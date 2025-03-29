@@ -75,7 +75,7 @@ const App = () => {
   <div className="container mx-auto flex justify-between items-center">
     <div className="flex items-center cursor-pointer" onClick={backToList}>
       <img 
-        src="/soccer-logo.svg" 
+        src="`${process.env.PUBLIC_URL}/soccer-logo.svg" 
         alt="大学サッカー部お品書き" 
         className="h-10 mr-3" 
       />
