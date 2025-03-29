@@ -72,21 +72,26 @@ const App = () => {
     <div className="min-h-screen bg-gray-50">
       {/* ヘッダー */}
       <header className="bg-green-700 text-white p-4 shadow-md">
-        <div className="container mx-auto flex justify-between items-center">
-          <h1 className="text-2xl font-bold cursor-pointer" onClick={backToList}>
-            大学サッカー部お品書き
-          </h1>
-          {compareList.length > 0 && (
-            <button 
-              className="bg-white text-green-700 px-4 py-2 rounded-md flex items-center"
-              onClick={showCompareView}
-            >
-              <span className="mr-2">比較リスト ({compareList.length})</span>
-              <ChevronRight size={16} />
-            </button>
-          )}
-        </div>
-      </header>
+  <div className="container mx-auto flex justify-between items-center">
+    <div className="flex items-center cursor-pointer" onClick={backToList}>
+      <img 
+        src="/soccer-logo.svg" 
+        alt="大学サッカー部お品書き" 
+        className="h-10 mr-3" 
+      />
+      <h1 className="text-2xl font-bold hidden sm:block">大学サッカー部お品書き</h1>
+    </div>
+    {compareList.length > 0 && (
+      <button 
+        className="bg-white text-green-700 px-4 py-2 rounded-md flex items-center"
+        onClick={showCompareView}
+      >
+        <span className="mr-2">比較リスト ({compareList.length})</span>
+        <ChevronRight size={16} />
+      </button>
+    )}
+  </div>
+</header>
 
       {/* メインコンテンツ */}
       <main className="container mx-auto p-4">
