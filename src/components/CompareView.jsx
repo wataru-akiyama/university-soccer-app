@@ -5,9 +5,9 @@ import { ChevronRight } from 'lucide-react';
 const CompareView = ({ universities, onBack, onRemove }) => {
   return (
     <div className="bg-white rounded-lg shadow-md overflow-hidden">
-      <div className="bg-blue-700 text-white p-6">
+      <div className="bg-green-700 text-white p-6">
         <button 
-          className="bg-white text-blue-700 px-3 py-1 rounded mb-4 flex items-center text-sm"
+          className="bg-white text-green-700 px-3 py-1 rounded mb-4 flex items-center text-sm"
           onClick={onBack}
         >
           <ChevronRight className="transform rotate-180 mr-1" size={16} />
@@ -38,8 +38,8 @@ const CompareView = ({ universities, onBack, onRemove }) => {
           </thead>
           <tbody>
             {/* 基本情報 */}
-            <tr className="bg-blue-50">
-              <th colSpan={universities.length + 1} className="p-2 text-left font-semibold text-blue-800 sticky left-0 z-10">
+            <tr className="bg-green-50">
+              <th colSpan={universities.length + 1} className="p-2 text-left font-semibold text-green-800 sticky left-0 z-10">
                 基本情報
               </th>
             </tr>

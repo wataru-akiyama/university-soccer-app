@@ -117,7 +117,7 @@ const SearchForm = ({
       {/* 人気の検索条件ボタン */}
       <div className="flex flex-wrap gap-2">
         <button 
-          className="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-sm hover:bg-blue-200"
+          className="bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm hover:bg-green-200"
           onClick={() => {
             setSportsRecommend(true);
             setSelectionAvailable(false);
@@ -127,7 +127,7 @@ const SearchForm = ({
           スポーツ推薦がある大学
         </button>
         <button 
-          className="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-sm hover:bg-blue-200"
+          className="bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm hover:bg-green-200"
           onClick={() => {
             setSortOption("j_league");
           }}
@@ -135,7 +135,7 @@ const SearchForm = ({
           Jリーグ内定者数が多い大学
         </button>
         <button 
-          className="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-sm hover:bg-blue-200"
+          className="bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm hover:bg-green-200"
           onClick={() => {
             setDormAvailable(true);
           }}
@@ -143,7 +143,7 @@ const SearchForm = ({
           寮がある大学
         </button>
         <button 
-          className="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-sm hover:bg-blue-200"
+          className="bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm hover:bg-green-200"
           onClick={() => {
             setSelectedQualification("JFA公認コーチングライセンス");
           }}
@@ -151,7 +151,7 @@ const SearchForm = ({
           コーチングライセンス取得可能
         </button>
         <button 
-          className="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-sm hover:bg-blue-200"
+          className="bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm hover:bg-green-200"
           onClick={() => {
             setSelectedQualification("教員免許（保健体育）");
           }}

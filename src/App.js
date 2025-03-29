@@ -71,14 +71,14 @@ const App = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* ヘッダー */}
-      <header className="bg-blue-700 text-white p-4 shadow-md">
+      <header className="bg-green-700 text-white p-4 shadow-md">
         <div className="container mx-auto flex justify-between items-center">
           <h1 className="text-2xl font-bold cursor-pointer" onClick={backToList}>
             大学サッカー部お品書き
           </h1>
           {compareList.length > 0 && (
             <button 
-              className="bg-white text-blue-700 px-4 py-2 rounded-md flex items-center"
+              className="bg-white text-green-700 px-4 py-2 rounded-md flex items-center"
               onClick={showCompareView}
             >
               <span className="mr-2">比較リスト ({compareList.length})</span>

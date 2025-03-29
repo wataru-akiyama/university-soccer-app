@@ -4,7 +4,7 @@ import { Award, User, ChevronRight, Check, PlusCircle } from 'lucide-react';
 const UniversityCard = ({ university, onViewDetails, onAddToCompare, isInCompareList, onRemoveFromCompare }) => {
   return (
     <div className="border rounded-lg overflow-hidden hover:shadow-lg transition-shadow">
-      <div className="bg-blue-50 p-4">
+      <div className="bg-green-50 p-4">
         <h3 className="text-lg font-semibold">{university.university_name}</h3>
         <p className="text-sm text-gray-600">{university.soccer_club.league}</p>
       </div>
@@ -19,7 +19,7 @@ const UniversityCard = ({ university, onViewDetails, onAddToCompare, isInCompare
         
         <div className="flex justify-between mb-2">
           <div className="flex items-center">
-            <User className="text-blue-500 mr-2" size={18} />
+            <User className="text-green-500 mr-2" size={18} />
             <span>部員数: {university.soccer_club.total_members}名</span>
           </div>
         </div>
@@ -32,7 +32,7 @@ const UniversityCard = ({ university, onViewDetails, onAddToCompare, isInCompare
           )}
           
           {university.entry_conditions.selection && (
-            <span className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">
+            <span className="bg-green-100 text-green-800 text-xs px-2 py-1 rounded">
               セレクションあり
             </span>
           )}
@@ -46,7 +46,7 @@ const UniversityCard = ({ university, onViewDetails, onAddToCompare, isInCompare
         
         <div className="flex justify-between">
           <button 
-            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 flex items-center"
+            className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 flex items-center"
             onClick={() => onViewDetails(university)}
           >
             詳細を見る
@@ -57,7 +57,7 @@ const UniversityCard = ({ university, onViewDetails, onAddToCompare, isInCompare
             className={`px-3 py-2 rounded border flex items-center ${
               isInCompareList
                 ? "bg-gray-200 text-gray-700 border-gray-300"
-                : "bg-white text-blue-600 border-blue-300 hover:bg-blue-50"
+                : "bg-white text-green-600 border-green-300 hover:bg-green-50"
             }`}
             onClick={() => {
               if (isInCompareList) {

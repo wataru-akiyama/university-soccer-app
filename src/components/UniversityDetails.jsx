@@ -8,11 +8,11 @@ const UniversityDetails = ({ university, onBack, onAddToCompare, isInCompareList
   return (
     <div className="bg-white rounded-lg shadow-md overflow-hidden">
       {/* ヘッダー部分 */}
-      <div className="bg-blue-700 text-white p-6">
+      <div className="bg-green-700 text-white p-6">
         <div className="flex justify-between items-start">
           <div>
             <button 
-              className="bg-white text-blue-700 px-3 py-1 rounded mb-4 flex items-center text-sm"
+              className="bg-white text-green-700 px-3 py-1 rounded mb-4 flex items-center text-sm"
               onClick={onBack}
             >
               <ChevronRight className="transform rotate-180 mr-1" size={16} />
@@ -26,7 +26,7 @@ const UniversityDetails = ({ university, onBack, onAddToCompare, isInCompareList
             className={`rounded-full p-2 ${
               isInCompareList 
                 ? "bg-white text-yellow-500" 
-                : "bg-blue-600 text-white hover:bg-blue-500"
+                : "bg-green-600 text-white hover:bg-green-500"
             }`}
             onClick={() => onAddToCompare(university)}
             disabled={isInCompareList}
@@ -39,25 +39,25 @@ const UniversityDetails = ({ university, onBack, onAddToCompare, isInCompareList
       {/* タブメニュー */}
       <div className="flex border-b overflow-x-auto">
         <button 
-          className={`px-4 py-3 text-center flex-grow ${activeTab === 'overview' ? 'border-b-2 border-blue-600 text-blue-600' : 'text-gray-500'}`}
+          className={`px-4 py-3 text-center flex-grow ${activeTab === 'overview' ? 'border-b-2 border-green-600 text-green-600' : 'text-gray-500'}`}
           onClick={() => setActiveTab('overview')}
         >
           概要
         </button>
         <button 
-          className={`px-4 py-3 text-center flex-grow ${activeTab === 'members' ? 'border-b-2 border-blue-600 text-blue-600' : 'text-gray-500'}`}
+          className={`px-4 py-3 text-center flex-grow ${activeTab === 'members' ? 'border-b-2 border-green-600 text-green-600' : 'text-gray-500'}`}
           onClick={() => setActiveTab('members')}
         >
           部員数・実績
         </button>
         <button 
-          className={`px-4 py-3 text-center flex-grow ${activeTab === 'facilities' ? 'border-b-2 border-blue-600 text-blue-600' : 'text-gray-500'}`}
+          className={`px-4 py-3 text-center flex-grow ${activeTab === 'facilities' ? 'border-b-2 border-green-600 text-green-600' : 'text-gray-500'}`}
           onClick={() => setActiveTab('facilities')}
         >
           施設・環境
         </button>
         <button 
-          className={`px-4 py-3 text-center flex-grow ${activeTab === 'entry' ? 'border-b-2 border-blue-600 text-blue-600' : 'text-gray-500'}`}
+          className={`px-4 py-3 text-center flex-grow ${activeTab === 'entry' ? 'border-b-2 border-green-600 text-green-600' : 'text-gray-500'}`}
           onClick={() => setActiveTab('entry')}
         >
           入部条件
@@ -97,7 +97,7 @@ const UniversityDetails = ({ university, onBack, onAddToCompare, isInCompareList
                           href={university.homepage_url} 
                           target="_blank" 
                           rel="noopener noreferrer"
-                          className="text-blue-600 hover:underline"
+                          className="text-green-600 hover:underline"
                         >
                           {university.homepage_url}
                         </a>
@@ -132,8 +132,8 @@ const UniversityDetails = ({ university, onBack, onAddToCompare, isInCompareList
                   )}
                   
                   {university.entry_conditions.sports_recommend && (
-                    <div className="flex items-center border rounded px-3 py-1 bg-blue-50">
-                      <FileText size={16} className="text-blue-700 mr-2" />
+                    <div className="flex items-center border rounded px-3 py-1 bg-green-50">
+                      <FileText size={16} className="text-green-700 mr-2" />
                       <span>スポーツ推薦あり</span>
                     </div>
                   )}
@@ -157,10 +157,10 @@ const UniversityDetails = ({ university, onBack, onAddToCompare, isInCompareList
                     return (
                       <div key={grade} className="flex flex-col items-center">
                         <div 
-                          className="w-16 bg-blue-500 rounded-t"
+                          className="w-16 bg-green-500 rounded-t"
                           style={{ height: `${height}%` }}
                         >
-                          <div className="bg-blue-600 h-1"></div>
+                          <div className="bg-green-600 h-1"></div>
                         </div>
                         <div className="mt-2 text-sm">
                           <div className="font-semibold">{grade}</div>
@@ -185,9 +185,9 @@ const UniversityDetails = ({ university, onBack, onAddToCompare, isInCompareList
                     </div>
                   </div>
                   
-                  <div className="bg-blue-50 p-4 rounded border border-blue-200">
+                  <div className="bg-green-50 p-4 rounded border border-green-200">
                     <h4 className="font-semibold mb-2">デンソーカップ出場選手数 (2024-2025)</h4>
-                    <div className="text-3xl font-bold text-center text-blue-700">
+                    <div className="text-3xl font-bold text-center text-green-700">
                       {university.soccer_club.denso_cup_2024_25}名
                     </div>
                   </div>
@@ -304,7 +304,7 @@ const UniversityDetails = ({ university, onBack, onAddToCompare, isInCompareList
                   )}
                 </div>
                 
-                <div className="mt-6 bg-blue-50 p-4 rounded border border-blue-200">
+                <div className="mt-6 bg-green-50 p-4 rounded border border-green-200">
                   <h3 className="text-lg font-semibold mb-2">入部に関する注意事項</h3>
                   <ul className="list-disc list-inside space-y-2 text-sm">
                     <li>入部条件や推薦基準は年度によって変更される場合があります</li>
