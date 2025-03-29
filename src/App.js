@@ -1,3 +1,4 @@
+import soccerLogo from './assets/soccer-logo.svg';
 import React, { useState } from 'react';
 import { ChevronRight } from 'lucide-react';
 import universities from './data/universities';
@@ -75,7 +76,7 @@ const App = () => {
   <div className="container mx-auto flex justify-between items-center">
     <div className="flex items-center cursor-pointer" onClick={backToList}>
       <img 
-        src="`${process.env.PUBLIC_URL}/soccer-logo.svg`" 
+        src={soccerLogo} 
         alt="大学サッカー部お品書き" 
         className="h-10 mr-3" 
       />
