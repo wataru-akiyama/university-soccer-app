@@ -9,7 +9,10 @@ const UniversityList = ({
   onViewDetails,
   compareList,
   onAddToCompare,
-  onRemoveFromCompare
+  onRemoveFromCompare,
+  favoriteUniversities,
+  onAddToFavorites,
+  onRemoveFromFavorites
 }) => {
   return (
     <div className="bg-white p-6 rounded-lg shadow-md">
@@ -29,6 +32,9 @@ const UniversityList = ({
             onAddToCompare={onAddToCompare}
             isInCompareList={compareList.some(uni => uni.id === university.id)}
             onRemoveFromCompare={onRemoveFromCompare}
+            onAddToFavorites={onAddToFavorites}
+            onRemoveFromFavorites={onRemoveFromFavorites}
+            isInFavorites={favoriteUniversities.some(uni => uni.id === university.id)}
           />
         ))}
       </div>

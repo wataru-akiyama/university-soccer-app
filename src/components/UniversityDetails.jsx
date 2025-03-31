@@ -1,8 +1,15 @@
 import React, { useState } from 'react';
-import { ChevronRight, Star, Home, ScrollText, FileText, Award, Check } from 'lucide-react';
+import { ChevronRight, Star, Heart, Home, ScrollText, FileText, Award, Check } from 'lucide-react';
 
 // 大学詳細コンポーネント
-const UniversityDetails = ({ university, onBack, onAddToCompare, isInCompareList }) => {
+const UniversityDetails = ({ 
+  university, 
+  onBack, 
+  onAddToCompare, 
+  onAddToFavorites, 
+  isInCompareList,
+  isInFavorites 
+}) => {
   const [activeTab, setActiveTab] = useState('overview');
   
   return (
@@ -22,17 +29,33 @@ const UniversityDetails = ({ university, onBack, onAddToCompare, isInCompareList
             <p className="text-lg">{university.soccer_club.league}</p>
           </div>
           
-          <button 
-            className={`rounded-full p-2 ${
-              isInCompareList 
-                ? "bg-white text-yellow-500" 
-                : "bg-green-600 text-white hover:bg-green-500"
-            }`}
-            onClick={() => onAddToCompare(university)}
-            disabled={isInCompareList}
-          >
-            <Star size={24} />
-          </button>
+          <div className="flex space-x-2">
+            <button 
+              className={`rounded-full p-2 ${
+                isInFavorites
+                ? "bg-white text-red-500"
+                : "bg-pink-600 text-white hover:bg-pink-500"
+              }`}
+              onClick={() => onAddToFavorites(university)}
+              disabled={isInFavorites}
+              title={isInFavorites ? "お気に入り登録済み" : "お気に入りに追加"}
+            >
+              <Heart size={24} />
+            </button>
+            
+            <button 
+              className={`rounded-full p-2 ${
+                isInCompareList 
+                  ? "bg-white text-yellow-500" 
+                  : "bg-green-600 text-white hover:bg-green-500"
+              }`}
+              onClick={() => onAddToCompare(university)}
+              disabled={isInCompareList}
+              title={isInCompareList ? "比較リスト追加済み" : "比較リストに追加"}
+            >
+              <Star size={24} />
+            </button>
+          </div>
         </div>
       </div>
       

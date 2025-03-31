@@ -1,12 +1,38 @@
 import React from 'react';
-import { Award, User, ChevronRight, Check, PlusCircle } from 'lucide-react';
+import { Award, User, ChevronRight, Check, PlusCircle, Heart } from 'lucide-react';
 
-const UniversityCard = ({ university, onViewDetails, onAddToCompare, isInCompareList, onRemoveFromCompare }) => {
+const UniversityCard = ({ 
+  university, 
+  onViewDetails, 
+  onAddToCompare, 
+  isInCompareList, 
+  onRemoveFromCompare,
+  onAddToFavorites,
+  onRemoveFromFavorites,
+  isInFavorites
+}) => {
   return (
     <div className="border rounded-lg overflow-hidden hover:shadow-lg transition-shadow">
       <div className="bg-green-50 p-4">
-        <h3 className="text-lg font-semibold">{university.university_name}</h3>
-        <p className="text-sm text-gray-600">{university.soccer_club.league}</p>
+        <div className="flex justify-between">
+          <div>
+            <h3 className="text-lg font-semibold">{university.university_name}</h3>
+            <p className="text-sm text-gray-600">{university.soccer_club.league}</p>
+          </div>
+          <button
+            className={`text-${isInFavorites ? 'red' : 'gray'}-500 hover:text-red-600`}
+            onClick={() => {
+              if (isInFavorites) {
+                onRemoveFromFavorites(university.id);
+              } else {
+                onAddToFavorites(university);
+              }
+            }}
+            title={isInFavorites ? "お気に入りから削除" : "お気に入りに追加"}
+          >
+            <Heart size={20} fill={isInFavorites ? "currentColor" : "none"} />
+          </button>
+        </div>
       </div>
       
       <div className="p-4">
