@@ -1,12 +1,13 @@
 import soccerLogo from './assets/soccer-logo.svg';
-import React, { useState, useEffect } from 'react';  // useEffect を追加
-import { ChevronRight, Heart } from 'lucide-react';  // Heart を追加
+import React, { useState, useEffect } from 'react';
+import { ChevronRight, Heart, Zap } from 'lucide-react'; // LightBulbを追加
 import universities from './data/universities';
 import SearchForm from './components/SearchForm';
 import UniversityList from './components/UniversityList';
 import UniversityDetails from './components/UniversityDetails';
 import CompareView from './components/CompareView';
-import MyCareerPlan from './components/MyCareerPlan';  // 新コンポーネント
+import MyCareerPlan from './components/MyCareerPlan';
+import SimpleRecommendationWizard from './components/SimpleRecommendationWizard'; // 追加
 import useUniversitySearch from './hooks/useUniversitySearch';
 
 const App = () => {
@@ -36,6 +37,7 @@ const App = () => {
   const [showCompare, setShowCompare] = useState(false);
   const [favoriteUniversities, setFavoriteUniversities] = useState([]);
   const [showFavorites, setShowFavorites] = useState(false);
+  const [showRecommendation, setShowRecommendation] = useState(false); // 追加: 推薦表示フラグ
 
   // ローカルストレージからお気に入りを読み込む
   useEffect(() => {
@@ -60,13 +62,15 @@ const App = () => {
   // 大学の詳細表示
   const viewUniversityDetails = (university) => {
     setSelectedUniversity(university);
+    setShowRecommendation(false); // 追加: 推薦表示をオフに
   };
 
   // トップページに戻る
   const backToList = () => {
     setSelectedUniversity(null);
     setShowCompare(false);
-    setShowFavorites(false);  // 追加
+    setShowFavorites(false);
+    setShowRecommendation(false); // 追加: 推薦表示をオフに
   };
 
   // 比較リストに追加
@@ -90,7 +94,8 @@ const App = () => {
     if (compareList.length > 0) {
       setShowCompare(true);
       setSelectedUniversity(null);
-      setShowFavorites(false);  // 追加
+      setShowFavorites(false);
+      setShowRecommendation(false); // 追加: 推薦表示をオフに
     }
   };
 
@@ -111,6 +116,7 @@ const App = () => {
     setShowFavorites(true);
     setSelectedUniversity(null);
     setShowCompare(false);
+    setShowRecommendation(false); // 追加: 推薦表示をオフに
   };
 
   // お気に入りの順序変更
@@ -119,6 +125,14 @@ const App = () => {
     const [removed] = result.splice(startIndex, 1);
     result.splice(endIndex, 0, removed);
     setFavoriteUniversities(result);
+  };
+
+  // 推薦ウィザード表示のトグル（追加）
+  const toggleRecommendation = () => {
+    setShowRecommendation(!showRecommendation);
+    setSelectedUniversity(null);
+    setShowCompare(false);
+    setShowFavorites(false);
   };
 
   return (
@@ -135,6 +149,19 @@ const App = () => {
             <h1 className="text-2xl font-bold hidden sm:block">大学サッカー部お品書き</h1>
           </div>
           <div className="flex gap-2">
+            {/* 推薦ウィザードボタン（追加） */}
+            <button 
+              className={`px-4 py-2 rounded-md flex items-center transition-colors ${
+                showRecommendation 
+                  ? "bg-yellow-500 text-white" 
+                  : "bg-white text-yellow-600"
+              }`}
+              onClick={toggleRecommendation}
+            >
+              <Zap size={16} className="mr-2" />
+              <span>あなたにぴったりの大学</span>
+            </button>
+            
             {favoriteUniversities.length > 0 && (
               <button 
                 className="bg-white text-blue-600 px-4 py-2 rounded-md flex items-center mr-2"
@@ -165,9 +192,9 @@ const App = () => {
             university={selectedUniversity} 
             onBack={backToList} 
             onAddToCompare={addToCompare}
-            onAddToFavorites={addToFavorites}  // 追加
+            onAddToFavorites={addToFavorites}
             isInCompareList={compareList.some(uni => uni.id === selectedUniversity.id)}
-            isInFavorites={favoriteUniversities.some(uni => uni.id === selectedUniversity.id)}  // 追加
+            isInFavorites={favoriteUniversities.some(uni => uni.id === selectedUniversity.id)}
           />
         ) 
         /* 比較画面 */
@@ -178,13 +205,20 @@ const App = () => {
             onRemove={removeFromCompare} 
           />
         ) 
-        /* お気に入り画面 - 追加 */
+        /* お気に入り画面 */
         : showFavorites ? (
           <MyCareerPlan 
             favoriteUniversities={favoriteUniversities}
             onBack={backToList}
             onRemoveFromFavorites={removeFromFavorites}
             onReorderFavorites={reorderFavorites}
+            onViewDetails={viewUniversityDetails}
+          />
+        )
+        /* 推薦ウィザード画面（追加） */
+        : showRecommendation ? (
+          <SimpleRecommendationWizard
+            universities={universities}
             onViewDetails={viewUniversityDetails}
           />
         )
@@ -209,6 +243,23 @@ const App = () => {
               setSortOption={setSortOption}
             />
             
+            {/* 推薦ウィザードバナー（追加） */}
+            <div className="bg-gradient-to-r from-yellow-500 to-orange-500 text-white p-4 rounded-lg shadow-md mb-6 flex items-center justify-between">
+              <div className="flex items-center">
+                <Zap size={24} className="mr-3" />
+                <div>
+                  <h3 className="font-bold text-lg">あなたにぴったりの大学サッカー部を見つけよう！</h3>
+                  <p className="text-sm text-yellow-100">サッカーに対する志向と学びたいことから最適な大学を提案します</p>
+                </div>
+              </div>
+              <button
+                className="bg-white text-orange-600 px-4 py-2 rounded-lg font-medium shadow-sm hover:bg-orange-50 transition-colors"
+                onClick={toggleRecommendation}
+              >
+                診断してみる
+              </button>
+            </div>
+            
             <UniversityList
               filteredUniversities={filteredUniversities}
               sortOption={sortOption}
@@ -217,9 +268,9 @@ const App = () => {
               compareList={compareList}
               onAddToCompare={addToCompare}
               onRemoveFromCompare={removeFromCompare}
-              favoriteUniversities={favoriteUniversities}  // 追加
-              onAddToFavorites={addToFavorites}  // 追加
-              onRemoveFromFavorites={removeFromFavorites}  // 追加
+              favoriteUniversities={favoriteUniversities}
+              onAddToFavorites={addToFavorites}
+              onRemoveFromFavorites={removeFromFavorites}
             />
           </>
         )}
