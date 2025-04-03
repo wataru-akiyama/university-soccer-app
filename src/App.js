@@ -9,8 +9,8 @@ import CompareView from './components/CompareView';
 import MyCareerPlan from './components/MyCareerPlan';
 import SimpleRecommendationWizard from './components/SimpleRecommendationWizard'; // 追加
 import useUniversitySearch from './hooks/useUniversitySearch';
-//import Papa from 'papaparse';
-//import { mapCsvToUniversity } from './utils/csvMapping';
+import MyPortfolio from './components/MyPortfolio';
+import { UserCircle } from 'lucide-react';
 
 const App = () => {
   // カスタムフックを使用して検索ロジックを実装
@@ -58,6 +58,7 @@ const App = () => {
   const [favoriteUniversities, setFavoriteUniversities] = useState([]);
   const [showFavorites, setShowFavorites] = useState(false);
   const [showRecommendation, setShowRecommendation] = useState(false); // 追加: 推薦表示フラグ
+  const [showPortfolio, setShowPortfolio] = useState(false);
 
   // ローカルストレージからお気に入りを読み込む
   useEffect(() => {
@@ -91,6 +92,7 @@ const App = () => {
     setShowCompare(false);
     setShowFavorites(false);
     setShowRecommendation(false); // 追加: 推薦表示をオフに
+    setShowPortfolio(false); // 追加
   };
 
   // 比較リストに追加
@@ -155,6 +157,15 @@ const App = () => {
     setShowFavorites(false);
   };
 
+  // ポートフォリオ表示関数を追加
+  const togglePortfolio = () => {
+    setShowPortfolio(!showPortfolio);
+    setSelectedUniversity(null);
+    setShowCompare(false);
+    setShowFavorites(false);
+    setShowRecommendation(false);
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* ヘッダー */}
@@ -169,6 +180,19 @@ const App = () => {
             <h1 className="text-2xl font-bold hidden sm:block">大学サッカー部お品書き</h1>
           </div>
           <div className="flex gap-2">
+            {/* ポートフォリオボタン (追加) */}
+            <button 
+              className={`px-4 py-2 rounded-md flex items-center transition-colors ${
+                showPortfolio 
+                  ? "bg-purple-500 text-white" 
+                  : "bg-white text-purple-600"
+              }`}
+              onClick={togglePortfolio}
+            >
+              <UserCircle size={16} className="mr-2" />
+              <span>マイポートフォリオ</span>
+            </button>
+
             {/* 推薦ウィザードボタン（追加） */}
             <button 
               className={`px-4 py-2 rounded-md flex items-center transition-colors ${
@@ -206,8 +230,15 @@ const App = () => {
 
       {/* メインコンテンツ */}
       <main className="container mx-auto p-4">
-        {/* 大学詳細表示 */}
-        {selectedUniversity ? (
+        {/* ポートフォリオ表示 (追加) */}
+        {showPortfolio ? (
+          <MyPortfolio 
+            onBack={backToList}
+            favoriteUniversities={favoriteUniversities}
+          />
+        ) 
+        /* 大学詳細表示 */
+        : selectedUniversity ? (
           <UniversityDetails 
             university={selectedUniversity} 
             onBack={backToList} 

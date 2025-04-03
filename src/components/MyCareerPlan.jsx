@@ -1,7 +1,14 @@
 import React from 'react';
-import { ChevronRight, X, ChevronUp, ChevronDown, Info } from 'lucide-react';
+import { ChevronRight, X, ChevronUp, ChevronDown, Info, UserCircle } from 'lucide-react';
 
-const MyCareerPlan = ({ favoriteUniversities, onBack, onRemoveFromFavorites, onReorderFavorites, onViewDetails }) => {
+const MyCareerPlan = ({
+  favoriteUniversities,
+  onBack,
+  onRemoveFromFavorites,
+  onReorderFavorites,
+  onViewDetails,
+  onShowPortfolio // 追加
+}) => {
   // 上に移動
   const moveUp = (index) => {
     if (index > 0) {
@@ -31,6 +38,23 @@ const MyCareerPlan = ({ favoriteUniversities, onBack, onRemoveFromFavorites, onR
         </div>
       
       <div className="p-6">
+        {/* ポートフォリオバナーを上部に追加 */}
+        <div className="bg-blue-50 p-4 rounded-xl mb-6">
+          <div className="flex items-center">
+            <UserCircle size={20} className="text-blue-600 mr-2" />
+            <div>
+              <p className="text-blue-800 font-medium">ポートフォリオで自己PR！</p>
+              <p className="text-blue-600 text-sm">大学サッカー部にアピールし、練習参加につなげよう</p>
+            </div>
+            <button 
+              className="ml-auto bg-blue-600 text-white px-3 py-1 rounded-md text-sm"
+              onClick={onShowPortfolio}
+            >
+              ポートフォリオを編集
+            </button>
+          </div>
+        </div>
+
         {favoriteUniversities.length > 0 ? (
           <div className="space-y-4">
             {favoriteUniversities.map((university, index) => (
