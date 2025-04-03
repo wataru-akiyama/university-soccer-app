@@ -9,6 +9,8 @@ import CompareView from './components/CompareView';
 import MyCareerPlan from './components/MyCareerPlan';
 import SimpleRecommendationWizard from './components/SimpleRecommendationWizard'; // 追加
 import useUniversitySearch from './hooks/useUniversitySearch';
+//import Papa from 'papaparse';
+//import { mapCsvToUniversity } from './utils/csvMapping';
 
 const App = () => {
   // カスタムフックを使用して検索ロジックを実装
@@ -27,8 +29,26 @@ const App = () => {
     setSelectionAvailable,
     dormAvailable,
     setDormAvailable,
+    generalAdmissionAvailable,
+    setGeneralAdmissionAvailable,
+    jLeagueMinimum,
+    setJLeagueMinimum,
+    yearlyJLeagueFilter,
+    setYearlyJLeagueFilter,
+    memberSizeCategory,
+    setMemberSizeCategory,
+    newMemberSizeCategory,
+    setNewMemberSizeCategory,
+    maxGradeRequirement,
+    setMaxGradeRequirement,
+    coachBackgroundFilter,
+    setCoachBackgroundFilter,
+    densoCupMinimum,
+    setDensoCupMinimum,
     sortOption,
     setSortOption,
+    sortDirection,
+    setSortDirection,
     filteredUniversities
   } = useUniversitySearch(universities);
 
@@ -240,7 +260,21 @@ const App = () => {
               setSelectionAvailable={setSelectionAvailable}
               dormAvailable={dormAvailable}
               setDormAvailable={setDormAvailable}
+              generalAdmissionAvailable={generalAdmissionAvailable}
+              setGeneralAdmissionAvailable={setGeneralAdmissionAvailable}
+              jLeagueMinimum={jLeagueMinimum}
+              setJLeagueMinimum={setJLeagueMinimum}
+              yearlyJLeagueFilter={yearlyJLeagueFilter}
+              setYearlyJLeagueFilter={setYearlyJLeagueFilter}
+              memberSizeCategory={memberSizeCategory}
+              setMemberSizeCategory={setMemberSizeCategory}
+              maxGradeRequirement={maxGradeRequirement}
+              setMaxGradeRequirement={setMaxGradeRequirement}
+              densoCupMinimum={densoCupMinimum}
+              setDensoCupMinimum={setDensoCupMinimum}
               setSortOption={setSortOption}
+              sortDirection={sortDirection}
+              setSortDirection={setSortDirection}
             />
             
             {/* 推薦ウィザードバナー（追加） */}
@@ -262,6 +296,7 @@ const App = () => {
             
             <UniversityList
               filteredUniversities={filteredUniversities}
+              allUniversities={universities}
               sortOption={sortOption}
               setSortOption={setSortOption}
               onViewDetails={viewUniversityDetails}
@@ -271,6 +306,12 @@ const App = () => {
               favoriteUniversities={favoriteUniversities}
               onAddToFavorites={addToFavorites}
               onRemoveFromFavorites={removeFromFavorites}
+              selectedRegion={selectedRegion}
+              sportsRecommend={sportsRecommend}
+              dormAvailable={dormAvailable}
+              selectionAvailable={selectionAvailable}
+              selectedLeague={selectedLeague}
+              selectedQualification={selectedQualification}
             />
           </>
         )}
