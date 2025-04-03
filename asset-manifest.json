@@ -1,16 +1,16 @@
 {
   "files": {
     "main.css": "/university-soccer-app/static/css/main.4ce2627c.css",
-    "main.js": "/university-soccer-app/static/js/main.6445a59b.js",
+    "main.js": "/university-soccer-app/static/js/main.d701f5a2.js",
     "static/js/453.a8a89bf8.chunk.js": "/university-soccer-app/static/js/453.a8a89bf8.chunk.js",
     "static/media/soccer-logo.svg": "/university-soccer-app/static/media/soccer-logo.c9e4bd040c50b4897f26e52b66c2aeb8.svg",
     "index.html": "/university-soccer-app/index.html",
     "main.4ce2627c.css.map": "/university-soccer-app/static/css/main.4ce2627c.css.map",
-    "main.6445a59b.js.map": "/university-soccer-app/static/js/main.6445a59b.js.map",
+    "main.d701f5a2.js.map": "/university-soccer-app/static/js/main.d701f5a2.js.map",
     "453.a8a89bf8.chunk.js.map": "/university-soccer-app/static/js/453.a8a89bf8.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.4ce2627c.css",
-    "static/js/main.6445a59b.js"
+    "static/js/main.d701f5a2.js"
   ]
 }
