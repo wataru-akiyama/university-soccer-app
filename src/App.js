@@ -4,13 +4,14 @@ import { ChevronRight, Heart, Zap } from 'lucide-react'; // LightBulbを追加
 import universities from './data/universities';
 import SearchForm from './components/SearchForm';
 import UniversityList from './components/UniversityList';
-import UniversityDetails from './components/UniversityDetails';
 import CompareView from './components/CompareView';
 import MyCareerPlan from './components/MyCareerPlan';
 import SimpleRecommendationWizard from './components/SimpleRecommendationWizard'; // 追加
 import useUniversitySearch from './hooks/useUniversitySearch';
 import MyPortfolio from './components/MyPortfolio';
+import EnhancedUniversityDetails from './components/EnhancedUniversityDetails';
 import { UserCircle } from 'lucide-react';
+//import UniversityDetails from './components/UniversityDetails';
 
 const App = () => {
   // カスタムフックを使用して検索ロジックを実装
@@ -37,12 +38,8 @@ const App = () => {
     setYearlyJLeagueFilter,
     memberSizeCategory,
     setMemberSizeCategory,
-    newMemberSizeCategory,
-    setNewMemberSizeCategory,
     maxGradeRequirement,
     setMaxGradeRequirement,
-    coachBackgroundFilter,
-    setCoachBackgroundFilter,
     densoCupMinimum,
     setDensoCupMinimum,
     sortOption,
@@ -50,6 +47,10 @@ const App = () => {
     sortDirection,
     setSortDirection,
     filteredUniversities
+    //newMemberSizeCategory,
+    //setNewMemberSizeCategory,
+    //coachBackgroundFilter,
+    //setCoachBackgroundFilter,
   } = useUniversitySearch(universities);
 
   const [selectedUniversity, setSelectedUniversity] = useState(null);
@@ -238,6 +239,7 @@ const App = () => {
           />
         ) 
         /* 大学詳細表示 */
+        /* 修正前:
         : selectedUniversity ? (
           <UniversityDetails 
             university={selectedUniversity} 
@@ -248,6 +250,18 @@ const App = () => {
             isInFavorites={favoriteUniversities.some(uni => uni.id === selectedUniversity.id)}
           />
         ) 
+        */
+       // 修正後:
+        : selectedUniversity ? (
+          <EnhancedUniversityDetails 
+            university={selectedUniversity} 
+            onBack={backToList} 
+            onAddToCompare={addToCompare}
+            onAddToFavorites={addToFavorites}
+            isInCompareList={compareList.some(uni => uni.id === selectedUniversity.id)}
+            isInFavorites={favoriteUniversities.some(uni => uni.id === selectedUniversity.id)}
+          />
+        )
         /* 比較画面 */
         : showCompare ? (
           <CompareView 
