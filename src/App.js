@@ -1,17 +1,16 @@
 import soccerLogo from './assets/soccer-logo.svg';
 import React, { useState, useEffect } from 'react';
-import { ChevronRight, Heart, Zap } from 'lucide-react'; // LightBulbを追加
+import { ChevronRight, Heart, Zap } from 'lucide-react';
+import { UserCircle } from 'lucide-react';
 import universities from './data/universities';
 import SearchForm from './components/SearchForm';
 import UniversityList from './components/UniversityList';
 import CompareView from './components/CompareView';
 import MyCareerPlan from './components/MyCareerPlan';
-import SimpleRecommendationWizard from './components/SimpleRecommendationWizard'; // 追加
+import SimpleRecommendationWizard from './components/SimpleRecommendationWizard';
 import useUniversitySearch from './hooks/useUniversitySearch';
 import MyPortfolio from './components/MyPortfolio';
 import EnhancedUniversityDetails from './components/EnhancedUniversityDetails';
-import { UserCircle } from 'lucide-react';
-//import UniversityDetails from './components/UniversityDetails';
 
 const App = () => {
   // カスタムフックを使用して検索ロジックを実装
@@ -47,10 +46,6 @@ const App = () => {
     sortDirection,
     setSortDirection,
     filteredUniversities
-    //newMemberSizeCategory,
-    //setNewMemberSizeCategory,
-    //coachBackgroundFilter,
-    //setCoachBackgroundFilter,
   } = useUniversitySearch(universities);
 
   const [selectedUniversity, setSelectedUniversity] = useState(null);
@@ -58,7 +53,7 @@ const App = () => {
   const [showCompare, setShowCompare] = useState(false);
   const [favoriteUniversities, setFavoriteUniversities] = useState([]);
   const [showFavorites, setShowFavorites] = useState(false);
-  const [showRecommendation, setShowRecommendation] = useState(false); // 追加: 推薦表示フラグ
+  const [showRecommendation, setShowRecommendation] = useState(false);
   const [showPortfolio, setShowPortfolio] = useState(false);
 
   // ローカルストレージからお気に入りを読み込む
@@ -84,7 +79,7 @@ const App = () => {
   // 大学の詳細表示
   const viewUniversityDetails = (university) => {
     setSelectedUniversity(university);
-    setShowRecommendation(false); // 追加: 推薦表示をオフに
+    setShowRecommendation(false);
   };
 
   // トップページに戻る
@@ -92,8 +87,8 @@ const App = () => {
     setSelectedUniversity(null);
     setShowCompare(false);
     setShowFavorites(false);
-    setShowRecommendation(false); // 追加: 推薦表示をオフに
-    setShowPortfolio(false); // 追加
+    setShowRecommendation(false);
+    setShowPortfolio(false);
   };
 
   // 比較リストに追加
@@ -118,7 +113,7 @@ const App = () => {
       setShowCompare(true);
       setSelectedUniversity(null);
       setShowFavorites(false);
-      setShowRecommendation(false); // 追加: 推薦表示をオフに
+      setShowRecommendation(false);
     }
   };
 
@@ -139,7 +134,7 @@ const App = () => {
     setShowFavorites(true);
     setSelectedUniversity(null);
     setShowCompare(false);
-    setShowRecommendation(false); // 追加: 推薦表示をオフに
+    setShowRecommendation(false);
   };
 
   // お気に入りの順序変更
@@ -150,7 +145,7 @@ const App = () => {
     setFavoriteUniversities(result);
   };
 
-  // 推薦ウィザード表示のトグル（追加）
+  // 推薦ウィザード表示のトグル
   const toggleRecommendation = () => {
     setShowRecommendation(!showRecommendation);
     setSelectedUniversity(null);
@@ -181,7 +176,7 @@ const App = () => {
             <h1 className="text-2xl font-bold hidden sm:block">大学サッカー部お品書き</h1>
           </div>
           <div className="flex gap-2">
-            {/* ポートフォリオボタン (追加) */}
+            {/* ポートフォリオボタン */}
             <button 
               className={`px-4 py-2 rounded-md flex items-center transition-colors ${
                 showPortfolio 
@@ -194,7 +189,7 @@ const App = () => {
               <span>マイポートフォリオ</span>
             </button>
 
-            {/* 推薦ウィザードボタン（追加） */}
+            {/* 推薦ウィザードボタン */}
             <button 
               className={`px-4 py-2 rounded-md flex items-center transition-colors ${
                 showRecommendation 
@@ -231,7 +226,7 @@ const App = () => {
 
       {/* メインコンテンツ */}
       <main className="container mx-auto p-4">
-        {/* ポートフォリオ表示 (追加) */}
+        {/* ポートフォリオ表示 */}
         {showPortfolio ? (
           <MyPortfolio 
             onBack={backToList}
@@ -239,19 +234,6 @@ const App = () => {
           />
         ) 
         /* 大学詳細表示 */
-        /* 修正前:
-        : selectedUniversity ? (
-          <UniversityDetails 
-            university={selectedUniversity} 
-            onBack={backToList} 
-            onAddToCompare={addToCompare}
-            onAddToFavorites={addToFavorites}
-            isInCompareList={compareList.some(uni => uni.id === selectedUniversity.id)}
-            isInFavorites={favoriteUniversities.some(uni => uni.id === selectedUniversity.id)}
-          />
-        ) 
-        */
-       // 修正後:
         : selectedUniversity ? (
           <EnhancedUniversityDetails 
             university={selectedUniversity} 
@@ -278,9 +260,10 @@ const App = () => {
             onRemoveFromFavorites={removeFromFavorites}
             onReorderFavorites={reorderFavorites}
             onViewDetails={viewUniversityDetails}
+            onShowPortfolio={togglePortfolio}
           />
         )
-        /* 推薦ウィザード画面（追加） */
+        /* 推薦ウィザード画面 */
         : showRecommendation ? (
           <SimpleRecommendationWizard
             universities={universities}
@@ -322,7 +305,7 @@ const App = () => {
               setSortDirection={setSortDirection}
             />
             
-            {/* 推薦ウィザードバナー（追加） */}
+            {/* 推薦ウィザードバナー */}
             <div className="bg-gradient-to-r from-yellow-500 to-orange-500 text-white p-4 rounded-lg shadow-md mb-6 flex items-center justify-between">
               <div className="flex items-center">
                 <Zap size={24} className="mr-3" />
@@ -344,6 +327,8 @@ const App = () => {
               allUniversities={universities}
               sortOption={sortOption}
               setSortOption={setSortOption}
+              sortDirection={sortDirection}
+              setSortDirection={setSortDirection}
               onViewDetails={viewUniversityDetails}
               compareList={compareList}
               onAddToCompare={addToCompare}

@@ -7,7 +7,7 @@ const MyCareerPlan = ({
   onRemoveFromFavorites,
   onReorderFavorites,
   onViewDetails,
-  onShowPortfolio // 追加
+  onShowPortfolio
 }) => {
   // 上に移動
   const moveUp = (index) => {

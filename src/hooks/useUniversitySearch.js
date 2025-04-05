@@ -1,6 +1,5 @@
 // src/hooks/useUniversitySearch.js
 import { useState, useEffect, useMemo } from 'react';
-import { filterBySize, filterByJLeagueNominees, filterByYearJLeagueNominees, filterByGradeRequirement } from '../utils/csvMapping';
 
 /**
  * 大学検索機能を提供するカスタムフック

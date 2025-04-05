@@ -1,4 +1,4 @@
-// 大学のサンプルデータ（12件に拡張）
+// 大学のサンプルデータ（20件に拡張）
 const universities = [
   {
     id: 1,
@@ -256,7 +256,6 @@ const universities = [
       general_conditions: "入学後のセレクションあり"
     }
   },
-  // 追加データ（9-12）
   {
     id: 9,
     university_name: "立命館大学",
@@ -383,6 +382,263 @@ const universities = [
       selection_period: "11月中旬・1月中旬",
       general_admission: true,
       general_conditions: "入学後のセレクションあり"
+    }
+  },
+  // ここから新規追加（ID 13-20）
+  {
+    id: 13,
+    university_name: "慶應義塾大学",
+    homepage_url: "https://www.keio.ac.jp/",
+    main_faculties: ["体育研究所", "経済学部", "理工学部"],
+    soccer_club: {
+      league: "関東大学サッカーリーグ2部",
+      coach_name: "木村和司",
+      total_members: 70,
+      members_by_grade: { "1年": 20, "2年": 18, "3年": 17, "4年": 15 },
+      j_league_nominees_2022_24: 3,
+      j_league_nominees_2022: 1,
+      j_league_nominees_2023: 1,
+      j_league_nominees_2024: 1,
+      denso_cup_2024_25: 1,
+      soccer_field_count: 1,
+      dorm_available: false,
+      facility_note: "人工芝1面（共用）、日吉キャンパス内に位置",
+      sports_scholarship: false,
+      qualifications: ["スポーツビジネス関連資格", "審判資格"],
+      qualification_note: "OB会のネットワークが強く、ビジネス界への進路が多い",
+      highlight: "進学校としての文武両道"
+    },
+    entry_conditions: {
+      sports_recommend: false,
+      recommend_criteria: "",
+      selection: true,
+      selection_period: "4月上旬（入学後）",
+      general_admission: true,
+      general_conditions: "入学後の技術テストで選抜"
+    }
+  },
+  {
+    id: 14,
+    university_name: "同志社大学",
+    homepage_url: "https://www.doshisha.ac.jp/",
+    main_faculties: ["スポーツ健康科学部", "商学部", "経済学部"],
+    soccer_club: {
+      league: "関西学生サッカーリーグ1部",
+      coach_name: "松井清隆",
+      total_members: 75,
+      members_by_grade: { "1年": 22, "2年": 20, "3年": 18, "4年": 15 },
+      j_league_nominees_2022_24: 5,
+      j_league_nominees_2022: 1,
+      j_league_nominees_2023: 2,
+      j_league_nominees_2024: 2,
+      denso_cup_2024_25: 2,
+      soccer_field_count: 1,
+      dorm_available: true,
+      facility_note: "人工芝1面、京田辺キャンパス内に位置",
+      sports_scholarship: true,
+      qualifications: ["JFA公認コーチングライセンス", "教員免許（保健体育）", "スポーツビジネス関連資格"],
+      qualification_note: "関西圏で指導者を目指す学生向けのカリキュラムが充実",
+      highlight: "関西の名門私学"
+    },
+    entry_conditions: {
+      sports_recommend: true,
+      recommend_criteria: "評定3.2以上、受入人数15名程度",
+      selection: true,
+      selection_period: "12月中旬・1月中旬",
+      general_admission: true,
+      general_conditions: "一般入試合格者は練習参加後に審査"
+    }
+  },
+  {
+    id: 15,
+    university_name: "日本体育大学",
+    homepage_url: "https://www.nittai.ac.jp/",
+    main_faculties: ["体育学部", "スポーツ文化学部", "児童スポーツ教育学部"],
+    soccer_club: {
+      league: "関東大学サッカーリーグ1部",
+      coach_name: "北澤豪",
+      total_members: 85,
+      members_by_grade: { "1年": 25, "2年": 22, "3年": 20, "4年": 18 },
+      j_league_nominees_2022_24: 7,
+      j_league_nominees_2022: 2,
+      j_league_nominees_2023: 2,
+      j_league_nominees_2024: 3,
+      denso_cup_2024_25: 3,
+      soccer_field_count: 2,
+      dorm_available: true,
+      facility_note: "人工芝1面、天然芝1面、専用トレーニング施設あり",
+      sports_scholarship: true,
+      qualifications: ["JFA公認コーチングライセンス", "教員免許（保健体育）", "アスレティックトレーナー資格"],
+      qualification_note: "指導者育成に特化したカリキュラム、実践的な指導経験を積める環境",
+      highlight: "体育系最高峰の設備"
+    },
+    entry_conditions: {
+      sports_recommend: true,
+      recommend_criteria: "評定3.0以上、受入人数25名程度",
+      selection: true,
+      selection_period: "11月中旬・1月中旬・2月下旬",
+      general_admission: false,
+      general_conditions: "推薦入試中心"
+    }
+  },
+  {
+    id: 16,
+    university_name: "大阪体育大学",
+    homepage_url: "https://www.ouhs.ac.jp/",
+    main_faculties: ["体育学部", "教育学部", "スポーツ健康学部"],
+    soccer_club: {
+      league: "関西学生サッカーリーグ1部",
+      coach_name: "西谷和弘",
+      total_members: 80,
+      members_by_grade: { "1年": 24, "2年": 21, "3年": 19, "4年": 16 },
+      j_league_nominees_2022_24: 6,
+      j_league_nominees_2022: 2,
+      j_league_nominees_2023: 2,
+      j_league_nominees_2024: 2,
+      denso_cup_2024_25: 2,
+      soccer_field_count: 2,
+      dorm_available: true,
+      facility_note: "人工芝1面、天然芝1面、最新トレーニング設備完備",
+      sports_scholarship: true,
+      qualifications: ["JFA公認コーチングライセンス", "教員免許（保健体育）", "スポーツトレーナー資格"],
+      qualification_note: "関西圏での教員採用実績が高く、指導者育成に強み",
+      highlight: "関西屈指の体育系大学"
+    },
+    entry_conditions: {
+      sports_recommend: true,
+      recommend_criteria: "評定3.0以上、受入人数20名程度",
+      selection: true,
+      selection_period: "11月下旬・1月中旬",
+      general_admission: true,
+      general_conditions: "技術・体力テストあり"
+    }
+  },
+  {
+    id: 17,
+    university_name: "流通経済大学",
+    homepage_url: "https://www.rku.ac.jp/",
+    main_faculties: ["スポーツ健康科学部", "経済学部", "社会学部"],
+    soccer_club: {
+      league: "関東大学サッカーリーグ1部",
+      coach_name: "岩政大樹",
+      total_members: 70,
+      members_by_grade: { "1年": 21, "2年": 18, "3年": 17, "4年": 14 },
+      j_league_nominees_2022_24: 5,
+      j_league_nominees_2022: 1,
+      j_league_nominees_2023: 2,
+      j_league_nominees_2024: 2,
+      denso_cup_2024_25: 2,
+      soccer_field_count: 1,
+      dorm_available: true,
+      facility_note: "人工芝1面、専用クラブハウスあり",
+      sports_scholarship: true,
+      qualifications: ["JFA公認コーチングライセンス", "スポーツトレーナー資格", "審判資格"],
+      qualification_note: "鹿島アントラーズとの連携プログラムあり",
+      highlight: "プロチームとの連携強化"
+    },
+    entry_conditions: {
+      sports_recommend: true,
+      recommend_criteria: "評定3.0以上、受入人数18名程度",
+      selection: true,
+      selection_period: "12月上旬・2月中旬",
+      general_admission: false,
+      general_conditions: "推薦入試のみ"
+    }
+  },
+  {
+    id: 18,
+    university_name: "専修大学",
+    homepage_url: "https://www.senshu-u.ac.jp/",
+    main_faculties: ["経営学部", "商学部", "法学部"],
+    soccer_club: {
+      league: "関東大学サッカーリーグ2部",
+      coach_name: "前田浩文",
+      total_members: 65,
+      members_by_grade: { "1年": 19, "2年": 17, "3年": 16, "4年": 13 },
+      j_league_nominees_2022_24: 3,
+      j_league_nominees_2022: 1,
+      j_league_nominees_2023: 1,
+      j_league_nominees_2024: 1,
+      denso_cup_2024_25: 1,
+      soccer_field_count: 1,
+      dorm_available: false,
+      facility_note: "人工芝1面（共用）",
+      sports_scholarship: true,
+      qualifications: ["スポーツビジネス関連資格", "JFA公認コーチングライセンス"],
+      qualification_note: "ビジネス系学部との連携による就職サポートが充実",
+      highlight: "ビジネス教育との両立"
+    },
+    entry_conditions: {
+      sports_recommend: true,
+      recommend_criteria: "評定3.2以上、受入人数12名程度",
+      selection: true,
+      selection_period: "11月下旬・1月上旬",
+      general_admission: true,
+      general_conditions: "一般入試合格後のセレクションあり"
+    }
+  },
+  {
+    id: 19,
+    university_name: "北海道大学",
+    homepage_url: "https://www.hokudai.ac.jp/",
+    main_faculties: ["教育学部", "経済学部", "工学部"],
+    soccer_club: {
+      league: "北海道大学サッカーリーグ1部",
+      coach_name: "斉藤嘉彦",
+      total_members: 55,
+      members_by_grade: { "1年": 16, "2年": 15, "3年": 13, "4年": 11 },
+      j_league_nominees_2022_24: 1,
+      j_league_nominees_2022: 0,
+      j_league_nominees_2023: 0,
+      j_league_nominees_2024: 1,
+      denso_cup_2024_25: 0,
+      soccer_field_count: 1,
+      dorm_available: false,
+      facility_note: "天然芝1面（共用）、冬季は室内練習場使用",
+      sports_scholarship: false,
+      qualifications: ["教員免許（保健体育）", "審判資格"],
+      qualification_note: "北海道内での教員採用実績が高い",
+      highlight: "北海道最高峰の国立大学"
+    },
+    entry_conditions: {
+      sports_recommend: false,
+      recommend_criteria: "",
+      selection: true,
+      selection_period: "4月上旬（入学後）",
+      general_admission: true,
+      general_conditions: "入学後のセレクションあり"
+    }
+  },
+  {
+    id: 20,
+    university_name: "九州産業大学",
+    homepage_url: "https://www.kyusan-u.ac.jp/",
+    main_faculties: ["スポーツ健康科学部", "経営学部", "国際文化学部"],
+    soccer_club: {
+      league: "九州大学サッカーリーグ1部",
+      coach_name: "高原直泰",
+      total_members: 60,
+      members_by_grade: { "1年": 18, "2年": 16, "3年": 14, "4年": 12 },
+      j_league_nominees_2022_24: 3,
+      j_league_nominees_2022: 1,
+      j_league_nominees_2023: 1,
+      j_league_nominees_2024: 1,
+      denso_cup_2024_25: 1,
+      soccer_field_count: 1,
+      dorm_available: true,
+      facility_note: "人工芝1面、トレーニングルーム完備",
+      sports_scholarship: true,
+      qualifications: ["JFA公認コーチングライセンス", "教員免許（保健体育）", "スポーツマネジメント関連資格"],
+      qualification_note: "九州地区のJクラブとの連携プログラムあり",
+      highlight: "九州の強豪私立大学"
+    },
+    entry_conditions: {
+      sports_recommend: true,
+      recommend_criteria: "評定3.0以上、受入人数15名程度",
+      selection: true,
+      selection_period: "11月中旬・2月上旬",
+      general_admission: true,
+      general_conditions: "技術テストあり"
     }
   }
 ];

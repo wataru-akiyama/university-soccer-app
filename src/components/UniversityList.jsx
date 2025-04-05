@@ -65,14 +65,6 @@ const UniversityList = ({
     
     return Array.from({ length: endPage - startPage + 1 }, (_, i) => startPage + i);
   };
-  
-  // フィルタリング実行時にページを1に戻す
-  // このuseEffectが無くても良いかもしれませんが、将来的に条件が変わった時にページをリセットする必要があれば追加してください
-  /*
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [selectedRegion, sportsRecommend, dormAvailable, selectionAvailable, selectedLeague, selectedQualification]);
-  */
 
   return (
     <div className="bg-white p-6 rounded-lg shadow-md">
