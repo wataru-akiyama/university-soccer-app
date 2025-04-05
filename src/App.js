@@ -45,7 +45,11 @@ const App = () => {
     setSortOption,
     sortDirection,
     setSortDirection,
-    filteredUniversities
+    filteredUniversities,
+    newMemberSizeCategory,
+    setNewMemberSizeCategory,
+    coachBackgroundFilter,
+    setCoachBackgroundFilter,
   } = useUniversitySearch(universities);
 
   const [selectedUniversity, setSelectedUniversity] = useState(null);
@@ -296,10 +300,15 @@ const App = () => {
               setYearlyJLeagueFilter={setYearlyJLeagueFilter}
               memberSizeCategory={memberSizeCategory}
               setMemberSizeCategory={setMemberSizeCategory}
+              newMemberSizeCategory={newMemberSizeCategory}
+              setNewMemberSizeCategory={setNewMemberSizeCategory}
               maxGradeRequirement={maxGradeRequirement}
               setMaxGradeRequirement={setMaxGradeRequirement}
+              coachBackgroundFilter={coachBackgroundFilter}
+              setCoachBackgroundFilter={setCoachBackgroundFilter}
               densoCupMinimum={densoCupMinimum}
               setDensoCupMinimum={setDensoCupMinimum}
+              sortOption={sortOption}
               setSortOption={setSortOption}
               sortDirection={sortDirection}
               setSortDirection={setSortDirection}
