@@ -1,9 +1,12 @@
 import React from 'react';
-import { Award, Users, Star, Heart } from 'lucide-react';
+import { Award, Users, Star, Heart, Plus, Check } from 'lucide-react';
 
 const SimpleUniversityCard = ({ 
   university, 
   onViewDetails,
+  onAddToCompare,
+  onRemoveFromCompare,
+  isInCompareList,
   onAddToFavorites,
   onRemoveFromFavorites,
   isInFavorites
@@ -41,6 +44,16 @@ const SimpleUniversityCard = ({
       onRemoveFromFavorites(university.id);
     } else {
       onAddToFavorites(university);
+    }
+  };
+  
+  // 比較ボタン用のハンドラー
+  const handleCompareClick = (e) => {
+    e.stopPropagation();
+    if (isInCompareList) {
+      onRemoveFromCompare(university.id);
+    } else {
+      onAddToCompare(university);
     }
   };
   
@@ -134,7 +147,7 @@ const SimpleUniversityCard = ({
         </div>
         
         {/* 特徴タグ */}
-        <div className="flex flex-wrap gap-1">
+        <div className="flex flex-wrap gap-1 mb-4">
           {university.entry_conditions.sports_recommend && (
             <span className="bg-green-50 text-green-700 text-xs px-2 py-1 rounded-full border border-green-100">
               スポーツ推薦
@@ -152,6 +165,29 @@ const SimpleUniversityCard = ({
               セレクション
             </span>
           )}
+        </div>
+        
+        {/* 比較リストに追加ボタン */}
+        <div className="flex justify-end">
+          <button 
+            className={`${isInCompareList 
+              ? 'bg-gray-100 text-gray-500' 
+              : 'text-green-600 border border-green-200 hover:bg-green-50'
+            } px-3 py-1.5 rounded-lg text-sm font-medium flex items-center transition-colors`}
+            onClick={handleCompareClick}
+          >
+            {isInCompareList ? (
+              <>
+                <Check size={16} className="mr-1" />
+                比較中
+              </>
+            ) : (
+              <>
+                <Plus size={16} className="mr-1" />
+                比較リストに追加
+              </>
+            )}
+          </button>
         </div>
       </div>
     </div>

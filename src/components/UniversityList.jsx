@@ -82,13 +82,16 @@ const UniversityList = ({
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
         {currentUniversities.map(university => (
           <SimpleUniversityCard
-            key={university.id}
-            university={university}
-            onViewDetails={onViewDetails}
-            onAddToFavorites={onAddToFavorites}
-            onRemoveFromFavorites={onRemoveFromFavorites}
-            isInFavorites={favoriteUniversities.some(uni => uni.id === university.id)}
-          />
+          key={university.id}
+          university={university}
+          onViewDetails={onViewDetails}
+          onAddToCompare={onAddToCompare}
+          onRemoveFromCompare={onRemoveFromCompare}
+          isInCompareList={compareList.some(uni => uni.id === university.id)}
+          onAddToFavorites={onAddToFavorites}
+          onRemoveFromFavorites={onRemoveFromFavorites}
+          isInFavorites={favoriteUniversities.some(uni => uni.id === university.id)}
+        />
         ))}
       </div>
       

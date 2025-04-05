@@ -11,6 +11,8 @@ import SimpleRecommendationWizard from './components/SimpleRecommendationWizard'
 import useUniversitySearch from './hooks/useUniversitySearch';
 import MyPortfolio from './components/MyPortfolio';
 import EnhancedUniversityDetails from './components/EnhancedUniversityDetails';
+import PortfolioBanner from './components/PortfolioBanner';
+import ResponsiveHeader from './components/ResponsiveHeader';
 
 const App = () => {
   // カスタムフックを使用して検索ロジックを実装
@@ -169,64 +171,15 @@ const App = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* ヘッダー */}
-      <header className="bg-green-700 text-white p-4 shadow-md">
-        <div className="container mx-auto flex justify-between items-center">
-          <div className="flex items-center cursor-pointer" onClick={backToList}>
-            <img 
-              src={soccerLogo} 
-              alt="大学サッカー部お品書き" 
-              className="h-10 mr-3" 
-            />
-            <h1 className="text-2xl font-bold hidden sm:block">大学サッカー部お品書き</h1>
-          </div>
-          <div className="flex gap-2">
-            {/* ポートフォリオボタン */}
-            <button 
-              className={`px-4 py-2 rounded-md flex items-center transition-colors ${
-                showPortfolio 
-                  ? "bg-purple-500 text-white" 
-                  : "bg-white text-purple-600"
-              }`}
-              onClick={togglePortfolio}
-            >
-              <UserCircle size={16} className="mr-2" />
-              <span>マイポートフォリオ</span>
-            </button>
-
-            {/* 推薦ウィザードボタン */}
-            <button 
-              className={`px-4 py-2 rounded-md flex items-center transition-colors ${
-                showRecommendation 
-                  ? "bg-yellow-500 text-white" 
-                  : "bg-white text-yellow-600"
-              }`}
-              onClick={toggleRecommendation}
-            >
-              <Zap size={16} className="mr-2" />
-              <span>あなたにぴったりの大学</span>
-            </button>
-            
-            {favoriteUniversities.length > 0 && (
-              <button 
-                className="bg-white text-blue-600 px-4 py-2 rounded-md flex items-center mr-2"
-                onClick={showFavoritesView}
-              >
-                <Heart size={16} className="mr-2" />
-                <span>私の進路プラン ({favoriteUniversities.length})</span>
-              </button>
-            )}
-            {compareList.length > 0 && (
-              <button 
-                className="bg-white text-green-700 px-4 py-2 rounded-md flex items-center"
-                onClick={showCompareView}
-              >
-                <span className="mr-2">比較リスト ({compareList.length})</span>
-                <ChevronRight size={16} />
-              </button>
-            )}
-          </div>
-        </div>
-      </header>
+      <ResponsiveHeader 
+        favoriteUniversities={favoriteUniversities}
+        compareList={compareList}
+        onShowPortfolio={togglePortfolio}
+        onShowRecommendation={toggleRecommendation}
+        onShowFavorites={showFavoritesView}
+        onShowCompare={showCompareView}
+        onBackToList={backToList}
+      />
 
       {/* メインコンテンツ */}
       <main className="container mx-auto p-4">
@@ -277,6 +230,27 @@ const App = () => {
         /* トップページ・検索結果表示 */
         : (
           <>
+            {/* 1. ポートフォリオバナー */}
+            <PortfolioBanner onShowPortfolio={togglePortfolio} />
+            
+            {/* 2. 推薦ウィザードバナー */}
+            <div className="bg-gradient-to-r from-yellow-500 to-orange-500 text-white p-4 rounded-lg shadow-md mb-6 flex items-center justify-between">
+              <div className="flex items-center">
+                <Zap size={24} className="mr-3" />
+                <div>
+                  <h3 className="font-bold text-lg">あなたにぴったりの大学サッカー部を見つけよう！</h3>
+                  <p className="text-sm text-yellow-100">サッカーに対する志向と学びたいことから最適な大学を提案します</p>
+                </div>
+              </div>
+              <button
+                className="bg-white text-orange-600 px-4 py-2 rounded-lg font-medium shadow-sm hover:bg-orange-50 transition-colors"
+                onClick={toggleRecommendation}
+              >
+                診断してみる
+              </button>
+            </div>
+
+            {/* 3. 検索フォーム */}
             <SearchForm
               searchQuery={searchQuery}
               setSearchQuery={setSearchQuery}
@@ -314,23 +288,7 @@ const App = () => {
               setSortDirection={setSortDirection}
             />
             
-            {/* 推薦ウィザードバナー */}
-            <div className="bg-gradient-to-r from-yellow-500 to-orange-500 text-white p-4 rounded-lg shadow-md mb-6 flex items-center justify-between">
-              <div className="flex items-center">
-                <Zap size={24} className="mr-3" />
-                <div>
-                  <h3 className="font-bold text-lg">あなたにぴったりの大学サッカー部を見つけよう！</h3>
-                  <p className="text-sm text-yellow-100">サッカーに対する志向と学びたいことから最適な大学を提案します</p>
-                </div>
-              </div>
-              <button
-                className="bg-white text-orange-600 px-4 py-2 rounded-lg font-medium shadow-sm hover:bg-orange-50 transition-colors"
-                onClick={toggleRecommendation}
-              >
-                診断してみる
-              </button>
-            </div>
-            
+            {/* 4. 大学リスト */}
             <UniversityList
               filteredUniversities={filteredUniversities}
               allUniversities={universities}
