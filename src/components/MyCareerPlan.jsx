@@ -48,7 +48,7 @@ const MyCareerPlan = ({
             </div>
             <button 
               className="ml-auto bg-blue-600 text-white px-3 py-1 rounded-md text-sm"
-              onClick={onShowPortfolio}
+              onClick={onShowPortfolio} // PlayerPortfolioを表示する関数を呼び出し
             >
               ポートフォリオを編集
             </button>

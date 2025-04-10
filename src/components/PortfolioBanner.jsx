@@ -4,9 +4,8 @@ import { UserCircle, ChevronRight, Trophy, Camera } from 'lucide-react';
 const PortfolioBanner = ({ onShowPortfolio }) => {
   // イベントハンドラを明示的に定義
   const handlePortfolioClick = (e) => {
-    e.stopPropagation(); // イベント伝播を停止
-    console.log("ポートフォリオボタンがクリックされました"); // デバッグ用
-    onShowPortfolio();
+    e.stopPropagation();
+    onShowPortfolio(); // PlayerPortfolioを表示する関数を呼び出し
   };
 
   return (

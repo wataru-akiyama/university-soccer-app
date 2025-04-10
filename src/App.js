@@ -9,7 +9,7 @@ import CompareView from './components/CompareView';
 import MyCareerPlan from './components/MyCareerPlan';
 import SimpleRecommendationWizard from './components/SimpleRecommendationWizard';
 import useUniversitySearch from './hooks/useUniversitySearch';
-import MyPortfolio from './components/MyPortfolio';
+import EnhancedPlayerPortfolio from './components/EnhancedPlayerPortfolio';
 import EnhancedUniversityDetails from './components/EnhancedUniversityDetails';
 import PortfolioBanner from './components/PortfolioBanner';
 import ResponsiveHeader from './components/ResponsiveHeader';
@@ -61,6 +61,7 @@ const App = () => {
   const [showFavorites, setShowFavorites] = useState(false);
   const [showRecommendation, setShowRecommendation] = useState(false);
   const [showPortfolio, setShowPortfolio] = useState(false);
+  const [showPlayerPortfolio, setShowPlayerPortfolio] = useState(false);
 
   // ローカルストレージからお気に入りを読み込む
   useEffect(() => {
@@ -95,6 +96,7 @@ const App = () => {
     setShowFavorites(false);
     setShowRecommendation(false);
     setShowPortfolio(false);
+    setShowPlayerPortfolio(false);
   };
 
   // 比較リストに追加
@@ -160,12 +162,13 @@ const App = () => {
   };
 
   // ポートフォリオ表示関数を追加
-  const togglePortfolio = () => {
-    setShowPortfolio(!showPortfolio);
+  const togglePlayerPortfolio = () => {
+    setShowPlayerPortfolio(!showPlayerPortfolio);
     setSelectedUniversity(null);
     setShowCompare(false);
     setShowFavorites(false);
     setShowRecommendation(false);
+    setShowPortfolio(false);
   };
 
   return (
@@ -174,7 +177,7 @@ const App = () => {
       <ResponsiveHeader 
         favoriteUniversities={favoriteUniversities}
         compareList={compareList}
-        onShowPortfolio={togglePortfolio}
+        onShowPortfolio={togglePlayerPortfolio}
         onShowRecommendation={toggleRecommendation}
         onShowFavorites={showFavoritesView}
         onShowCompare={showCompareView}
@@ -184,12 +187,12 @@ const App = () => {
       {/* メインコンテンツ */}
       <main className="container mx-auto p-4">
         {/* ポートフォリオ表示 */}
-        {showPortfolio ? (
-          <MyPortfolio 
+        {showPlayerPortfolio ? (
+          <EnhancedPlayerPortfolio 
             onBack={backToList}
             favoriteUniversities={favoriteUniversities}
           />
-        ) 
+        )
         /* 大学詳細表示 */
         : selectedUniversity ? (
           <EnhancedUniversityDetails 
@@ -217,7 +220,7 @@ const App = () => {
             onRemoveFromFavorites={removeFromFavorites}
             onReorderFavorites={reorderFavorites}
             onViewDetails={viewUniversityDetails}
-            onShowPortfolio={togglePortfolio}
+            onShowPortfolio={togglePlayerPortfolio}
           />
         )
         /* 推薦ウィザード画面 */
@@ -231,7 +234,7 @@ const App = () => {
         : (
           <>
             {/* 1. ポートフォリオバナー */}
-            <PortfolioBanner onShowPortfolio={togglePortfolio} />
+            <PortfolioBanner onShowPortfolio={togglePlayerPortfolio} />
             
             {/* 2. 推薦ウィザードバナー */}
             <div className="bg-gradient-to-r from-yellow-500 to-orange-500 text-white p-4 rounded-lg shadow-md mb-6 flex items-center justify-between">

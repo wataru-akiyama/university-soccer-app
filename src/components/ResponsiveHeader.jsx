@@ -37,11 +37,11 @@ const ResponsiveHeader = ({
           {/* デスクトップビュー: メインナビゲーション */}
           <div className="hidden md:flex items-center space-x-3">
             <button 
-              className="px-4 py-2 rounded-lg flex items-center bg-white text-green-700 shadow-sm hover:bg-green-50 transition-colors"
-              onClick={() => handleNavClick(onShowPortfolio)}
+                className="px-4 py-2 rounded-lg flex items-center bg-white text-green-700 shadow-sm hover:bg-green-50 transition-colors"
+                onClick={() => handleNavClick(onShowPortfolio)}
             >
-              <UserCircle size={18} className="mr-2" />
-              <span>マイポートフォリオ</span>
+                <UserCircle size={18} className="mr-2" />
+                <span>マイポートフォリオ</span>
             </button>
             
             <button 
