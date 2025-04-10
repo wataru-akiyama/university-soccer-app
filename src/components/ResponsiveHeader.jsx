@@ -20,12 +20,15 @@ const ResponsiveHeader = ({
   };
 
   return (
-    <header className="bg-green-700 text-white p-4 shadow-md">
+    <header className="bg-green-700 text-white p-4 shadow-md sticky top-0 z-50">
       <div className="container mx-auto">
         {/* デスクトップとモバイルビューの両方を含むフレックスコンテナ */}
         <div className="flex justify-between items-center">
           {/* ロゴとタイトル */}
-          <div className="flex items-center cursor-pointer" onClick={() => handleNavClick(onBackToList)}>
+          <div 
+            className="flex items-center cursor-pointer" 
+            onClick={() => handleNavClick(onBackToList)}
+          >
             <img 
               src={soccerLogo} 
               alt="大学サッカー部お品書き" 

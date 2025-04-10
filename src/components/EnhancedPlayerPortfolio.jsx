@@ -7,7 +7,14 @@ import {
 } from 'lucide-react';
 
 // メインコンポーネント
-const EnhancedPlayerPortfolio = ({ onBack, favoriteUniversities }) => {
+const EnhancedPlayerPortfolio = ({ 
+  onBack, 
+  favoriteUniversities,
+  // 以下、新しく追加されたプロップス
+  onShowRecommendation,
+  onShowFavorites,
+  onShowCompare
+}) => {
   const [activeTab, setActiveTab] = useState('playerCard');
   const [editMode, setEditMode] = useState(false);
   const [showShareModal, setShowShareModal] = useState(false);
@@ -162,6 +169,8 @@ const EnhancedPlayerPortfolio = ({ onBack, favoriteUniversities }) => {
                   : playerProfile.favoriteUniversities
               } 
               editMode={editMode} 
+              // 追加：お気に入り表示機能を直接使えるようにする
+              onShowFavorites={onShowFavorites}
             />
           )}
         </div>
@@ -910,7 +919,7 @@ const ChevronDown = ({ size, className }) => (
 );
 
 // 志望大学タブのコンテンツ
-const UniversitiesTab = ({ universities, editMode }) => {
+const UniversitiesTab = ({ universities, editMode, onShowFavorites }) => {
   return (
     <div className="space-y-6">
       <h3 className="text-lg font-medium text-gray-800 mb-4 flex items-center">
@@ -989,6 +998,17 @@ const UniversitiesTab = ({ universities, editMode }) => {
         </div>
         
         <p className="text-gray-600 leading-relaxed">私は大学サッカー部に入部し、より高いレベルで自分を成長させたいと考えています。技術面では特にパスとゲームメイクに自信がありますが、フィジカル面の強化が課題だと認識しています。大学ではその点を改善しながら、チームの勝利に貢献できる選手になりたいです。また、プロを目指しながらも、専門的な知識を身につけるために学業も真剣に取り組む予定です。</p>
+      </div>
+      
+      {/* 「私の進路プラン」に移動するためのボタンを追加 */}
+      <div className="mt-6">
+        <button 
+          className="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white rounded flex items-center justify-center transition-colors"
+          onClick={onShowFavorites}
+        >
+          <Heart size={18} className="mr-2" />
+          「私の進路プラン」ページで詳細を管理する
+        </button>
       </div>
     </div>
   );

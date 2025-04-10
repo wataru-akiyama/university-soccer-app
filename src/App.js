@@ -1,7 +1,6 @@
 import soccerLogo from './assets/soccer-logo.svg';
 import React, { useState, useEffect } from 'react';
-import { ChevronRight, Heart, Zap } from 'lucide-react';
-import { UserCircle } from 'lucide-react';
+import { ChevronRight, Heart, Zap, UserCircle } from 'lucide-react';
 import universities from './data/universities';
 import MultiSelectSearchForm from './components/MultiSelectSearchForm';
 import UniversityList from './components/UniversityList';
@@ -60,8 +59,10 @@ const App = () => {
   const [favoriteUniversities, setFavoriteUniversities] = useState([]);
   const [showFavorites, setShowFavorites] = useState(false);
   const [showRecommendation, setShowRecommendation] = useState(false);
-  const [showPortfolio, setShowPortfolio] = useState(false);
+  // showPortfolioを削除（未使用）
   const [showPlayerPortfolio, setShowPlayerPortfolio] = useState(false);
+  // 現在のビュー管理用のステートを追加
+  const [currentView, setCurrentView] = useState('list'); // 'list', 'details', 'compare', 'favorites', 'recommendation', 'portfolio'
 
   // ローカルストレージからお気に入りを読み込む
   useEffect(() => {
@@ -86,17 +87,13 @@ const App = () => {
   // 大学の詳細表示
   const viewUniversityDetails = (university) => {
     setSelectedUniversity(university);
-    setShowRecommendation(false);
+    setCurrentView('details');
   };
 
   // トップページに戻る
   const backToList = () => {
     setSelectedUniversity(null);
-    setShowCompare(false);
-    setShowFavorites(false);
-    setShowRecommendation(false);
-    setShowPortfolio(false);
-    setShowPlayerPortfolio(false);
+    setCurrentView('list');
   };
 
   // 比較リストに追加
@@ -117,12 +114,7 @@ const App = () => {
 
   // 比較画面の表示
   const showCompareView = () => {
-    if (compareList.length > 0) {
-      setShowCompare(true);
-      setSelectedUniversity(null);
-      setShowFavorites(false);
-      setShowRecommendation(false);
-    }
+    setCurrentView('compare');
   };
 
   // お気に入りに追加
@@ -139,10 +131,7 @@ const App = () => {
 
   // お気に入り画面の表示
   const showFavoritesView = () => {
-    setShowFavorites(true);
-    setSelectedUniversity(null);
-    setShowCompare(false);
-    setShowRecommendation(false);
+    setCurrentView('favorites');
   };
 
   // お気に入りの順序変更
@@ -155,65 +144,48 @@ const App = () => {
 
   // 推薦ウィザード表示のトグル
   const toggleRecommendation = () => {
-    setShowRecommendation(!showRecommendation);
-    setSelectedUniversity(null);
-    setShowCompare(false);
-    setShowFavorites(false);
+    setCurrentView('recommendation');
   };
 
-  // ポートフォリオ表示関数を追加
+  // ポートフォリオ表示関数
   const togglePlayerPortfolio = () => {
-    setShowPlayerPortfolio(!showPlayerPortfolio);
-    setSelectedUniversity(null);
-    setShowCompare(false);
-    setShowFavorites(false);
-    setShowRecommendation(false);
-    setShowPortfolio(false);
+    setCurrentView('portfolio');
   };
 
-  return (
-    <div className="min-h-screen bg-gray-50">
-      {/* ヘッダー */}
-      <ResponsiveHeader 
-        favoriteUniversities={favoriteUniversities}
-        compareList={compareList}
-        onShowPortfolio={togglePlayerPortfolio}
-        onShowRecommendation={toggleRecommendation}
-        onShowFavorites={showFavoritesView}
-        onShowCompare={showCompareView}
-        onBackToList={backToList}
-      />
-
-      {/* メインコンテンツ */}
-      <main className="container mx-auto p-4">
-        {/* ポートフォリオ表示 */}
-        {showPlayerPortfolio ? (
+  // 現在のビューに基づいて表示するコンポーネントを決定
+  const renderCurrentView = () => {
+    switch (currentView) {
+      case 'portfolio':
+        return (
           <EnhancedPlayerPortfolio 
             onBack={backToList}
             favoriteUniversities={favoriteUniversities}
+            onShowRecommendation={toggleRecommendation}
+            onShowFavorites={showFavoritesView}
+            onShowCompare={showCompareView}
           />
-        )
-        /* 大学詳細表示 */
-        : selectedUniversity ? (
+        );
+      case 'details':
+        return (
           <EnhancedUniversityDetails 
             university={selectedUniversity} 
             onBack={backToList} 
             onAddToCompare={addToCompare}
             onAddToFavorites={addToFavorites}
-            isInCompareList={compareList.some(uni => uni.id === selectedUniversity.id)}
-            isInFavorites={favoriteUniversities.some(uni => uni.id === selectedUniversity.id)}
+            isInCompareList={compareList.some(uni => uni && selectedUniversity && uni.id === selectedUniversity.id)}
+            isInFavorites={favoriteUniversities.some(uni => uni && selectedUniversity && uni.id === selectedUniversity.id)}
           />
-        )
-        /* 比較画面 */
-        : showCompare ? (
+        );
+      case 'compare':
+        return (
           <CompareView 
             universities={compareList} 
             onBack={backToList} 
             onRemove={removeFromCompare} 
           />
-        ) 
-        /* お気に入り画面 */
-        : showFavorites ? (
+        );
+      case 'favorites':
+        return (
           <MyCareerPlan 
             favoriteUniversities={favoriteUniversities}
             onBack={backToList}
@@ -222,16 +194,17 @@ const App = () => {
             onViewDetails={viewUniversityDetails}
             onShowPortfolio={togglePlayerPortfolio}
           />
-        )
-        /* 推薦ウィザード画面 */
-        : showRecommendation ? (
+        );
+      case 'recommendation':
+        return (
           <SimpleRecommendationWizard
             universities={universities}
             onViewDetails={viewUniversityDetails}
           />
-        )
-        /* トップページ・検索結果表示 */
-        : (
+        );
+      case 'list':
+      default:
+        return (
           <>
             {/* 1. ポートフォリオバナー */}
             <PortfolioBanner onShowPortfolio={togglePlayerPortfolio} />
@@ -314,7 +287,26 @@ const App = () => {
               selectedQualification={selectedQualifications}
             />
           </>
-        )}
+        );
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-gray-50">
+      {/* ヘッダー */}
+      <ResponsiveHeader 
+        favoriteUniversities={favoriteUniversities}
+        compareList={compareList}
+        onShowPortfolio={togglePlayerPortfolio}
+        onShowRecommendation={toggleRecommendation}
+        onShowFavorites={showFavoritesView}
+        onShowCompare={showCompareView}
+        onBackToList={backToList}
+      />
+
+      {/* メインコンテンツ */}
+      <main className="container mx-auto p-4">
+        {renderCurrentView()}
       </main>
       
       {/* フッター */}
