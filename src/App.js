@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { ChevronRight, Heart, Zap } from 'lucide-react';
 import { UserCircle } from 'lucide-react';
 import universities from './data/universities';
-import SearchForm from './components/SearchForm';
+import MultiSelectSearchForm from './components/MultiSelectSearchForm';
 import UniversityList from './components/UniversityList';
 import CompareView from './components/CompareView';
 import MyCareerPlan from './components/MyCareerPlan';
@@ -19,12 +19,12 @@ const App = () => {
   const {
     searchQuery,
     setSearchQuery,
-    selectedRegion,
-    setSelectedRegion,
-    selectedLeague,
-    setSelectedLeague,
-    selectedQualification,
-    setSelectedQualification,
+    selectedRegions,
+    setSelectedRegions,
+    selectedLeagues,
+    setSelectedLeagues,
+    selectedQualifications,
+    setSelectedQualifications,
     sportsRecommend,
     setSportsRecommend,
     selectionAvailable,
@@ -251,15 +251,15 @@ const App = () => {
             </div>
 
             {/* 3. 検索フォーム */}
-            <SearchForm
+            <MultiSelectSearchForm
               searchQuery={searchQuery}
               setSearchQuery={setSearchQuery}
-              selectedRegion={selectedRegion}
-              setSelectedRegion={setSelectedRegion}
-              selectedLeague={selectedLeague}
-              setSelectedLeague={setSelectedLeague}
-              selectedQualification={selectedQualification}
-              setSelectedQualification={setSelectedQualification}
+              selectedRegions={selectedRegions}
+              setSelectedRegions={setSelectedRegions}
+              selectedLeagues={selectedLeagues}
+              setSelectedLeagues={setSelectedLeagues}
+              selectedQualifications={selectedQualifications}
+              setSelectedQualifications={setSelectedQualifications}
               sportsRecommend={sportsRecommend}
               setSportsRecommend={setSportsRecommend}
               selectionAvailable={selectionAvailable}
@@ -303,12 +303,12 @@ const App = () => {
               favoriteUniversities={favoriteUniversities}
               onAddToFavorites={addToFavorites}
               onRemoveFromFavorites={removeFromFavorites}
-              selectedRegion={selectedRegion}
+              selectedRegion={selectedRegions}
               sportsRecommend={sportsRecommend}
               dormAvailable={dormAvailable}
               selectionAvailable={selectionAvailable}
-              selectedLeague={selectedLeague}
-              selectedQualification={selectedQualification}
+              selectedLeague={selectedLeagues}
+              selectedQualification={selectedQualifications}
             />
           </>
         )}

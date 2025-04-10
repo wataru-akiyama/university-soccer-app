@@ -8,11 +8,11 @@ import { useState, useEffect, useMemo } from 'react';
  * @returns {Object} 検索状態と結果
  */
 const useUniversitySearch = (universities) => {
-  // 基本検索条件
+  // 基本検索条件 - 複数選択対応に変更
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedRegion, setSelectedRegion] = useState('');
-  const [selectedLeague, setSelectedLeague] = useState('');
-  const [selectedQualification, setSelectedQualification] = useState('');
+  const [selectedRegions, setSelectedRegions] = useState([]);
+  const [selectedLeagues, setSelectedLeagues] = useState([]);
+  const [selectedQualifications, setSelectedQualifications] = useState([]);
   const [sportsRecommend, setSportsRecommend] = useState(false);
   const [selectionAvailable, setSelectionAvailable] = useState(false);
   const [dormAvailable, setDormAvailable] = useState(false);
@@ -144,7 +144,7 @@ const useUniversitySearch = (universities) => {
     return false;
   };
   
-  // フィルタリング処理
+  // フィルタリング処理 - 複数選択対応に修正
   const filteredUniversities = useMemo(() => {
     if (!universities || universities.length === 0) return [];
     
@@ -170,24 +170,31 @@ const useUniversitySearch = (universities) => {
           }
         }
         
-        // 地域フィルター - 修正：より柔軟なマッチング
-        if (selectedRegion && selectedRegion.trim() !== '') {
-          if (!checkRegionMatch(university, selectedRegion)) {
+        // 地域フィルター（複数選択対応）
+        if (selectedRegions.length > 0) {
+          // いずれかの選択された地域に一致するかチェック
+          const matchesAnyRegion = selectedRegions.some(region => 
+            checkRegionMatch(university, region)
+          );
+          if (!matchesAnyRegion) {
             return false;
           }
         }
         
-        // リーグフィルター
-        if (selectedLeague && selectedLeague.trim() !== '') {
-          if (!university.soccer_club.league || !university.soccer_club.league.includes(selectedLeague)) {
+        // リーグフィルター（複数選択対応）
+        if (selectedLeagues.length > 0) {
+          if (!university.soccer_club.league || 
+              !selectedLeagues.some(league => university.soccer_club.league.includes(league))) {
             return false;
           }
         }
         
-        // 取得可能資格フィルター
-        if (selectedQualification && selectedQualification.trim() !== '') {
+        // 取得可能資格フィルター（複数選択対応）
+        if (selectedQualifications.length > 0) {
           if (!university.soccer_club.qualifications || 
-              !university.soccer_club.qualifications.some(q => q.includes(selectedQualification))) {
+              !university.soccer_club.qualifications.some(q => 
+                selectedQualifications.some(selected => q.includes(selected))
+              )) {
             return false;
           }
         }
@@ -363,9 +370,9 @@ const useUniversitySearch = (universities) => {
   }, [
     universities,
     searchQuery,
-    selectedRegion,
-    selectedLeague,
-    selectedQualification,
+    selectedRegions,
+    selectedLeagues,
+    selectedQualifications,
     sportsRecommend,
     selectionAvailable,
     dormAvailable,
@@ -386,12 +393,12 @@ const useUniversitySearch = (universities) => {
     // 基本検索条件
     searchQuery,
     setSearchQuery,
-    selectedRegion,
-    setSelectedRegion,
-    selectedLeague,
-    setSelectedLeague,
-    selectedQualification,
-    setSelectedQualification,
+    selectedRegions,
+    setSelectedRegions,
+    selectedLeagues,
+    setSelectedLeagues,
+    selectedQualifications,
+    setSelectedQualifications,
     sportsRecommend,
     setSportsRecommend,
     selectionAvailable,

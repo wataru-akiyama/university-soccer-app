@@ -1,19 +1,119 @@
-// src/components/SearchForm.jsx
-import React, { useState, useEffect } from 'react';
-import { Search, ChevronDown, ChevronRight, Bookmark, SlidersHorizontal, Users, Trophy, Medal, BookOpen, Calendar, Zap } from 'lucide-react';
+// src/components/MultiSelectSearchForm.jsx
+import React, { useState, useEffect, useRef } from 'react';
+import { Search, ChevronDown, ChevronUp, X, Check, SlidersHorizontal, Users, Trophy, Medal, BookOpen, Calendar, Zap, Bookmark } from 'lucide-react';
 import regions from '../data/regions';
 import leagues from '../data/leagues';
 import availableQualifications from '../data/qualifications';
 
-const SearchForm = ({
+// マルチセレクトドロップダウンコンポーネント
+const MultiSelectDropdown = ({ 
+  options, 
+  selectedValues, 
+  onChange, 
+  placeholder 
+}) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const dropdownRef = useRef(null);
+  
+  // ドロップダウン外のクリックを検知して閉じる
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsOpen(false);
+      }
+    };
+    
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+  
+  // チェックボックスの変更ハンドラー
+  const handleCheckboxChange = (value) => {
+    const updatedValues = selectedValues.includes(value)
+      ? selectedValues.filter(v => v !== value)
+      : [...selectedValues, value];
+    
+    onChange(updatedValues);
+  };
+  
+  // 表示テキストの生成
+  const getDisplayText = () => {
+    if (selectedValues.length === 0) return placeholder;
+    if (selectedValues.length === 1) return selectedValues[0];
+    return `${selectedValues.length}件選択中`;
+  };
+  
+  return (
+    <div className="relative" ref={dropdownRef}>
+      <button
+        type="button"
+        className="w-full p-3 border rounded-md flex justify-between items-center bg-white"
+        onClick={() => setIsOpen(!isOpen)}
+      >
+        <span className={`${selectedValues.length === 0 ? 'text-gray-500' : 'text-gray-800'}`}>
+          {getDisplayText()}
+        </span>
+        {isOpen ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
+      </button>
+      
+      {isOpen && (
+        <div className="absolute z-10 w-full mt-1 bg-white border rounded-md shadow-lg max-h-60 overflow-y-auto">
+          <div className="p-2">
+            {options.map((option, index) => (
+              <div 
+                key={index} 
+                className="flex items-center p-2 hover:bg-gray-100 rounded-md cursor-pointer"
+                onClick={() => handleCheckboxChange(option)}
+              >
+                <input
+                  type="checkbox"
+                  id={`option-${option}`}
+                  checked={selectedValues.includes(option)}
+                  onChange={() => {}}
+                  className="mr-2 h-4 w-4"
+                />
+                <label 
+                  htmlFor={`option-${option}`} 
+                  className="cursor-pointer flex-grow"
+                >
+                  {option}
+                </label>
+                {selectedValues.includes(option) && (
+                  <Check size={16} className="text-green-600" />
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+// タグコンポーネント
+const Tag = ({ label, onRemove }) => (
+  <span className="inline-flex items-center bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full mr-1 mb-1">
+    {label}
+    <button 
+      onClick={onRemove} 
+      className="ml-1 text-green-600 hover:text-green-800 focus:outline-none"
+    >
+      <X size={14} />
+    </button>
+  </span>
+);
+
+const MultiSelectSearchForm = ({
   searchQuery,
   setSearchQuery,
-  selectedRegion,
-  setSelectedRegion,
-  selectedLeague,
-  setSelectedLeague,
-  selectedQualification,
-  setSelectedQualification,
+  selectedRegions,
+  setSelectedRegions,
+  selectedLeagues,
+  setSelectedLeagues,
+  selectedQualifications,
+  setSelectedQualifications,
   sportsRecommend,
   setSportsRecommend,
   selectionAvailable,
@@ -36,6 +136,7 @@ const SearchForm = ({
   setCoachBackgroundFilter,
   densoCupMinimum,
   setDensoCupMinimum,
+  sortOption,
   setSortOption,
   sortDirection,
   setSortDirection
@@ -55,7 +156,6 @@ const SearchForm = ({
     setSliderValue(value);
     
     // スライダー値をJリーグ内定者数フィルターに反映
-    // 0: 指定なし, 1-5: 1-5名, 6-10: 6-10名, 11-15: 11-15名
     setJLeagueMinimum(value);
   };
   
@@ -113,52 +213,163 @@ const SearchForm = ({
     setMaxGradeRequirement(gradeValue);
   };
   
-  // 現在の検索条件をクリアする関数
-  const clearAllFilters = () => {
-    setSearchQuery('');
-    setSelectedRegion('');
-    setSelectedLeague('');
-    setSelectedQualification('');
-    setSportsRecommend(false);
-    setSelectionAvailable(false);
-    setDormAvailable(false);
-    setGeneralAdmissionAvailable(false);
+  // タグの生成（現在の選択条件）
+  const createTags = () => {
+    const tags = [];
     
-    // 詳細検索条件もリセット
-    setJLeagueMinimum(0);
-    setSliderValue(0);
-    setYearlyJLeagueFilter({
-      year2022: 0,
-      year2023: 0,
-      year2024: 0
+    // 地域タグ
+    selectedRegions.forEach(region => {
+      tags.push({
+        id: `region-${region}`,
+        label: region,
+        type: 'region',
+        value: region
+      });
     });
-    setMemberSizeCategory('');
-    setNewMemberSizeCategory('');
-    setCoachBackgroundFilter('');
-    setMaxGradeRequirement(0);
-    setDensoCupMinimum(0);
+    
+    // リーグタグ
+    selectedLeagues.forEach(league => {
+      tags.push({
+        id: `league-${league}`,
+        label: league,
+        type: 'league',
+        value: league
+      });
+    });
+    
+    // 資格タグ
+    selectedQualifications.forEach(qual => {
+      tags.push({
+        id: `qual-${qual}`,
+        label: qual,
+        type: 'qualification',
+        value: qual
+      });
+    });
+    
+    // チェックボックス条件のタグ
+    if (sportsRecommend) {
+      tags.push({
+        id: 'sports-recommend',
+        label: 'スポーツ推薦あり',
+        type: 'sportsRecommend'
+      });
+    }
+    
+    if (selectionAvailable) {
+      tags.push({
+        id: 'selection-available',
+        label: 'セレクションあり',
+        type: 'selectionAvailable'
+      });
+    }
+    
+    if (dormAvailable) {
+      tags.push({
+        id: 'dorm-available',
+        label: '寮あり',
+        type: 'dormAvailable'
+      });
+    }
+    
+    if (generalAdmissionAvailable) {
+      tags.push({
+        id: 'general-admission',
+        label: '一般入部可',
+        type: 'generalAdmissionAvailable'
+      });
+    }
+    
+    // その他の詳細条件
+    if (jLeagueMinimum > 0) {
+      tags.push({
+        id: 'jleague-minimum',
+        label: `Jリーグ内定${jLeagueMinimum}名以上`,
+        type: 'jLeagueMinimum'
+      });
+    }
+    
+    if (memberSizeCategory) {
+      const labelMap = {
+        'small': '少数精鋭 (〜49名)',
+        'medium': '中規模 (50〜79名)',
+        'large': '大規模 (80名以上)'
+      };
+      tags.push({
+        id: 'member-size',
+        label: `部員数: ${labelMap[memberSizeCategory] || memberSizeCategory}`,
+        type: 'memberSizeCategory'
+      });
+    }
+    
+    if (newMemberSizeCategory) {
+      const labelMap = {
+        'small': '少数選抜 (〜15名)',
+        'medium': '中規模 (16〜25名)',
+        'large': '多数受入 (26名以上)'
+      };
+      tags.push({
+        id: 'new-member-size',
+        label: `新入部員: ${labelMap[newMemberSizeCategory] || newMemberSizeCategory}`,
+        type: 'newMemberSizeCategory'
+      });
+    }
+    
+    if (coachBackgroundFilter) {
+      const labelMap = {
+        'jleaguer': '元Jリーガー',
+        'national': '元日本代表',
+        'student': '学生出身'
+      };
+      tags.push({
+        id: 'coach-background',
+        label: `監督: ${labelMap[coachBackgroundFilter] || coachBackgroundFilter}`,
+        type: 'coachBackgroundFilter'
+      });
+    }
+    
+    if (maxGradeRequirement > 0) {
+      tags.push({
+        id: 'grade-requirement',
+        label: `評定${maxGradeRequirement}以上`,
+        type: 'maxGradeRequirement'
+      });
+    }
+    
+    if (densoCupMinimum > 0) {
+      tags.push({
+        id: 'denso-cup-minimum',
+        label: `デンソーカップ${densoCupMinimum}名以上`,
+        type: 'densoCupMinimum'
+      });
+    }
+    
+    return tags;
   };
   
-  // 個別のフィルターをクリアする関数
-  const clearFilter = (filterType) => {
-    switch(filterType) {
+  // タグを削除する処理
+  const handleRemoveTag = (tag) => {
+    switch(tag.type) {
       case 'region':
-        setSelectedRegion('');
+        setSelectedRegions(selectedRegions.filter(r => r !== tag.value));
+        break;
+      case 'league':
+        setSelectedLeagues(selectedLeagues.filter(l => l !== tag.value));
+        break;
+      case 'qualification':
+        setSelectedQualifications(selectedQualifications.filter(q => q !== tag.value));
         break;
       case 'sportsRecommend':
         setSportsRecommend(false);
         break;
-      case 'dormAvailable':
-        setDormAvailable(false);
-        break;
       case 'selectionAvailable':
         setSelectionAvailable(false);
         break;
-      case 'league':
-        setSelectedLeague('');
+      case 'dormAvailable':
+        setDormAvailable(false);
         break;
-      case 'qualification':
-        setSelectedQualification('');
+      case 'generalAdmissionAvailable':
+        setGeneralAdmissionAvailable(false);
         break;
       case 'jLeagueMinimum':
         setJLeagueMinimum(0);
@@ -184,10 +395,40 @@ const SearchForm = ({
     }
   };
   
+  // 現在の検索条件をクリアする関数
+  const clearAllFilters = () => {
+    setSearchQuery('');
+    setSelectedRegions([]);
+    setSelectedLeagues([]);
+    setSelectedQualifications([]);
+    setSportsRecommend(false);
+    setSelectionAvailable(false);
+    setDormAvailable(false);
+    setGeneralAdmissionAvailable(false);
+    
+    // 詳細検索条件もリセット
+    setJLeagueMinimum(0);
+    setSliderValue(0);
+    setYearlyJLeagueFilter({
+      year2022: 0,
+      year2023: 0,
+      year2024: 0
+    });
+    setMemberSizeCategory('');
+    setNewMemberSizeCategory('');
+    setCoachBackgroundFilter('');
+    setMaxGradeRequirement(0);
+    setDensoCupMinimum(0);
+  };
+  
+  // 現在選択されているタグのリスト
+  const tags = createTags();
+  
   return (
     <div className="bg-white p-6 rounded-lg shadow-md mb-6">
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-xl font-semibold">大学サッカー部を探す</h2>
+        <p className="text-sm text-gray-500">地域・カテゴリ・学部は複数選択できます</p>
         
         {/* 保存された検索条件 */}
         <div className="relative group">
@@ -228,203 +469,49 @@ const SearchForm = ({
           <Search className="absolute left-3 top-3 text-gray-400" size={20} />
         </div>
         
-        {/* 地域選択 */}
+        {/* 地域選択（複数選択） */}
         <div>
-          <select 
-            className="w-full p-3 border rounded-md"
-            value={selectedRegion}
-            onChange={(e) => setSelectedRegion(e.target.value)}
-          >
-            <option value="">地域を選択</option>
-            {regions.map((region, index) => (
-              <option key={index} value={region}>{region}</option>
-            ))}
-          </select>
+          <MultiSelectDropdown 
+            options={regions}
+            selectedValues={selectedRegions}
+            onChange={setSelectedRegions}
+            placeholder="地域を選択（複数可）"
+          />
         </div>
         
-        {/* リーグ選択 */}
+        {/* リーグ選択（複数選択） */}
         <div>
-          <select 
-            className="w-full p-3 border rounded-md"
-            value={selectedLeague}
-            onChange={(e) => setSelectedLeague(e.target.value)}
-          >
-            <option value="">カテゴリを選択</option>
-            {leagues.map((league, index) => (
-              <option key={index} value={league}>{league}</option>
-            ))}
-          </select>
+          <MultiSelectDropdown 
+            options={leagues}
+            selectedValues={selectedLeagues}
+            onChange={setSelectedLeagues}
+            placeholder="カテゴリを選択（複数可）"
+          />
         </div>
         
-        {/* 資格選択 */}
+        {/* 資格選択（複数選択） */}
         <div>
-          <select 
-            className="w-full p-3 border rounded-md"
-            value={selectedQualification}
-            onChange={(e) => setSelectedQualification(e.target.value)}
-          >
-            <option value="">学部で選択</option>
-            {availableQualifications.map((qualification, index) => (
-              <option key={index} value={qualification}>{qualification}</option>
-            ))}
-          </select>
+          <MultiSelectDropdown 
+            options={availableQualifications}
+            selectedValues={selectedQualifications}
+            onChange={setSelectedQualifications}
+            placeholder="学部で選択（複数可）"
+          />
         </div>
       </div>
       
       {/* フィルターチップ - 現在の検索条件 */}
-      {(selectedRegion || sportsRecommend || dormAvailable || selectionAvailable || 
-        selectedLeague || selectedQualification || jLeagueMinimum > 0 || 
-        memberSizeCategory || newMemberSizeCategory || coachBackgroundFilter || 
-        maxGradeRequirement > 0 || densoCupMinimum > 0) && (
+      {tags.length > 0 && (
         <div className="flex flex-wrap gap-2 mb-4 bg-gray-50 p-3 rounded-lg">
           <span className="text-sm text-gray-500 mr-1">現在の検索条件:</span>
           
-          {selectedRegion && (
-            <span className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full flex items-center">
-              {selectedRegion}
-              <button 
-                className="ml-1 text-blue-500 hover:text-blue-700"
-                onClick={() => clearFilter('region')}
-              >
-                ×
-              </button>
-            </span>
-          )}
-          
-          {sportsRecommend && (
-            <span className="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full flex items-center">
-              スポーツ推薦あり
-              <button 
-                className="ml-1 text-green-500 hover:text-green-700"
-                onClick={() => clearFilter('sportsRecommend')}
-              >
-                ×
-              </button>
-            </span>
-          )}
-          
-          {dormAvailable && (
-            <span className="bg-purple-100 text-purple-800 text-xs px-2 py-1 rounded-full flex items-center">
-              寮あり
-              <button 
-                className="ml-1 text-purple-500 hover:text-purple-700"
-                onClick={() => clearFilter('dormAvailable')}
-              >
-                ×
-              </button>
-            </span>
-          )}
-          
-          {selectionAvailable && (
-            <span className="bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded-full flex items-center">
-              セレクションあり
-              <button 
-                className="ml-1 text-yellow-500 hover:text-yellow-700"
-                onClick={() => clearFilter('selectionAvailable')}
-              >
-                ×
-              </button>
-            </span>
-          )}
-          
-          {selectedLeague && (
-            <span className="bg-indigo-100 text-indigo-800 text-xs px-2 py-1 rounded-full flex items-center">
-              {selectedLeague}
-              <button 
-                className="ml-1 text-indigo-500 hover:text-indigo-700"
-                onClick={() => clearFilter('league')}
-              >
-                ×
-              </button>
-            </span>
-          )}
-          
-          {selectedQualification && (
-            <span className="bg-pink-100 text-pink-800 text-xs px-2 py-1 rounded-full flex items-center">
-              {selectedQualification}
-              <button 
-                className="ml-1 text-pink-500 hover:text-pink-700"
-                onClick={() => clearFilter('qualification')}
-              >
-                ×
-              </button>
-            </span>
-          )}
-          
-          {jLeagueMinimum > 0 && (
-            <span className="bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded-full flex items-center">
-              Jリーグ内定{jLeagueMinimum}名以上
-              <button 
-                className="ml-1 text-yellow-500 hover:text-yellow-700"
-                onClick={() => clearFilter('jLeagueMinimum')}
-              >
-                ×
-              </button>
-            </span>
-          )}
-          
-          {memberSizeCategory && (
-            <span className="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full flex items-center">
-              部員数: {memberSizeCategory === 'small' ? '少数精鋭' : 
-                      memberSizeCategory === 'medium' ? '中規模' : '大規模'}
-              <button 
-                className="ml-1 text-green-500 hover:text-green-700"
-                onClick={() => clearFilter('memberSizeCategory')}
-              >
-                ×
-              </button>
-            </span>
-          )}
-          
-          {newMemberSizeCategory && (
-            <span className="bg-purple-100 text-purple-800 text-xs px-2 py-1 rounded-full flex items-center">
-              新入部員: {newMemberSizeCategory === 'small' ? '少数選抜' : 
-                       newMemberSizeCategory === 'medium' ? '中規模' : '多数受入'}
-              <button 
-                className="ml-1 text-purple-500 hover:text-purple-700"
-                onClick={() => clearFilter('newMemberSizeCategory')}
-              >
-                ×
-              </button>
-            </span>
-          )}
-          
-          {coachBackgroundFilter && (
-            <span className="bg-orange-100 text-orange-800 text-xs px-2 py-1 rounded-full flex items-center">
-              監督: {coachBackgroundFilter === 'jleaguer' ? '元Jリーガー' : 
-                   coachBackgroundFilter === 'national' ? '元日本代表' : '学生出身'}
-              <button 
-                className="ml-1 text-orange-500 hover:text-orange-700"
-                onClick={() => clearFilter('coachBackgroundFilter')}
-              >
-                ×
-              </button>
-            </span>
-          )}
-          
-          {maxGradeRequirement > 0 && (
-            <span className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full flex items-center">
-              評定{maxGradeRequirement}以上
-              <button 
-                className="ml-1 text-blue-500 hover:text-blue-700"
-                onClick={() => clearFilter('maxGradeRequirement')}
-              >
-                ×
-              </button>
-            </span>
-          )}
-          
-          {densoCupMinimum > 0 && (
-            <span className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full flex items-center">
-              デンソーカップ{densoCupMinimum}名以上
-              <button 
-                className="ml-1 text-blue-500 hover:text-blue-700"
-                onClick={() => clearFilter('densoCupMinimum')}
-              >
-                ×
-              </button>
-            </span>
-          )}
+          {tags.map(tag => (
+            <Tag 
+              key={tag.id} 
+              label={tag.label} 
+              onRemove={() => handleRemoveTag(tag)} 
+            />
+          ))}
           
           <button 
             className="text-red-500 text-xs hover:underline ml-auto"
@@ -483,7 +570,7 @@ const SearchForm = ({
         className="flex items-center text-green-600 hover:text-green-700 transition-colors mb-4"
         onClick={() => setShowAdvancedOptions(!showAdvancedOptions)}
       >
-        {showAdvancedOptions ? <ChevronDown size={20} /> : <ChevronRight size={20} />}
+        {showAdvancedOptions ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
         <span className="ml-1 font-medium">詳細検索オプション</span>
       </button>
       
@@ -681,7 +768,7 @@ const SearchForm = ({
         <button 
           className="bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm hover:bg-green-200"
           onClick={() => {
-            setSelectedQualification("JFA公認コーチングライセンス");
+            setSelectedQualifications(["JFA公認コーチングライセンス"]);
           }}
         >
           コーチングライセンス取得可能
@@ -689,14 +776,21 @@ const SearchForm = ({
         <button 
           className="bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm hover:bg-green-200"
           onClick={() => {
-            setSelectedQualification("教員免許（保健体育）");
+            setSelectedQualifications(["教員免許（保健体育）"]);
           }}
         >
           教員免許取得可能
+        </button>
+      </div>
+      
+      {/* 検索ボタン */}
+      <div className="flex justify-center mt-4">
+        <button className="bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-6 rounded-md transition-colors shadow-sm">
+          検索する
         </button>
       </div>
     </div>
   );
 };
 
-export default SearchForm;
+export default MultiSelectSearchForm;
