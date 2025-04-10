@@ -102,8 +102,8 @@ const EnhancedPlayerPortfolio = ({
   return (
     <div className="bg-gray-50 min-h-screen">
       <div className="max-w-4xl mx-auto bg-white shadow-sm">
-        {/* ヘッダー */}
-        <div className="bg-gray-900 p-5 text-white">
+        {/* ヘッダー - 緑系のグラデーションに変更 */}
+        <div className="bg-gradient-to-r from-green-600 to-green-700 p-5 text-white">
           <div className="flex justify-between items-center">
             <div className="flex items-center">
               <button className="mr-3 bg-white/10 p-2 rounded-full" onClick={onBack}>
@@ -113,14 +113,14 @@ const EnhancedPlayerPortfolio = ({
             </div>
             <div className="flex space-x-2">
               <button 
-                className="bg-green-600 hover:bg-green-700 text-white px-3 py-1.5 rounded-md flex items-center text-sm transition-colors"
+                className="bg-white text-green-600 hover:bg-green-50 hover:text-green-700 px-3 py-1.5 rounded-md flex items-center text-sm transition-colors"
                 onClick={() => setEditMode(!editMode)}
               >
                 <Edit size={16} className="mr-1.5" />
                 {editMode ? "編集終了" : "編集する"}
               </button>
               <button 
-                className="bg-gray-700 hover:bg-gray-600 text-white px-3 py-1.5 rounded-md flex items-center text-sm transition-colors"
+                className="bg-green-500 hover:bg-green-400 text-white px-3 py-1.5 rounded-md flex items-center text-sm transition-colors"
                 onClick={() => setShowShareModal(true)}
               >
                 <Share2 size={16} className="mr-1.5" />
@@ -271,18 +271,18 @@ const ShareModal = ({ onClose, player }) => {
           <p className="text-sm text-gray-500 mb-3">共有すると{shareOption === 'card' ? '選手カードのみ' : 'ポートフォリオ全体'}が表示されます</p>
           <div className="bg-gray-100 p-3 rounded-md">
             {shareOption === 'card' ? (
-              <div className="bg-gray-900 p-4 rounded inline-block text-white mx-auto">
+              <div className="bg-white p-4 rounded border border-gray-200 inline-block shadow-sm mx-auto">
                 <div className="flex items-center mb-2">
                   <div className="bg-green-600 text-white font-bold text-xl w-8 h-8 rounded-full flex items-center justify-center mr-2">
                     {player.metrics.overall}
                   </div>
-                    <span className="text-sm">
+                    <span className="text-gray-800">
                         {player.personalInfo.name} | {player.personalInfo.position}
                     </span>
                 </div>
                 <div className="flex justify-center space-x-1 mt-1">
                   {player.metrics.specialAbilities.slice(0, 2).map((ability, index) => (
-                    <div key={index} className="bg-gray-700 text-green-400 text-xs px-1.5 py-0.5 rounded text-center">
+                    <div key={index} className="bg-green-50 text-green-600 text-xs px-1.5 py-0.5 rounded text-center">
                       {ability}
                     </div>
                   ))}
@@ -389,6 +389,10 @@ const StatsRadarChart = ({ stats }) => {
 
 // 選手カードタブのコンテンツ
 const PlayerCardTab = ({ player, editMode }) => {
+  // 数値編集用のステート - 実際の実装では各能力値ごとに作成
+  const [editing, setEditing] = useState(null);
+  const [editValue, setEditValue] = useState(0);
+  
   // 日付をフォーマットする関数
   const formatDate = (dateString) => {
     const date = new Date(dateString);
@@ -398,10 +402,6 @@ const PlayerCardTab = ({ player, editMode }) => {
       day: 'numeric'
     });
   };
-  
-  // 数値編集用のステート - 実際の実装では各能力値ごとに作成
-  const [editing, setEditing] = useState(null);
-  const [editValue, setEditValue] = useState(0);
   
   // 数値編集関数
   const startEditing = (stat, value) => {
@@ -429,30 +429,34 @@ const PlayerCardTab = ({ player, editMode }) => {
   
   return (
     <div className="space-y-8">
-      {/* プレー動画セクション - 一番上に配置 */}
-      <div className="group relative bg-black rounded overflow-hidden" style={{ paddingTop: '56.25%' }}>
-        <div className="absolute inset-0 flex items-center justify-center bg-gray-900">
-          <div className="text-center text-gray-400">
-            <Video size={48} className="mx-auto mb-2 opacity-50 group-hover:opacity-80 transition-opacity text-green-500" />
-            <p className="text-sm font-light">プレー動画をアップロード</p>
-            {!editMode && (
-              <button className="mt-3 bg-green-600 hover:bg-green-700 text-white text-sm px-4 py-2 rounded transition-colors">
-                サンプル動画を見る
-              </button>
-            )}
-            {editMode && (
-              <button className="mt-3 border border-green-700 hover:border-green-600 text-green-400 text-sm px-4 py-2 rounded transition-colors flex items-center mx-auto">
-                <Upload size={14} className="mr-2" />
-                動画をアップロード
-              </button>
-            )}
-          </div>
+      {/* プレー動画セクション */}
+        <div className="group relative bg-black rounded-lg overflow-hidden" style={{ paddingTop: '56.25%' }}>
+            <div className="absolute inset-0">
+                {/* 実際のビデオ要素 */}
+                <video 
+                className="w-full h-full object-cover"
+                controls
+                poster="/assets/images/video-thumbnail.jpg" // サムネイル画像（オプション）
+                >
+                <source src="/assets/videos/sample-play.mp4" type="video/mp4" />
+                あなたのブラウザは動画再生をサポートしていません
+                </video>
+                
+                {/* 編集モード時のオーバーレイ */}
+                {editMode && (
+                <div className="absolute inset-0 bg-black/70 flex items-center justify-center">
+                    <button className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded flex items-center text-sm">
+                    <Upload size={14} className="mr-2" />
+                    動画を変更
+                    </button>
+                </div>
+                )}
+            </div>
         </div>
-      </div>
       
-      {/* 選手基本情報カード - モダンでシンプル */}
-      <div className="bg-gray-900 rounded overflow-hidden">
-        <div className="p-5 text-white">
+      {/* 選手基本情報カード - 白背景に変更 */}
+      <div className="bg-white rounded-lg overflow-hidden border border-gray-200 shadow-sm">
+        <div className="p-5">
           <div className="flex justify-between items-start">
             <div>
               {/* ポジションと総合評価 */}
@@ -474,61 +478,77 @@ const PlayerCardTab = ({ player, editMode }) => {
                     </span>
                   )}
                 </div>
-                <div className="border border-green-700 text-white font-medium rounded px-3 py-1 text-sm">
+                <div className="border border-green-600 text-green-600 font-medium rounded px-3 py-1 text-sm">
                   {player.personalInfo.position}
                 </div>
               </div>
               
               {/* 名前とプレースタイル */}
-              <h3 className="text-xl font-medium mb-1">{player.personalInfo.name}</h3>
-              <p className="text-gray-400 text-sm mb-4">{player.personalInfo.playStyle}</p>
+              <h3 className="text-xl font-medium mb-1 text-gray-800">{player.personalInfo.name}</h3>
+              <p className="text-gray-600 text-sm mb-4">{player.personalInfo.playStyle}</p>
               
               {/* 志向タイプ */}
-              <div className="inline-block bg-gray-800 rounded px-3 py-1.5 text-sm">
-                <span className="text-gray-400 mr-2">志向:</span>
-                <span className="text-green-400">{player.aspirations.type}</span>
+              <div className="inline-block bg-green-50 rounded px-3 py-1.5 text-sm">
+                <span className="text-gray-500 mr-2">志向:</span>
+                <span className="text-green-600 font-medium">{player.aspirations.type}</span>
               </div>
             </div>
             
             {/* プロフィール写真スペース */}
             <div className="relative">
-              <div className="w-20 h-20 bg-gray-800 rounded-full border border-gray-700 flex items-center justify-center">
-                <User size={32} className="text-green-500" />
-              </div>
-              {editMode && (
-                <button className="absolute bottom-0 right-0 bg-green-600 rounded-full p-1 border border-green-700">
-                  <Camera size={14} className="text-white" />
-                </button>
-              )}
-            </div>
+                <div className="w-20 h-20 bg-gray-100 rounded-full border border-gray-200 overflow-hidden">
+                    <img 
+                    src="/assets/images/profile-photo.jpg"
+                    alt="プロフィール写真"
+                    className="w-full h-full object-cover"
+                    onError={(e) => {
+                        // 画像読み込みエラー時にフォールバックとしてアイコンを表示
+                        e.target.style.display = 'none';
+                        e.currentTarget.parentNode.innerHTML += `
+                        <div class="w-full h-full flex items-center justify-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="12" cy="7" r="4"></circle>
+                            </svg>
+                        </div>
+                        `;
+                    }}
+                    />
+                </div>
+                {editMode && (
+                    <button className="absolute bottom-0 right-0 bg-green-600 rounded-full p-1 border border-green-700">
+                    <Camera size={14} className="text-white" />
+                    </button>
+                )}
+                </div>
           </div>
           
           {/* 基本情報のバッジ */}
-          <div className="flex flex-wrap gap-3 mt-4 pt-4 border-t border-gray-800">
-            <div className="rounded bg-gray-800 px-2.5 py-1 text-xs">
-              <span className="text-gray-400">高校:</span> {player.personalInfo.highSchool}
+          <div className="flex flex-wrap gap-3 mt-4 pt-4 border-t border-gray-100">
+            <div className="rounded bg-gray-50 px-2.5 py-1 text-xs">
+              <span className="text-gray-500">高校:</span> {player.personalInfo.highSchool}
             </div>
-            <div className="rounded bg-gray-800 px-2.5 py-1 text-xs">
-              <span className="text-gray-400">身長:</span> {player.personalInfo.height} cm
+            <div className="rounded bg-gray-50 px-2.5 py-1 text-xs">
+              <span className="text-gray-500">身長:</span> {player.personalInfo.height} cm
             </div>
-            <div className="rounded bg-gray-800 px-2.5 py-1 text-xs">
-              <span className="text-gray-400">体重:</span> {player.personalInfo.weight} kg
+            <div className="rounded bg-gray-50 px-2.5 py-1 text-xs">
+              <span className="text-gray-500">体重:</span> {player.personalInfo.weight} kg
             </div>
-            <div className="rounded bg-gray-800 px-2.5 py-1 text-xs">
-              <span className="text-gray-400">利き足:</span> {player.personalInfo.footedness}
+            <div className="rounded bg-gray-50 px-2.5 py-1 text-xs">
+              <span className="text-gray-500">利き足:</span> {player.personalInfo.footedness}
             </div>
           </div>
         </div>
         
         {/* 特殊能力アイコン */}
-        <div className="bg-gray-800 px-4 py-2.5 flex flex-wrap gap-2">
+        <div className="bg-green-50 px-4 py-2.5 flex flex-wrap gap-2">
           {player.metrics.specialAbilities.map((ability, index) => (
-            <div key={index} className="bg-gray-700 text-green-400 text-xs px-2 py-0.5 rounded border border-green-900">
+            <div key={index} className="bg-white text-green-600 text-xs px-2 py-0.5 rounded border border-green-200">
               {ability}
             </div>
           ))}
           {editMode && (
-            <button className="bg-gray-700 text-green-400 text-xs px-2 py-0.5 rounded border border-green-900 flex items-center">
+            <button className="bg-white text-green-600 text-xs px-2 py-0.5 rounded border border-green-200 flex items-center">
               <Plus size={10} className="mr-1" />
               追加
             </button>
@@ -539,7 +559,7 @@ const PlayerCardTab = ({ player, editMode }) => {
       {/* 能力値グリッド */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         {/* レーダーチャート */}
-        <div className="bg-white p-5 rounded">
+        <div className="bg-white p-5 rounded-lg shadow-sm border border-gray-200">
           <h3 className="text-lg font-medium text-gray-800 mb-4 flex items-center">
             <span className="w-3 h-3 bg-green-600 rounded-full inline-block mr-2"></span>
             能力レーダーチャート
@@ -548,7 +568,7 @@ const PlayerCardTab = ({ player, editMode }) => {
         </div>
         
         {/* 詳細能力値 */}
-        <div className="bg-white p-5 rounded">
+        <div className="bg-white p-5 rounded-lg shadow-sm border border-gray-200">
           <h3 className="text-lg font-medium text-gray-800 mb-4 flex items-center">
             <span className="w-3 h-3 bg-green-600 rounded-full inline-block mr-2"></span>
             詳細能力値
@@ -738,7 +758,7 @@ const PlayerCardTab = ({ player, editMode }) => {
       </div>
       
       {/* 学びたいこと */}
-      <div className="bg-white p-5 rounded">
+      <div className="bg-white p-5 rounded-lg shadow-sm border border-gray-200">
         <h3 className="text-lg font-medium text-gray-800 mb-4 flex items-center">
           <BookOpen size={18} className="text-green-600 mr-2" />
           学びたいこと
@@ -759,7 +779,7 @@ const PlayerCardTab = ({ player, editMode }) => {
       </div>
       
       {/* 実績 */}
-      <div className="bg-white p-5 rounded">
+      <div className="bg-white p-5 rounded-lg shadow-sm border border-gray-200">
         <div className="flex justify-between items-center mb-4">
           <h3 className="text-lg font-medium text-gray-800 flex items-center">
             <Trophy size={18} className="text-green-600 mr-2" />
@@ -786,7 +806,7 @@ const PlayerCardTab = ({ player, editMode }) => {
       </div>
       
       {/* 自己PR */}
-      <div className="bg-white p-5 rounded">
+      <div className="bg-white p-5 rounded-lg shadow-sm border border-gray-200">
         <div className="flex justify-between items-center mb-4">
           <h3 className="text-lg font-medium text-gray-800 flex items-center">
             <MessageSquare size={18} className="text-green-600 mr-2" />
@@ -803,7 +823,7 @@ const PlayerCardTab = ({ player, editMode }) => {
       </div>
       
       {/* 活動実績 - 一番下に追加 */}
-      <div className="bg-white p-5 rounded">
+      <div className="bg-white p-5 rounded-lg shadow-sm border border-gray-200">
         <div className="flex justify-between items-center mb-4">
           <h3 className="text-lg font-medium text-gray-800 flex items-center">
             <Clock size={18} className="text-green-600 mr-2" />
@@ -919,7 +939,11 @@ const ChevronDown = ({ size, className }) => (
 );
 
 // 志望大学タブのコンテンツ
-const UniversitiesTab = ({ universities, editMode, onShowFavorites }) => {
+const UniversitiesTab = ({ 
+  universities = [], 
+  editMode = false, 
+  onShowFavorites 
+}) => {
   return (
     <div className="space-y-6">
       <h3 className="text-lg font-medium text-gray-800 mb-4 flex items-center">
@@ -928,7 +952,7 @@ const UniversitiesTab = ({ universities, editMode, onShowFavorites }) => {
       </h3>
       
       {universities.map((university, index) => (
-        <div key={university.id} className="bg-white rounded border border-gray-200 overflow-hidden">
+        <div key={university.id} className="bg-white rounded-lg border border-gray-200 overflow-hidden shadow-sm hover:shadow-md transition-all">
           <div className="bg-gray-50 p-4 border-b flex justify-between items-center">
             <div className="flex items-center">
               <div className="bg-green-600 text-white w-8 h-8 rounded-full flex items-center justify-center mr-3 shadow-sm flex-shrink-0">
@@ -982,28 +1006,10 @@ const UniversitiesTab = ({ universities, editMode, onShowFavorites }) => {
         </button>
       )}
       
-      {/* 大学へのメッセージ */}
-      <div className="bg-white rounded p-5 mt-6">
-        <div className="flex justify-between items-center mb-4">
-          <h3 className="text-lg font-medium text-gray-800 flex items-center">
-            <MessageSquare size={18} className="text-green-600 mr-2" />
-            大学へのメッセージ
-          </h3>
-          {editMode && (
-            <button className="text-green-600 text-sm flex items-center">
-              <Edit size={14} className="mr-1" />
-              編集
-            </button>
-          )}
-        </div>
-        
-        <p className="text-gray-600 leading-relaxed">私は大学サッカー部に入部し、より高いレベルで自分を成長させたいと考えています。技術面では特にパスとゲームメイクに自信がありますが、フィジカル面の強化が課題だと認識しています。大学ではその点を改善しながら、チームの勝利に貢献できる選手になりたいです。また、プロを目指しながらも、専門的な知識を身につけるために学業も真剣に取り組む予定です。</p>
-      </div>
-      
-      {/* 「私の進路プラン」に移動するためのボタンを追加 */}
+      {/* 「私の進路プラン」に移動するためのボタン */}
       <div className="mt-6">
         <button 
-          className="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white rounded flex items-center justify-center transition-colors"
+          className="w-full py-3 bg-green-600 hover:bg-green-700 text-white rounded flex items-center justify-center transition-colors"
           onClick={onShowFavorites}
         >
           <Heart size={18} className="mr-2" />
