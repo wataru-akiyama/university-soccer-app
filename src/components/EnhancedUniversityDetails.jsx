@@ -286,6 +286,10 @@ const EnhancedUniversityDetails = ({
                       <td className="py-3">{extendedData?.location || "情報なし"}</td>
                     </tr>
                     <tr className="border-b">
+                      <th className="py-3 text-left text-gray-600">練習場所</th>
+                      <td className="py-3">{university.soccer_club.practice_location || "情報なし"}</td>
+                    </tr>
+                    <tr className="border-b">
                       <th className="py-3 text-left text-gray-600">学部情報</th>
                       <td className="py-3">{university.main_faculties.join('、')}</td>
                     </tr>

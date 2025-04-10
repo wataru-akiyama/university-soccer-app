@@ -1,5 +1,7 @@
+// src/components/SimpleUniversityCard.jsx
 import React from 'react';
-import { Award, Users, Star, Heart, Plus, Check } from 'lucide-react';
+import { Heart, Plus, Check, Star, MapPin } from 'lucide-react';
+import universityExtendedData from '../data/universityExtendedData';
 
 const SimpleUniversityCard = ({ 
   university, 
@@ -11,22 +13,18 @@ const SimpleUniversityCard = ({
   onRemoveFromFavorites,
   isInFavorites
 }) => {
-  // Jリーグ内定者の3年間合計を計算
-  const totalJLeagueNominees = 
-    (university.soccer_club.j_league_nominees_2022 || 0) + 
-    (university.soccer_club.j_league_nominees_2023 || 0) + 
-    (university.soccer_club.j_league_nominees_2024 || 0);
-  
-  // Jリーグ内定数に基づく星評価（レーティング）を取得
-  const getRating = (nominees) => {
-    if (nominees >= 8) return 5;
-    if (nominees >= 6) return 4;
-    if (nominees >= 4) return 3;
-    if (nominees >= 2) return 2;
-    return 1;
+  // PLAYMAKERコメントがあれば要約表示（最初の2文程度に制限）
+  const getSummarizedComment = () => {
+    const extData = universityExtendedData[university.id];
+    const comment = extData?.playmakerComment || university.playmakerComment;
+    
+    if (!comment) return "詳細情報はありません";
+    
+    // 文を分割（。や．で区切る）
+    const sentences = comment.split(/[。.．]/);
+    // 最初の2文を取得して結合（末尾に句点を追加）
+    return sentences.slice(0, 2).join('。') + '。';
   };
-  
-  const jLeagueRating = getRating(totalJLeagueNominees);
   
   // リーグに基づく色を取得
   const getLeagueColor = (league) => {
@@ -94,58 +92,37 @@ const SimpleUniversityCard = ({
           <div className="flex-1">
             <h3 className="font-bold text-lg text-gray-800 mb-1">{university.university_name}</h3>
             
-            {/* リーグバッジ */}
-            <span className={`inline-block px-2 py-0.5 rounded-full text-xs ${getLeagueColor(university.soccer_club.league)}`}>
-              {university.soccer_club.league}
-            </span>
-          </div>
-        </div>
-        
-        {/* ハイライト情報 - もし存在すれば表示 */}
-        {university.soccer_club.highlight && (
-          <div className="mt-3 bg-yellow-50 rounded-lg p-2 border border-yellow-100">
-            <div className="flex items-center">
-              <Star className="text-yellow-500 w-4 h-4 mr-1 flex-shrink-0" />
-              <p className="text-sm text-yellow-700">{university.soccer_club.highlight}</p>
+            {/* タグエリア - リーグと練習場所を表示 */}
+            <div className="flex flex-wrap gap-1">
+                {/* リーグバッジ */}
+                <span className={`inline-block px-2 py-0.5 rounded-full text-xs ${getLeagueColor(university.soccer_club.league)}`}>
+                    {university.soccer_club.league}
+                </span>
+                
+                {/* 練習場所情報 - 存在する場合のみ表示 */}
+                {university.soccer_club.practice_location && (
+                    <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs bg-gray-100 text-gray-700">
+                    <MapPin size={10} className="mr-1" />
+                    {university.soccer_club.practice_location}
+                    </span>
+                )}
             </div>
           </div>
-        )}
+        </div>
+      </div>
+      
+      {/* PLAYMAKERコメント要約 */}
+      <div className="p-4 bg-yellow-50 border-b border-yellow-100">
+        <div className="flex items-start">
+          <Star size={16} className="text-yellow-500 mr-2 mt-0.5 flex-shrink-0" />
+          <p className="text-sm text-yellow-800 line-clamp-2">
+            {getSummarizedComment()}
+          </p>
+        </div>
       </div>
       
       {/* カード本体 */}
       <div className="p-4">
-        <div className="flex justify-between mb-4">
-          {/* Jリーグ内定者数 */}
-          <div className="flex-1">
-            <div className="flex items-center">
-              <Award className="text-yellow-500 mr-1 w-4 h-4" />
-              <span className="text-sm font-medium">Jリーグ内定</span>
-            </div>
-            <div className="mt-1 flex items-center">
-              <span className="text-lg font-bold text-yellow-700">{totalJLeagueNominees}名</span>
-              <div className="ml-2 flex">
-                {[...Array(5)].map((_, i) => (
-                  <Star
-                    key={i}
-                    className={`w-3 h-3 ${i < jLeagueRating ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300'}`}
-                  />
-                ))}
-              </div>
-            </div>
-          </div>
-          
-          {/* 部員数 */}
-          <div className="flex-1 text-right">
-            <div className="flex items-center justify-end">
-              <Users className="text-green-500 mr-1 w-4 h-4" />
-              <span className="text-sm font-medium">部員数</span>
-            </div>
-            <p className="text-lg font-bold text-green-700 mt-1">
-              {university.soccer_club.total_members}名
-            </p>
-          </div>
-        </div>
-        
         {/* 特徴タグ */}
         <div className="flex flex-wrap gap-1 mb-4">
           {university.entry_conditions.sports_recommend && (
