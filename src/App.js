@@ -1,6 +1,6 @@
 import soccerLogo from './assets/soccer-logo.svg';
 import React, { useState, useEffect } from 'react';
-import { ChevronRight, Heart, Zap, UserCircle } from 'lucide-react';
+import { ChevronRight, Heart, Zap, UserCircle, Trophy, BookOpen } from 'lucide-react';
 import universities from './data/universities';
 import MultiSelectSearchForm from './components/MultiSelectSearchForm';
 import UniversityList from './components/UniversityList';
@@ -210,20 +210,51 @@ const App = () => {
             <PortfolioBanner onShowPortfolio={togglePlayerPortfolio} />
             
             {/* 2. 推薦ウィザードバナー */}
-            <div className="bg-gradient-to-r from-yellow-500 to-orange-500 text-white p-4 rounded-lg shadow-md mb-6 flex items-center justify-between">
-              <div className="flex items-center">
-                <Zap size={24} className="mr-3" />
-                <div>
-                  <h3 className="font-bold text-lg">あなたにぴったりの大学サッカー部を見つけよう！</h3>
-                  <p className="text-sm text-yellow-100">サッカーに対する志向と学びたいことから最適な大学を提案します</p>
+            <div className="bg-gradient-to-r from-yellow-500 to-orange-500 rounded-xl shadow-md overflow-hidden mb-6">
+              <div className="relative p-5">
+                {/* 背景装飾 */}
+                <div className="absolute right-0 top-0 bottom-0 opacity-10">
+                  <div className="h-full w-64 bg-white rounded-full blur-3xl"></div>
+                </div>
+                
+                <div className="flex flex-col md:flex-row items-center md:items-start">
+                  {/* アイコン部分 */}
+                  <div className="bg-white rounded-full p-3 shadow-md mb-4 md:mb-0 md:mr-5">
+                    <Zap size={32} className="text-orange-600" />
+                  </div>
+                  
+                  {/* テキスト部分 */}
+                  <div className="text-center md:text-left md:flex-1">
+                    <h3 className="text-xl font-bold text-white mb-1">あなたにぴったりの大学サッカー部を見つけよう！</h3>
+                    <p className="text-yellow-100 mb-4">サッカーに対する志向と学びたいことから最適な大学を提案します</p>
+                    
+                    {/* 特徴ポイント */}
+                    <div className="flex flex-wrap justify-center md:justify-start gap-4 mb-3">
+                      <div className="flex items-center text-white text-sm">
+                        <Trophy size={16} className="mr-1" />
+                        <span>実績に基づく大学提案</span>
+                      </div>
+                      <div className="flex items-center text-white text-sm">
+                        <BookOpen size={16} className="mr-1" />
+                        <span>学びたいことから診断</span>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {/* ボタン - z-indexを高くして最前面に表示 */}
+                  <div className="mt-4 md:mt-0 md:ml-5 relative z-10">
+                    <button 
+                      className="bg-white text-orange-600 px-5 py-3 rounded-lg font-bold shadow-md hover:bg-orange-50 transition-colors flex items-center cursor-pointer"
+                      onClick={toggleRecommendation}
+                      type="button"
+                      style={{ position: 'relative', zIndex: 20 }}
+                    >
+                      診断してみる
+                      <ChevronRight size={18} className="ml-1" />
+                    </button>
+                  </div>
                 </div>
               </div>
-              <button
-                className="bg-white text-orange-600 px-4 py-2 rounded-lg font-medium shadow-sm hover:bg-orange-50 transition-colors"
-                onClick={toggleRecommendation}
-              >
-                診断してみる
-              </button>
             </div>
 
             {/* 3. 検索フォーム */}
