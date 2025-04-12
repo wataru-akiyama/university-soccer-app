@@ -1,6 +1,6 @@
 import soccerLogo from './assets/soccer-logo.svg';
 import React, { useState, useEffect } from 'react';
-import { ChevronRight, Heart, Zap, UserCircle, Trophy, BookOpen } from 'lucide-react';
+import { ChevronRight, Heart, Zap, UserCircle, Trophy, BookOpen, X } from 'lucide-react';
 import universities from './data/universities';
 import MultiSelectSearchForm from './components/MultiSelectSearchForm';
 import UniversityList from './components/UniversityList';
@@ -12,6 +12,7 @@ import EnhancedPlayerPortfolio from './components/EnhancedPlayerPortfolio';
 import EnhancedUniversityDetails from './components/EnhancedUniversityDetails';
 import PortfolioBanner from './components/PortfolioBanner';
 import ResponsiveHeader from './components/ResponsiveHeader';
+import StepSearchWizard from './components/StepSearchWizard';
 
 const App = () => {
   // カスタムフックを使用して検索ロジックを実装
@@ -59,6 +60,7 @@ const App = () => {
   const [favoriteUniversities, setFavoriteUniversities] = useState([]);
   const [showFavorites, setShowFavorites] = useState(false);
   const [showRecommendation, setShowRecommendation] = useState(false);
+  const [showWizard, setShowWizard] = useState(false);// 最初は非表示にする
   // showPortfolioを削除（未使用）
   const [showPlayerPortfolio, setShowPlayerPortfolio] = useState(false);
   // 現在のビュー管理用のステートを追加
@@ -145,6 +147,11 @@ const App = () => {
   // 推薦ウィザード表示のトグル
   const toggleRecommendation = () => {
     setCurrentView('recommendation');
+  };
+
+  // ウィザード表示のトグル関数
+  const toggleWizard = () => {
+    setShowWizard(!showWizard);
   };
 
   // ポートフォリオ表示関数
@@ -255,6 +262,61 @@ const App = () => {
                   </div>
                 </div>
               </div>
+            </div>
+
+            {/* ステップ式検索ウィザード - show状態の時のみ表示 */}
+            {showWizard && (
+              <StepSearchWizard
+                onViewDetails={viewUniversityDetails}
+                universities={universities}
+                setSearchQuery={setSearchQuery}
+                setSelectedRegions={setSelectedRegions}
+                setSelectedLeagues={setSelectedLeagues}
+                setSelectedQualifications={setSelectedQualifications}
+                setSportsRecommend={setSportsRecommend}
+                setSelectionAvailable={setSelectionAvailable}
+                setDormAvailable={setDormAvailable}
+                setJLeagueMinimum={setJLeagueMinimum}
+                useUniversitySearchInstance={{
+                  searchQuery,
+                  selectedRegions,
+                  selectedLeagues,
+                  selectedQualifications,
+                  sportsRecommend,
+                  selectionAvailable,
+                  dormAvailable,
+                  generalAdmissionAvailable,
+                  jLeagueMinimum,
+                  yearlyJLeagueFilter,
+                  memberSizeCategory,
+                  newMemberSizeCategory,
+                  maxGradeRequirement,
+                  coachBackgroundFilter,
+                  densoCupMinimum,
+                  sortOption,
+                  sortDirection
+                }}
+              />
+            )}
+
+            {/* 検索フォームの上に小さなボタンを追加して、ウィザードをトグルできるようにする */}
+            <div className="flex justify-center mb-4">
+              <button
+                className={`flex items-center ${showWizard ? 'bg-gray-200 text-gray-700' : 'bg-green-600 text-white'} px-4 py-2 rounded-lg hover:bg-green-700 hover:text-white transition-colors shadow-sm`}
+                onClick={toggleWizard}
+              >
+                {showWizard ? (
+                  <>
+                    <X size={16} className="mr-1" />
+                    ウィザードを閉じる
+                  </>
+                ) : (
+                  <>
+                    <Zap size={16} className="mr-1" />
+                    かんたん検索ウィザード
+                  </>
+                )}
+              </button>
             </div>
 
             {/* 3. 検索フォーム */}
