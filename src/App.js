@@ -74,6 +74,10 @@ const App = () => {
     setPlayerProfileData(profileData);
     // ローカルストレージに保存（オプション）
     localStorage.setItem('playerProfile', JSON.stringify(profileData));
+    // 保存後に既存のポートフォリオページに遷移
+    setCurrentView('portfolio');
+    // 保存成功メッセージ
+    alert("ポートフォリオが保存されました！");
   };
 
   // ローカルストレージからお気に入りを読み込む
@@ -98,12 +102,6 @@ const App = () => {
       }
     }
   }, []);
-
-  // テンプレート式ポートフォリオ表示ハンドラ
-  const showTemplatePortfolioCreator = () => {
-    setShowTemplatePortfolio(true);
-    setCurrentView('templatePortfolio');
-  };
 
   // お気に入りをローカルストレージに保存
   useEffect(() => {
@@ -181,15 +179,15 @@ const App = () => {
     setShowWizard(!showWizard);
   };
 
-  // ポートフォリオ表示関数
+  // ポートフォリオ表示関数を修正 - 常に既存のポートフォリオに遷移
   const togglePlayerPortfolio = () => {
-    // テンプレート式のポートフォリオを使用する場合
-    if (playerProfileData && Object.keys(playerProfileData).length > 0) {
-      showTemplatePortfolioCreator();
-    } else {
-      // 通常のポートフォリオを表示
-      setCurrentView('portfolio');
-    }
+    // 直接既存のポートフォリオページに遷移
+    setCurrentView('portfolio');
+  };
+  
+  // テンプレート式ポートフォリオ表示ハンドラ
+  const showTemplatePortfolioCreator = () => {
+    setCurrentView('templatePortfolio');
   };
 
   // 現在のビューに基づいて表示するコンポーネントを決定
@@ -203,6 +201,8 @@ const App = () => {
             onShowRecommendation={toggleRecommendation}
             onShowFavorites={showFavoritesView}
             onShowCompare={showCompareView}
+            onEditWithTemplate={showTemplatePortfolioCreator} // 新しいプロップスを追加
+            userProfile={playerProfileData} // プロフィールデータを渡す
           />
         );
       case 'templatePortfolio':
@@ -257,7 +257,7 @@ const App = () => {
           <>
             {/* 1. ポートフォリオバナー */}
             <PortfolioBanner
-              onShowPortfolio={togglePlayerPortfolio}
+              onShowPortfolio={showTemplatePortfolioCreator}
               showTemplateVersion={true} // テンプレート版を使用する設定
             />
             

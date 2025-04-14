@@ -1,19 +1,39 @@
 import React, { useState } from 'react';
 import { 
-  Heart, ChevronLeft, Edit, Trophy, Star, Camera,
-  MessageSquare, Video, BookOpen, User, Save, Clock, 
-  CheckCircle, X, Plus, Download, Share2, Twitter,
-  Facebook, Instagram, Linkedin, Link
+    UserCircle, 
+    ChevronLeft, 
+    Edit, 
+    Trophy, 
+    Star, 
+    Camera,
+    MessageSquare, 
+    Video, 
+    BookOpen, 
+    User, 
+    Save, 
+    Clock, 
+    CheckCircle, 
+    X, 
+    Plus, 
+    Download, 
+    Share2, 
+    Twitter,
+    Facebook, 
+    Instagram, 
+    Linkedin, 
+    Link,
+    FileEdit
 } from 'lucide-react';
 
 // メインコンポーネント
 const EnhancedPlayerPortfolio = ({ 
   onBack, 
   favoriteUniversities,
-  // 以下、新しく追加されたプロップス
   onShowRecommendation,
   onShowFavorites,
-  onShowCompare
+  onShowCompare,
+  onEditWithTemplate, // 新しいプロップスを追加
+  userProfile // プロフィールデータを追加
 }) => {
   const [activeTab, setActiveTab] = useState('playerCard');
   const [editMode, setEditMode] = useState(false);
@@ -112,6 +132,14 @@ const EnhancedPlayerPortfolio = ({
               <h2 className="text-xl font-medium">マイポートフォリオ</h2>
             </div>
             <div className="flex space-x-2">
+              {/* テンプレートで編集するボタンを追加 */}
+              <button 
+                className="bg-blue-500 text-white hover:bg-blue-400 px-3 py-1.5 rounded-md flex items-center text-sm transition-colors"
+                onClick={onEditWithTemplate}
+              >
+                <FileEdit size={16} className="mr-1.5" />
+                テンプレートで編集
+              </button>
               <button 
                 className="bg-white text-green-600 hover:bg-green-50 hover:text-green-700 px-3 py-1.5 rounded-md flex items-center text-sm transition-colors"
                 onClick={() => setEditMode(!editMode)}
@@ -173,6 +201,27 @@ const EnhancedPlayerPortfolio = ({
               onShowFavorites={onShowFavorites}
             />
           )}
+
+          {/* テンプレート編集へのリンクバナーを追加 - 特に編集モードでない場合に表示 */}
+          {!editMode && (
+            <div className="mt-6 bg-blue-50 p-4 rounded-lg border border-blue-200">
+              <div className="flex items-center">
+                <div className="bg-blue-100 p-2 rounded-full mr-3">
+                  <FileEdit size={20} className="text-blue-600" />
+                </div>
+                <div className="flex-1">
+                  <h3 className="font-medium text-blue-800">テンプレートでもっと簡単に編集！</h3>
+                  <p className="text-sm text-blue-600">簡単なステップで効果的なポートフォリオが作れるテンプレートエディタが利用できます。</p>
+                </div>
+                <button 
+                  className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-md text-sm ml-3"
+                  onClick={onEditWithTemplate}
+                >
+                  テンプレートで編集
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       </div>
       
@@ -186,6 +235,24 @@ const EnhancedPlayerPortfolio = ({
     </div>
   );
 };
+
+// Heart コンポーネント（必要であれば追加）
+const Heart = ({ size, className }) => (
+    <svg 
+      xmlns="http://www.w3.org/2000/svg" 
+      width={size} 
+      height={size} 
+      viewBox="0 0 24 24" 
+      fill="none" 
+      stroke="currentColor" 
+      strokeWidth="2" 
+      strokeLinecap="round" 
+      strokeLinejoin="round" 
+      className={className}
+    >
+      <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+    </svg>
+  );
 
 // 共有モーダルコンポーネント
 const ShareModal = ({ onClose, player }) => {
