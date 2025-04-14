@@ -1,7 +1,7 @@
 import React from 'react';
 import { UserCircle, ChevronRight, Trophy, Camera } from 'lucide-react';
 
-const PortfolioBanner = ({ onShowPortfolio }) => {
+const PortfolioBanner = ({ onShowPortfolio, showTemplateVersion = true }) => {
   // イベントハンドラを明示的に定義
   const handlePortfolioClick = (e) => {
     e.stopPropagation();
@@ -25,7 +25,11 @@ const PortfolioBanner = ({ onShowPortfolio }) => {
           {/* テキスト部分 */}
           <div className="text-center md:text-left md:flex-1">
             <h3 className="text-xl font-bold text-white mb-1">あなたのサッカーキャリアをアピール！</h3>
-            <p className="text-blue-100 mb-4">ポートフォリオを作成して大学サッカー部にアピール。プレー動画や実績をまとめて進路活動を有利に進めよう</p>
+            <p className="text-blue-100 mb-4">
+              {showTemplateVersion 
+                ? "テンプレートを選んで簡単にポートフォリオを作成！大学サッカー部にあなたの魅力をアピールしよう"
+                : "ポートフォリオを作成して大学サッカー部にアピール。プレー動画や実績をまとめて進路活動を有利に進めよう"}
+            </p>
             
             {/* 特徴ポイント */}
             <div className="flex flex-wrap justify-center md:justify-start gap-4 mb-3">
@@ -33,10 +37,17 @@ const PortfolioBanner = ({ onShowPortfolio }) => {
                 <Trophy size={16} className="mr-1" />
                 <span>競技実績の登録</span>
               </div>
-              <div className="flex items-center text-white text-sm">
-                <Camera size={16} className="mr-1" />
-                <span>プレー動画のアップロード</span>
-              </div>
+              {showTemplateVersion ? (
+                <div className="flex items-center text-white text-sm">
+                  <Camera size={16} className="mr-1" />
+                  <span>目的別テンプレート</span>
+                </div>
+              ) : (
+                <div className="flex items-center text-white text-sm">
+                  <Camera size={16} className="mr-1" />
+                  <span>プレー動画のアップロード</span>
+                </div>
+              )}
             </div>
           </div>
           
@@ -48,7 +59,7 @@ const PortfolioBanner = ({ onShowPortfolio }) => {
               type="button"
               style={{ position: 'relative', zIndex: 20 }} // インラインスタイルでも設定
             >
-              ポートフォリオを作成
+              {showTemplateVersion ? "かんたんポートフォリオ作成" : "ポートフォリオを作成"}
               <ChevronRight size={18} className="ml-1" />
             </button>
           </div>

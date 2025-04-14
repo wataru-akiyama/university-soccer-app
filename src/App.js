@@ -13,6 +13,8 @@ import EnhancedUniversityDetails from './components/EnhancedUniversityDetails';
 import PortfolioBanner from './components/PortfolioBanner';
 import ResponsiveHeader from './components/ResponsiveHeader';
 import StepSearchWizard from './components/StepSearchWizard';
+import TemplatePortfolioCreator from './components/TemplatePortfolioCreator';
+import userProfile from './data/userProfile'; // 既存のデータファイル
 
 const App = () => {
   // カスタムフックを使用して検索ロジックを実装
@@ -61,10 +63,18 @@ const App = () => {
   const [showFavorites, setShowFavorites] = useState(false);
   const [showRecommendation, setShowRecommendation] = useState(false);
   const [showWizard, setShowWizard] = useState(false);// 最初は非表示にする
-  // showPortfolioを削除（未使用）
   const [showPlayerPortfolio, setShowPlayerPortfolio] = useState(false);
-  // 現在のビュー管理用のステートを追加
   const [currentView, setCurrentView] = useState('list'); // 'list', 'details', 'compare', 'favorites', 'recommendation', 'portfolio'
+  // テンプレート式ポートフォリオ機能のための新しい状態
+  const [playerProfileData, setPlayerProfileData] = useState(userProfile);
+  const [showTemplatePortfolio, setShowTemplatePortfolio] = useState(false);
+
+  // プロフィール保存ハンドラ
+  const handleSaveProfile = (profileData) => {
+    setPlayerProfileData(profileData);
+    // ローカルストレージに保存（オプション）
+    localStorage.setItem('playerProfile', JSON.stringify(profileData));
+  };
 
   // ローカルストレージからお気に入りを読み込む
   useEffect(() => {
@@ -76,7 +86,24 @@ const App = () => {
       ).filter(Boolean);
       setFavoriteUniversities(favUniversities);
     }
+
+    // プロフィールデータの読み込み（新規追加）
+    const savedProfile = localStorage.getItem('playerProfile');
+    if (savedProfile) {
+      try {
+        const profileData = JSON.parse(savedProfile);
+        setPlayerProfileData(profileData);
+      } catch (e) {
+        console.error('プロフィールデータの読み込みに失敗しました');
+      }
+    }
   }, []);
+
+  // テンプレート式ポートフォリオ表示ハンドラ
+  const showTemplatePortfolioCreator = () => {
+    setShowTemplatePortfolio(true);
+    setCurrentView('templatePortfolio');
+  };
 
   // お気に入りをローカルストレージに保存
   useEffect(() => {
@@ -156,7 +183,13 @@ const App = () => {
 
   // ポートフォリオ表示関数
   const togglePlayerPortfolio = () => {
-    setCurrentView('portfolio');
+    // テンプレート式のポートフォリオを使用する場合
+    if (playerProfileData && Object.keys(playerProfileData).length > 0) {
+      showTemplatePortfolioCreator();
+    } else {
+      // 通常のポートフォリオを表示
+      setCurrentView('portfolio');
+    }
   };
 
   // 現在のビューに基づいて表示するコンポーネントを決定
@@ -170,6 +203,15 @@ const App = () => {
             onShowRecommendation={toggleRecommendation}
             onShowFavorites={showFavoritesView}
             onShowCompare={showCompareView}
+          />
+        );
+      case 'templatePortfolio':
+        return (
+          <TemplatePortfolioCreator
+            onBack={backToList}
+            userProfile={playerProfileData}
+            onSaveProfile={handleSaveProfile}
+            favoriteUniversities={favoriteUniversities}
           />
         );
       case 'details':
@@ -214,7 +256,10 @@ const App = () => {
         return (
           <>
             {/* 1. ポートフォリオバナー */}
-            <PortfolioBanner onShowPortfolio={togglePlayerPortfolio} />
+            <PortfolioBanner
+              onShowPortfolio={togglePlayerPortfolio}
+              showTemplateVersion={true} // テンプレート版を使用する設定
+            />
             
             {/* 2. 推薦ウィザードバナー */}
             <div className="bg-gradient-to-r from-yellow-500 to-orange-500 rounded-xl shadow-md overflow-hidden mb-6">
