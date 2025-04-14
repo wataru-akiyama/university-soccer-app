@@ -18,6 +18,10 @@ const useUniversitySearch = (universities) => {
   const [dormAvailable, setDormAvailable] = useState(false);
   const [generalAdmissionAvailable, setGeneralAdmissionAvailable] = useState(false);
   
+  // 国公立・私立フィルター（新規追加）
+  const [publicUniversity, setPublicUniversity] = useState(false);
+  const [privateUniversity, setPrivateUniversity] = useState(false);
+  
   // 詳細検索条件
   const [jLeagueMinimum, setJLeagueMinimum] = useState(0);
   const [yearlyJLeagueFilter, setYearlyJLeagueFilter] = useState({
@@ -34,6 +38,27 @@ const useUniversitySearch = (universities) => {
   // ソートオプション
   const [sortOption, setSortOption] = useState('');
   const [sortDirection, setSortDirection] = useState('desc'); // 'desc' = 降順, 'asc' = 昇順
+  
+  // 国公立大学かどうかをチェックする関数
+  const isPublicUniversity = (university) => {
+    if (!university || !university.university_name) return false;
+    
+    const name = university.university_name;
+    
+    // 明らかな国公立大学の判定
+    if (
+      name.includes('国立') || 
+      name.includes('県立') || 
+      name.includes('市立') || 
+      name === '筑波大学' || 
+      name === '北海道大学' || 
+      name === '名古屋大学'
+    ) {
+      return true;
+    }
+    
+    return false;
+  };
   
   // 評定値を文字列から抽出する関数
   const extractGradeValue = (criteriaString) => {
@@ -153,6 +178,15 @@ const useUniversitySearch = (universities) => {
         // 基本的なnullチェック
         if (!university || !university.soccer_club || !university.entry_conditions) {
           console.warn('不完全な大学データがフィルタリングされました:', university?.university_name || 'unknown');
+          return false;
+        }
+        
+        // 国公立・私立フィルター（新規追加）
+        if (publicUniversity && !isPublicUniversity(university)) {
+          return false;
+        }
+        
+        if (privateUniversity && isPublicUniversity(university)) {
           return false;
         }
         
@@ -377,6 +411,8 @@ const useUniversitySearch = (universities) => {
     selectionAvailable,
     dormAvailable,
     generalAdmissionAvailable,
+    publicUniversity, // 新規追加
+    privateUniversity, // 新規追加
     jLeagueMinimum,
     yearlyJLeagueFilter,
     memberSizeCategory,
@@ -407,6 +443,12 @@ const useUniversitySearch = (universities) => {
     setDormAvailable,
     generalAdmissionAvailable,
     setGeneralAdmissionAvailable,
+    
+    // 国公立・私立フィルター（新規追加）
+    publicUniversity,
+    setPublicUniversity,
+    privateUniversity,
+    setPrivateUniversity,
     
     // 詳細検索条件
     jLeagueMinimum,

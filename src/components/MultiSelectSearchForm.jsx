@@ -1,6 +1,6 @@
 // src/components/MultiSelectSearchForm.jsx
 import React, { useState, useEffect, useRef } from 'react';
-import { Search, ChevronDown, ChevronUp, X, Check, Filter, Trophy, Home, Calendar, BookOpen, SlidersHorizontal, Medal, Users, Zap, Star, Save, Bookmark, Trash } from 'lucide-react';
+import { Search, ChevronDown, ChevronUp, X, Check, Filter, Trophy, Home, Calendar, BookOpen, SlidersHorizontal, Medal, Users, Zap, Star, Save, Bookmark, Trash, School } from 'lucide-react';
 import regions from '../data/regions';
 import leagues from '../data/leagues';
 import availableQualifications from '../data/qualifications';
@@ -22,6 +22,10 @@ const MultiSelectSearchForm = ({
   setDormAvailable,
   generalAdmissionAvailable,
   setGeneralAdmissionAvailable,
+  publicUniversity,  // 新規追加
+  setPublicUniversity, // 新規追加
+  privateUniversity,  // 新規追加
+  setPrivateUniversity, // 新規追加
   jLeagueMinimum,
   setJLeagueMinimum,
   yearlyJLeagueFilter,
@@ -185,6 +189,8 @@ const MultiSelectSearchForm = ({
     setSelectionAvailable(false);
     setDormAvailable(false);
     setGeneralAdmissionAvailable(false);
+    setPublicUniversity(false); // 新規追加
+    setPrivateUniversity(false); // 新規追加
     
     // 詳細検索条件もリセット
     setJLeagueMinimum(0);
@@ -214,6 +220,8 @@ const MultiSelectSearchForm = ({
       selectionAvailable,
       dormAvailable,
       generalAdmissionAvailable,
+      publicUniversity, // 新規追加
+      privateUniversity, // 新規追加
       jLeagueMinimum,
       yearlyJLeagueFilter,
       memberSizeCategory,
@@ -268,6 +276,10 @@ const MultiSelectSearchForm = ({
     setDormAvailable(conditions.dormAvailable || false);
     setGeneralAdmissionAvailable(conditions.generalAdmissionAvailable || false);
     
+    // 国公立・私立フィルター（新規追加）
+    setPublicUniversity(conditions.publicUniversity || false);
+    setPrivateUniversity(conditions.privateUniversity || false);
+    
     // 詳細検索条件
     setJLeagueMinimum(conditions.jLeagueMinimum || 0);
     setSliderValue(conditions.jLeagueMinimum || 0);
@@ -314,6 +326,8 @@ const MultiSelectSearchForm = ({
     if (selectionAvailable) count++;
     if (dormAvailable) count++;
     if (generalAdmissionAvailable) count++;
+    if (publicUniversity) count++; // 新規追加
+    if (privateUniversity) count++; // 新規追加
     
     // 詳細フィルター
     if (jLeagueMinimum > 0) count++;
@@ -393,6 +407,23 @@ const MultiSelectSearchForm = ({
         id: 'general-admission',
         label: '一般入部可',
         type: 'generalAdmissionAvailable'
+      });
+    }
+    
+    // 国公立・私立タグ（新規追加）
+    if (publicUniversity) {
+      tags.push({
+        id: 'public-university',
+        label: '国公立大学',
+        type: 'publicUniversity'
+      });
+    }
+    
+    if (privateUniversity) {
+      tags.push({
+        id: 'private-university',
+        label: '私立大学',
+        type: 'privateUniversity'
       });
     }
     
@@ -500,6 +531,12 @@ const MultiSelectSearchForm = ({
         break;
       case 'generalAdmissionAvailable':
         setGeneralAdmissionAvailable(false);
+        break;
+      case 'publicUniversity': // 新規追加
+        setPublicUniversity(false);
+        break;
+      case 'privateUniversity': // 新規追加
+        setPrivateUniversity(false);
         break;
       case 'jLeagueMinimum':
         setJLeagueMinimum(0);
@@ -732,6 +769,29 @@ const MultiSelectSearchForm = ({
             onChange={() => setGeneralAdmissionAvailable(!generalAdmissionAvailable)}
           />
           一般入部可
+        </label>
+
+        {/* 国公立・私立大学チェックボックス（新規追加） */}
+        <label className="flex items-center cursor-pointer">
+          <input 
+            type="checkbox" 
+            className="mr-2 h-5 w-5"
+            checked={publicUniversity}
+            onChange={() => setPublicUniversity(!publicUniversity)}
+          />
+          <School size={16} className="mr-1 text-blue-600" />
+          国公立大学
+        </label>
+        
+        <label className="flex items-center cursor-pointer">
+          <input 
+            type="checkbox" 
+            className="mr-2 h-5 w-5"
+            checked={privateUniversity}
+            onChange={() => setPrivateUniversity(!privateUniversity)}
+          />
+          <School size={16} className="mr-1 text-red-600" />
+          私立大学
         </label>
       </div>
       
@@ -1024,6 +1084,27 @@ const MultiSelectSearchForm = ({
           }}
         >
           教員免許取得可能
+        </button>
+        {/* 国公立・私立大学ボタン（新規追加） */}
+        <button 
+          type="button"
+          className="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-sm hover:bg-blue-200"
+          onClick={() => {
+            setPublicUniversity(true);
+            setPrivateUniversity(false);
+          }}
+        >
+          国公立大学のみ
+        </button>
+        <button 
+          type="button"
+          className="bg-red-100 text-red-700 px-3 py-1 rounded-full text-sm hover:bg-red-200"
+          onClick={() => {
+            setPrivateUniversity(true);
+            setPublicUniversity(false);
+          }}
+        >
+          私立大学のみ
         </button>
       </div>
       

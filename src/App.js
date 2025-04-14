@@ -35,6 +35,10 @@ const App = () => {
     setDormAvailable,
     generalAdmissionAvailable,
     setGeneralAdmissionAvailable,
+    publicUniversity,  // 新規追加
+    setPublicUniversity, // 新規追加
+    privateUniversity,  // 新規追加
+    setPrivateUniversity, // 新規追加
     jLeagueMinimum,
     setJLeagueMinimum,
     yearlyJLeagueFilter,
@@ -382,6 +386,10 @@ const App = () => {
               setDormAvailable={setDormAvailable}
               generalAdmissionAvailable={generalAdmissionAvailable}
               setGeneralAdmissionAvailable={setGeneralAdmissionAvailable}
+              publicUniversity={publicUniversity}  // 新規追加
+              setPublicUniversity={setPublicUniversity} // 新規追加
+              privateUniversity={privateUniversity}  // 新規追加
+              setPrivateUniversity={setPrivateUniversity} // 新規追加
               jLeagueMinimum={jLeagueMinimum}
               setJLeagueMinimum={setJLeagueMinimum}
               yearlyJLeagueFilter={yearlyJLeagueFilter}
