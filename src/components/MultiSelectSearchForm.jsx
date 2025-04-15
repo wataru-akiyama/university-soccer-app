@@ -1,9 +1,10 @@
 // src/components/MultiSelectSearchForm.jsx
 import React, { useState, useEffect, useRef } from 'react';
-import { Search, ChevronDown, ChevronUp, X, Check, Filter, Trophy, Home, Calendar, BookOpen, SlidersHorizontal, Medal, Users, Zap, Star, Save, Bookmark, Trash, School } from 'lucide-react';
+import { Search, ChevronDown, ChevronUp, X, Filter, Trophy, Home, Calendar, BookOpen, SlidersHorizontal, Medal, Users, Zap, Star, Save, Bookmark, Trash, School } from 'lucide-react';
 import regions from '../data/regions';
 import leagues from '../data/leagues';
 import availableQualifications from '../data/qualifications';
+import MultiSelectDropdown from './MultiSelectDropdown';
 
 const MultiSelectSearchForm = ({
   searchQuery,
@@ -22,10 +23,10 @@ const MultiSelectSearchForm = ({
   setDormAvailable,
   generalAdmissionAvailable,
   setGeneralAdmissionAvailable,
-  publicUniversity,  // 新規追加
-  setPublicUniversity, // 新規追加
-  privateUniversity,  // 新規追加
-  setPrivateUniversity, // 新規追加
+  publicUniversity,
+  setPublicUniversity,
+  privateUniversity,
+  setPrivateUniversity,
   jLeagueMinimum,
   setJLeagueMinimum,
   yearlyJLeagueFilter,
@@ -48,16 +49,9 @@ const MultiSelectSearchForm = ({
   // 詳細検索オプションの表示状態
   const [showAdvancedOptions, setShowAdvancedOptions] = useState(false);
   
-  // ドロップダウンの表示状態
-  const [dropdowns, setDropdowns] = useState({
-    region: false,
-    league: false,
-    qualification: false,
-    savedSearches: false
-  });
-  
   // 保存済み検索条件の表示状態
   const [savedSearches, setSavedSearches] = useState([]);
+  const [showSavedSearchesDropdown, setShowSavedSearchesDropdown] = useState(false);
   
   // 検索条件保存モーダル
   const [showSaveModal, setShowSaveModal] = useState(false);
@@ -67,7 +61,7 @@ const MultiSelectSearchForm = ({
   const [sliderValue, setSliderValue] = useState(jLeagueMinimum || 0);
   
   // ドロップダウンの外側クリックを検知するためのref
-  const dropdownRef = useRef(null);
+  const savedSearchesRef = useRef(null);
   const saveModalRef = useRef(null);
   
   // ローカルストレージから保存済み検索条件を読み込む
@@ -83,16 +77,11 @@ const MultiSelectSearchForm = ({
     }
   }, []);
   
-  // ドロップダウン外のクリックを検知して閉じる
+  // 保存済み検索ドロップダウン外のクリックを検知して閉じる
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        setDropdowns({
-          region: false,
-          league: false,
-          qualification: false,
-          savedSearches: false
-        });
+      if (savedSearchesRef.current && !savedSearchesRef.current.contains(event.target)) {
+        setShowSavedSearchesDropdown(false);
       }
       
       if (saveModalRef.current && !saveModalRef.current.contains(event.target)) {
@@ -110,17 +99,6 @@ const MultiSelectSearchForm = ({
   useEffect(() => {
     setSliderValue(jLeagueMinimum || 0);
   }, [jLeagueMinimum]);
-  
-  // ドロップダウンのトグル
-  const toggleDropdown = (dropdown) => {
-    setDropdowns(prev => {
-      const updated = Object.keys(prev).reduce((acc, key) => {
-        acc[key] = key === dropdown ? !prev[key] : false;
-        return acc;
-      }, {});
-      return updated;
-    });
-  };
   
   // スライダーの値変更ハンドラー
   const handleSliderChange = (e) => {
@@ -189,8 +167,8 @@ const MultiSelectSearchForm = ({
     setSelectionAvailable(false);
     setDormAvailable(false);
     setGeneralAdmissionAvailable(false);
-    setPublicUniversity(false); // 新規追加
-    setPrivateUniversity(false); // 新規追加
+    setPublicUniversity(false);
+    setPrivateUniversity(false);
     
     // 詳細検索条件もリセット
     setJLeagueMinimum(0);
@@ -220,8 +198,8 @@ const MultiSelectSearchForm = ({
       selectionAvailable,
       dormAvailable,
       generalAdmissionAvailable,
-      publicUniversity, // 新規追加
-      privateUniversity, // 新規追加
+      publicUniversity,
+      privateUniversity,
       jLeagueMinimum,
       yearlyJLeagueFilter,
       memberSizeCategory,
@@ -276,7 +254,7 @@ const MultiSelectSearchForm = ({
     setDormAvailable(conditions.dormAvailable || false);
     setGeneralAdmissionAvailable(conditions.generalAdmissionAvailable || false);
     
-    // 国公立・私立フィルター（新規追加）
+    // 国公立・私立フィルター
     setPublicUniversity(conditions.publicUniversity || false);
     setPrivateUniversity(conditions.privateUniversity || false);
     
@@ -297,7 +275,7 @@ const MultiSelectSearchForm = ({
     setSortDirection(conditions.sortDirection || 'desc');
     
     // ドロップダウンを閉じる
-    setDropdowns(prev => ({...prev, savedSearches: false}));
+    setShowSavedSearchesDropdown(false);
   };
   
   // 保存済み検索条件を削除するハンドラー
@@ -326,8 +304,8 @@ const MultiSelectSearchForm = ({
     if (selectionAvailable) count++;
     if (dormAvailable) count++;
     if (generalAdmissionAvailable) count++;
-    if (publicUniversity) count++; // 新規追加
-    if (privateUniversity) count++; // 新規追加
+    if (publicUniversity) count++;
+    if (privateUniversity) count++;
     
     // 詳細フィルター
     if (jLeagueMinimum > 0) count++;
@@ -410,7 +388,7 @@ const MultiSelectSearchForm = ({
       });
     }
     
-    // 国公立・私立タグ（新規追加）
+    // 国公立・私立タグ
     if (publicUniversity) {
       tags.push({
         id: 'public-university',
@@ -532,10 +510,10 @@ const MultiSelectSearchForm = ({
       case 'generalAdmissionAvailable':
         setGeneralAdmissionAvailable(false);
         break;
-      case 'publicUniversity': // 新規追加
+      case 'publicUniversity':
         setPublicUniversity(false);
         break;
-      case 'privateUniversity': // 新規追加
+      case 'privateUniversity':
         setPrivateUniversity(false);
         break;
       case 'jLeagueMinimum':
@@ -568,42 +546,6 @@ const MultiSelectSearchForm = ({
     }
   };
   
-  // ドロップダウン選択オプションのレンダリング
-  const renderDropdownOptions = (options, current, onChange) => {
-    return (
-      <div className="absolute z-30 mt-1 w-full bg-white border rounded-md shadow-lg max-h-60 overflow-y-auto">
-        <div className="p-2">
-          {options.map((option, index) => (
-            <div 
-              key={index} 
-              className="flex items-center p-2 hover:bg-gray-100 rounded-md cursor-pointer"
-              onClick={() => {
-                // 既に選択されている場合は削除、そうでなければ追加
-                const newSelection = current.includes(option)
-                  ? current.filter(item => item !== option)
-                  : [...current, option];
-                onChange(newSelection);
-              }}
-            >
-              <input
-                type="checkbox"
-                checked={current.includes(option)}
-                onChange={() => {}}
-                className="mr-2 h-4 w-4"
-              />
-              <label className="cursor-pointer flex-grow">
-                {option}
-              </label>
-              {current.includes(option) && (
-                <Check size={16} className="text-green-600" />
-              )}
-            </div>
-          ))}
-        </div>
-      </div>
-    );
-  };
-  
   // タグリスト
   const tags = createTags();
   const activeFiltersCount = getActiveFiltersCount();
@@ -614,17 +556,17 @@ const MultiSelectSearchForm = ({
         <h2 className="text-xl font-semibold">大学サッカー部を探す</h2>
         
         {/* 保存済み検索条件ドロップダウン */}
-        <div className="relative" ref={dropdownRef}>
+        <div className="relative" ref={savedSearchesRef}>
           <button 
             className="flex items-center text-blue-600 hover:text-blue-700 transition-colors"
-            onClick={() => toggleDropdown('savedSearches')}
+            onClick={() => setShowSavedSearchesDropdown(!showSavedSearchesDropdown)}
           >
             <Bookmark size={18} className="mr-1" />
             <span>保存した検索条件</span>
             <ChevronDown size={16} className="ml-1" />
           </button>
           
-          {dropdowns.savedSearches && (
+          {showSavedSearchesDropdown && (
             <div className="absolute right-0 mt-2 w-64 bg-white shadow-lg rounded-md p-2 z-30">
               <div className="max-h-60 overflow-y-auto">
                 {savedSearches.length > 0 ? (
@@ -654,7 +596,7 @@ const MultiSelectSearchForm = ({
                   className="text-green-600 hover:text-green-700 text-sm w-full text-left p-2 flex items-center"
                   onClick={() => {
                     setShowSaveModal(true);
-                    setDropdowns(prev => ({...prev, savedSearches: false}));
+                    setShowSavedSearchesDropdown(false);
                   }}
                 >
                   <Save size={14} className="mr-2" />
@@ -681,52 +623,31 @@ const MultiSelectSearchForm = ({
       {/* ドロップダウンフィルター */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
         {/* 地域選択 */}
-        <div className="relative">
-          <button
-            type="button"
-            className="w-full p-3 border rounded-md flex justify-between items-center bg-white"
-            onClick={() => toggleDropdown('region')}
-          >
-            <span className="flex items-center text-gray-700">
-              <Filter className="text-green-600 mr-2" size={16} />
-              地域を選択 {selectedRegions.length > 0 && `(${selectedRegions.length})`}
-            </span>
-            <ChevronDown className="text-gray-400" size={16} />
-          </button>
-          {dropdowns.region && renderDropdownOptions(regions, selectedRegions, setSelectedRegions)}
-        </div>
+        <MultiSelectDropdown
+          label="地域を選択"
+          icon={<Filter className="text-green-600" size={16} />}
+          options={regions}
+          selectedValues={selectedRegions}
+          onChange={setSelectedRegions}
+        />
         
         {/* リーグ選択 */}
-        <div className="relative">
-          <button
-            type="button"
-            className="w-full p-3 border rounded-md flex justify-between items-center bg-white"
-            onClick={() => toggleDropdown('league')}
-          >
-            <span className="flex items-center text-gray-700">
-              <Trophy className="text-green-600 mr-2" size={16} />
-              カテゴリを選択 {selectedLeagues.length > 0 && `(${selectedLeagues.length})`}
-            </span>
-            <ChevronDown className="text-gray-400" size={16} />
-          </button>
-          {dropdowns.league && renderDropdownOptions(leagues, selectedLeagues, setSelectedLeagues)}
-        </div>
+        <MultiSelectDropdown
+          label="カテゴリを選択"
+          icon={<Trophy className="text-green-600" size={16} />}
+          options={leagues}
+          selectedValues={selectedLeagues}
+          onChange={setSelectedLeagues}
+        />
         
         {/* 資格・学部選択 */}
-        <div className="relative">
-          <button
-            type="button"
-            className="w-full p-3 border rounded-md flex justify-between items-center bg-white"
-            onClick={() => toggleDropdown('qualification')}
-          >
-            <span className="flex items-center text-gray-700">
-              <BookOpen className="text-green-600 mr-2" size={16} />
-              学部で選択 {selectedQualifications.length > 0 && `(${selectedQualifications.length})`}
-            </span>
-            <ChevronDown className="text-gray-400" size={16} />
-          </button>
-          {dropdowns.qualification && renderDropdownOptions(availableQualifications, selectedQualifications, setSelectedQualifications)}
-        </div>
+        <MultiSelectDropdown
+          label="学部で選択"
+          icon={<BookOpen className="text-green-600" size={16} />}
+          options={availableQualifications}
+          selectedValues={selectedQualifications}
+          onChange={setSelectedQualifications}
+        />
       </div>
       
       {/* チェックボックスフィルター */}
@@ -771,7 +692,7 @@ const MultiSelectSearchForm = ({
           一般入部可
         </label>
 
-        {/* 国公立・私立大学チェックボックス（新規追加） */}
+        {/* 国公立・私立大学チェックボックス */}
         <label className="flex items-center cursor-pointer">
           <input 
             type="checkbox" 
@@ -1085,7 +1006,7 @@ const MultiSelectSearchForm = ({
         >
           教員免許取得可能
         </button>
-        {/* 国公立・私立大学ボタン（新規追加） */}
+        {/* 国公立・私立大学ボタン */}
         <button 
           type="button"
           className="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-sm hover:bg-blue-200"
