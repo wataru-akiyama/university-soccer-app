@@ -35,10 +35,10 @@ const App = () => {
     setDormAvailable,
     generalAdmissionAvailable,
     setGeneralAdmissionAvailable,
-    publicUniversity,  // 新規追加
-    setPublicUniversity, // 新規追加
-    privateUniversity,  // 新規追加
-    setPrivateUniversity, // 新規追加
+    publicUniversity,
+    setPublicUniversity,
+    privateUniversity,
+    setPrivateUniversity,
     jLeagueMinimum,
     setJLeagueMinimum,
     yearlyJLeagueFilter,
@@ -60,18 +60,27 @@ const App = () => {
     setCoachBackgroundFilter,
   } = useUniversitySearch(universities);
 
+  const [currentView, setCurrentView] = useState('list'); // 'list', 'details', 'compare', 'favorites', 'recommendation', 'portfolio'
   const [selectedUniversity, setSelectedUniversity] = useState(null);
   const [compareList, setCompareList] = useState([]);
-  const [showCompare, setShowCompare] = useState(false);
   const [favoriteUniversities, setFavoriteUniversities] = useState([]);
-  const [showFavorites, setShowFavorites] = useState(false);
-  const [showRecommendation, setShowRecommendation] = useState(false);
   const [showWizard, setShowWizard] = useState(false);// 最初は非表示にする
-  const [showPlayerPortfolio, setShowPlayerPortfolio] = useState(false);
-  const [currentView, setCurrentView] = useState('list'); // 'list', 'details', 'compare', 'favorites', 'recommendation', 'portfolio'
-  // テンプレート式ポートフォリオ機能のための新しい状態
   const [playerProfileData, setPlayerProfileData] = useState(userProfile);
-  const [showTemplatePortfolio, setShowTemplatePortfolio] = useState(false);
+
+  const changeView = (viewName) => {
+    setCurrentView(viewName);
+  };
+
+  // 大学の詳細表示
+  const viewUniversityDetails = (university) => {
+    setSelectedUniversity(university);
+    changeView('details');
+  };
+
+  // ウィザード表示のトグル関数
+  const toggleWizard = () => {
+    setShowWizard(!showWizard);
+  };
 
   // プロフィール保存ハンドラ
   const handleSaveProfile = (profileData) => {
@@ -79,7 +88,7 @@ const App = () => {
     // ローカルストレージに保存（オプション）
     localStorage.setItem('playerProfile', JSON.stringify(profileData));
     // 保存後に既存のポートフォリオページに遷移
-    setCurrentView('portfolio');
+    changeView('portfolio');
     // 保存成功メッセージ
     alert("ポートフォリオが保存されました！");
   };
@@ -114,12 +123,6 @@ const App = () => {
       localStorage.setItem('favoriteUniversities', JSON.stringify(favoriteIds));
     }
   }, [favoriteUniversities]);
-
-  // 大学の詳細表示
-  const viewUniversityDetails = (university) => {
-    setSelectedUniversity(university);
-    setCurrentView('details');
-  };
 
   // トップページに戻る
   const backToList = () => {
@@ -178,11 +181,6 @@ const App = () => {
     setCurrentView('recommendation');
   };
 
-  // ウィザード表示のトグル関数
-  const toggleWizard = () => {
-    setShowWizard(!showWizard);
-  };
-
   // ポートフォリオ表示関数を修正 - 常に既存のポートフォリオに遷移
   const togglePlayerPortfolio = () => {
     // 直接既存のポートフォリオページに遷移
@@ -233,7 +231,7 @@ const App = () => {
         return (
           <CompareView 
             universities={compareList} 
-            onBack={backToList} 
+            onBack={() => changeView('list')}  
             onRemove={removeFromCompare} 
           />
         );
@@ -241,7 +239,7 @@ const App = () => {
         return (
           <MyCareerPlan 
             favoriteUniversities={favoriteUniversities}
-            onBack={backToList}
+            onBack={() => changeView('list')}
             onRemoveFromFavorites={removeFromFavorites}
             onReorderFavorites={reorderFavorites}
             onViewDetails={viewUniversityDetails}
@@ -252,6 +250,7 @@ const App = () => {
         return (
           <SimpleRecommendationWizard
             universities={universities}
+            onBack={() => changeView('list')}
             onViewDetails={viewUniversityDetails}
           />
         );
@@ -261,7 +260,7 @@ const App = () => {
           <>
             {/* 1. ポートフォリオバナー */}
             <PortfolioBanner
-              onShowPortfolio={showTemplatePortfolioCreator}
+              onShowPortfolio={() => changeView('templatePortfolio')}
               showTemplateVersion={true} // テンプレート版を使用する設定
             />
             
@@ -301,7 +300,7 @@ const App = () => {
                   <div className="mt-4 md:mt-0 md:ml-5 relative z-10">
                     <button 
                       className="bg-white text-orange-600 px-5 py-3 rounded-lg font-bold shadow-md hover:bg-orange-50 transition-colors flex items-center cursor-pointer"
-                      onClick={toggleRecommendation}
+                      onClick={() => changeView('recommendation')}
                       type="button"
                       style={{ position: 'relative', zIndex: 20 }}
                     >
@@ -443,11 +442,11 @@ const App = () => {
       <ResponsiveHeader 
         favoriteUniversities={favoriteUniversities}
         compareList={compareList}
-        onShowPortfolio={togglePlayerPortfolio}
-        onShowRecommendation={toggleRecommendation}
-        onShowFavorites={showFavoritesView}
-        onShowCompare={showCompareView}
-        onBackToList={backToList}
+        onShowPortfolio={() => changeView('portfolio')}
+        onShowRecommendation={() => changeView('recommendation')}
+        onShowFavorites={() => changeView('favorites')}
+        onShowCompare={() => changeView('compare')}
+        onBackToList={() => changeView('list')}
       />
 
       {/* メインコンテンツ */}

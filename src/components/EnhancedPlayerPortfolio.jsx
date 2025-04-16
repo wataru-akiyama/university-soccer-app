@@ -22,7 +22,11 @@ import {
     Instagram, 
     Linkedin, 
     Link,
-    FileEdit
+    FileEdit,
+    Heart,
+    Upload,
+    ChevronUp,
+    ChevronDown
 } from 'lucide-react';
 
 // メインコンポーネント
@@ -235,24 +239,6 @@ const EnhancedPlayerPortfolio = ({
     </div>
   );
 };
-
-// Heart コンポーネント（必要であれば追加）
-const Heart = ({ size, className }) => (
-    <svg 
-      xmlns="http://www.w3.org/2000/svg" 
-      width={size} 
-      height={size} 
-      viewBox="0 0 24 24" 
-      fill="none" 
-      stroke="currentColor" 
-      strokeWidth="2" 
-      strokeLinecap="round" 
-      strokeLinejoin="round" 
-      className={className}
-    >
-      <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
-    </svg>
-  );
 
 // 共有モーダルコンポーネント
 const ShareModal = ({ onClose, player }) => {
@@ -949,61 +935,6 @@ const PlayerCardTab = ({ player, editMode }) => {
     </div>
   );
 };
-
-// アップロードアイコン
-const Upload = ({ size, className }) => (
-  <svg 
-    xmlns="http://www.w3.org/2000/svg" 
-    width={size} 
-    height={size} 
-    viewBox="0 0 24 24" 
-    fill="none" 
-    stroke="currentColor" 
-    strokeWidth="2" 
-    strokeLinecap="round" 
-    strokeLinejoin="round" 
-    className={className}
-  >
-    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-    <polyline points="17 8 12 3 7 8" />
-    <line x1="12" y1="3" x2="12" y2="15" />
-  </svg>
-);
-
-// 上下の矢印アイコン
-const ChevronUp = ({ size, className }) => (
-  <svg 
-    xmlns="http://www.w3.org/2000/svg" 
-    width={size} 
-    height={size} 
-    viewBox="0 0 24 24" 
-    fill="none" 
-    stroke="currentColor" 
-    strokeWidth="2" 
-    strokeLinecap="round" 
-    strokeLinejoin="round" 
-    className={className}
-  >
-    <polyline points="18 15 12 9 6 15" />
-  </svg>
-);
-
-const ChevronDown = ({ size, className }) => (
-  <svg 
-    xmlns="http://www.w3.org/2000/svg" 
-    width={size} 
-    height={size} 
-    viewBox="0 0 24 24" 
-    fill="none" 
-    stroke="currentColor" 
-    strokeWidth="2" 
-    strokeLinecap="round" 
-    strokeLinejoin="round" 
-    className={className}
-  >
-    <polyline points="6 9 12 15 18 9" />
-  </svg>
-);
 
 // 志望大学タブのコンテンツ
 const UniversitiesTab = ({ 
