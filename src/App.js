@@ -1,83 +1,36 @@
-import soccerLogo from './assets/soccer-logo.svg';
+// App.js
 import React, { useState, useEffect } from 'react';
-import { ChevronRight, Heart, Zap, UserCircle, Trophy, BookOpen, X } from 'lucide-react';
+import { Trophy, BookOpen } from 'lucide-react';
 import universities from './data/universities';
-import MultiSelectSearchForm from './components/MultiSelectSearchForm';
-import UniversityList from './components/UniversityList';
-import CompareView from './components/CompareView';
-import MyCareerPlan from './components/MyCareerPlan';
-import SimpleRecommendationWizard from './components/SimpleRecommendationWizard';
-import useUniversitySearch from './hooks/useUniversitySearch';
-import EnhancedPlayerPortfolio from './components/EnhancedPlayerPortfolio';
-import EnhancedUniversityDetails from './components/EnhancedUniversityDetails';
-import PortfolioBanner from './components/PortfolioBanner';
+import ViewManager from './components/ViewManager';
 import ResponsiveHeader from './components/ResponsiveHeader';
-import StepSearchWizard from './components/StepSearchWizard';
-import TemplatePortfolioCreator from './components/TemplatePortfolioCreator';
-import userProfile from './data/userProfile'; // 既存のデータファイル
+import useUniversitySearch from './hooks/useUniversitySearch';
+import userProfile from './data/userProfile';
 
 const App = () => {
   // カスタムフックを使用して検索ロジックを実装
-  const {
-    searchQuery,
-    setSearchQuery,
-    selectedRegions,
-    setSelectedRegions,
-    selectedLeagues,
-    setSelectedLeagues,
-    selectedQualifications,
-    setSelectedQualifications,
-    sportsRecommend,
-    setSportsRecommend,
-    selectionAvailable,
-    setSelectionAvailable,
-    dormAvailable,
-    setDormAvailable,
-    generalAdmissionAvailable,
-    setGeneralAdmissionAvailable,
-    publicUniversity,
-    setPublicUniversity,
-    privateUniversity,
-    setPrivateUniversity,
-    jLeagueMinimum,
-    setJLeagueMinimum,
-    yearlyJLeagueFilter,
-    setYearlyJLeagueFilter,
-    memberSizeCategory,
-    setMemberSizeCategory,
-    maxGradeRequirement,
-    setMaxGradeRequirement,
-    densoCupMinimum,
-    setDensoCupMinimum,
-    sortOption,
-    setSortOption,
-    sortDirection,
-    setSortDirection,
-    filteredUniversities,
-    newMemberSizeCategory,
-    setNewMemberSizeCategory,
-    coachBackgroundFilter,
-    setCoachBackgroundFilter,
-  } = useUniversitySearch(universities);
-
-  const [currentView, setCurrentView] = useState('list'); // 'list', 'details', 'compare', 'favorites', 'recommendation', 'portfolio'
+  const searchState = useUniversitySearch(universities);
+  
+  // 主要な表示状態を一元管理
+  const [currentView, setCurrentView] = useState('list');
   const [selectedUniversity, setSelectedUniversity] = useState(null);
   const [compareList, setCompareList] = useState([]);
   const [favoriteUniversities, setFavoriteUniversities] = useState([]);
-  const [showWizard, setShowWizard] = useState(false);// 最初は非表示にする
+  const [showWizard, setShowWizard] = useState(false);
   const [playerProfileData, setPlayerProfileData] = useState(userProfile);
 
+  // 統一されたビュー切り替え関数
   const changeView = (viewName) => {
     setCurrentView(viewName);
   };
 
-  // 大学の詳細表示
+  // 大学詳細表示ハンドラ
   const viewUniversityDetails = (university) => {
     setSelectedUniversity(university);
     changeView('details');
   };
 
-  // ウィザード表示のトグル関数
+  // ウィザード表示のトグル
   const toggleWizard = () => {
     setShowWizard(!showWizard);
   };
@@ -85,11 +38,8 @@ const App = () => {
   // プロフィール保存ハンドラ
   const handleSaveProfile = (profileData) => {
     setPlayerProfileData(profileData);
-    // ローカルストレージに保存（オプション）
     localStorage.setItem('playerProfile', JSON.stringify(profileData));
-    // 保存後に既存のポートフォリオページに遷移
     changeView('portfolio');
-    // 保存成功メッセージ
     alert("ポートフォリオが保存されました！");
   };
 
@@ -104,7 +54,7 @@ const App = () => {
       setFavoriteUniversities(favUniversities);
     }
 
-    // プロフィールデータの読み込み（新規追加）
+    // プロフィールデータの読み込み
     const savedProfile = localStorage.getItem('playerProfile');
     if (savedProfile) {
       try {
@@ -124,12 +74,6 @@ const App = () => {
     }
   }, [favoriteUniversities]);
 
-  // トップページに戻る
-  const backToList = () => {
-    setSelectedUniversity(null);
-    setCurrentView('list');
-  };
-
   // 比較リストに追加
   const addToCompare = (university) => {
     if (!compareList.some(uni => uni.id === university.id)) {
@@ -146,11 +90,6 @@ const App = () => {
     setCompareList(compareList.filter(uni => uni.id !== universityId));
   };
 
-  // 比較画面の表示
-  const showCompareView = () => {
-    setCurrentView('compare');
-  };
-
   // お気に入りに追加
   const addToFavorites = (university) => {
     if (!favoriteUniversities.some(uni => uni.id === university.id)) {
@@ -163,11 +102,6 @@ const App = () => {
     setFavoriteUniversities(favoriteUniversities.filter(uni => uni.id !== universityId));
   };
 
-  // お気に入り画面の表示
-  const showFavoritesView = () => {
-    setCurrentView('favorites');
-  };
-
   // お気に入りの順序変更
   const reorderFavorites = (startIndex, endIndex) => {
     const result = Array.from(favoriteUniversities);
@@ -176,264 +110,29 @@ const App = () => {
     setFavoriteUniversities(result);
   };
 
-  // 推薦ウィザード表示のトグル
-  const toggleRecommendation = () => {
-    setCurrentView('recommendation');
+  // イベントハンドラをまとめたオブジェクト
+  const handlers = {
+    changeView,
+    viewUniversityDetails,
+    toggleWizard,
+    handleSaveProfile,
+    addToCompare,
+    removeFromCompare,
+    addToFavorites,
+    removeFromFavorites,
+    reorderFavorites
   };
 
-  // ポートフォリオ表示関数を修正 - 常に既存のポートフォリオに遷移
-  const togglePlayerPortfolio = () => {
-    // 直接既存のポートフォリオページに遷移
-    setCurrentView('portfolio');
-  };
-  
-  // テンプレート式ポートフォリオ表示ハンドラ
-  const showTemplatePortfolioCreator = () => {
-    setCurrentView('templatePortfolio');
-  };
-
-  // 現在のビューに基づいて表示するコンポーネントを決定
-  const renderCurrentView = () => {
-    switch (currentView) {
-      case 'portfolio':
-        return (
-          <EnhancedPlayerPortfolio 
-            onBack={backToList}
-            favoriteUniversities={favoriteUniversities}
-            onShowRecommendation={toggleRecommendation}
-            onShowFavorites={showFavoritesView}
-            onShowCompare={showCompareView}
-            onEditWithTemplate={showTemplatePortfolioCreator} // 新しいプロップスを追加
-            userProfile={playerProfileData} // プロフィールデータを渡す
-          />
-        );
-      case 'templatePortfolio':
-        return (
-          <TemplatePortfolioCreator
-            onBack={backToList}
-            userProfile={playerProfileData}
-            onSaveProfile={handleSaveProfile}
-            favoriteUniversities={favoriteUniversities}
-          />
-        );
-      case 'details':
-        return (
-          <EnhancedUniversityDetails 
-            university={selectedUniversity} 
-            onBack={backToList} 
-            onAddToCompare={addToCompare}
-            onAddToFavorites={addToFavorites}
-            isInCompareList={compareList.some(uni => uni && selectedUniversity && uni.id === selectedUniversity.id)}
-            isInFavorites={favoriteUniversities.some(uni => uni && selectedUniversity && uni.id === selectedUniversity.id)}
-          />
-        );
-      case 'compare':
-        return (
-          <CompareView 
-            universities={compareList} 
-            onBack={() => changeView('list')}  
-            onRemove={removeFromCompare} 
-          />
-        );
-      case 'favorites':
-        return (
-          <MyCareerPlan 
-            favoriteUniversities={favoriteUniversities}
-            onBack={() => changeView('list')}
-            onRemoveFromFavorites={removeFromFavorites}
-            onReorderFavorites={reorderFavorites}
-            onViewDetails={viewUniversityDetails}
-            onShowPortfolio={togglePlayerPortfolio}
-          />
-        );
-      case 'recommendation':
-        return (
-          <SimpleRecommendationWizard
-            universities={universities}
-            onBack={() => changeView('list')}
-            onViewDetails={viewUniversityDetails}
-          />
-        );
-      case 'list':
-      default:
-        return (
-          <>
-            {/* 1. ポートフォリオバナー */}
-            <PortfolioBanner
-              onShowPortfolio={() => changeView('templatePortfolio')}
-              showTemplateVersion={true} // テンプレート版を使用する設定
-            />
-            
-            {/* 2. 推薦ウィザードバナー */}
-            <div className="bg-gradient-to-r from-yellow-500 to-orange-500 rounded-xl shadow-md overflow-hidden mb-6">
-              <div className="relative p-5">
-                {/* 背景装飾 */}
-                <div className="absolute right-0 top-0 bottom-0 opacity-10">
-                  <div className="h-full w-64 bg-white rounded-full blur-3xl"></div>
-                </div>
-                
-                <div className="flex flex-col md:flex-row items-center md:items-start">
-                  {/* アイコン部分 */}
-                  <div className="bg-white rounded-full p-3 shadow-md mb-4 md:mb-0 md:mr-5">
-                    <Zap size={32} className="text-orange-600" />
-                  </div>
-                  
-                  {/* テキスト部分 */}
-                  <div className="text-center md:text-left md:flex-1">
-                    <h3 className="text-xl font-bold text-white mb-1">あなたにぴったりの大学サッカー部を見つけよう！</h3>
-                    <p className="text-yellow-100 mb-4">サッカーに対する志向と学びたいことから最適な大学を提案します</p>
-                    
-                    {/* 特徴ポイント */}
-                    <div className="flex flex-wrap justify-center md:justify-start gap-4 mb-3">
-                      <div className="flex items-center text-white text-sm">
-                        <Trophy size={16} className="mr-1" />
-                        <span>実績に基づく大学提案</span>
-                      </div>
-                      <div className="flex items-center text-white text-sm">
-                        <BookOpen size={16} className="mr-1" />
-                        <span>学びたいことから診断</span>
-                      </div>
-                    </div>
-                  </div>
-                  
-                  {/* ボタン - z-indexを高くして最前面に表示 */}
-                  <div className="mt-4 md:mt-0 md:ml-5 relative z-10">
-                    <button 
-                      className="bg-white text-orange-600 px-5 py-3 rounded-lg font-bold shadow-md hover:bg-orange-50 transition-colors flex items-center cursor-pointer"
-                      onClick={() => changeView('recommendation')}
-                      type="button"
-                      style={{ position: 'relative', zIndex: 20 }}
-                    >
-                      診断してみる
-                      <ChevronRight size={18} className="ml-1" />
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* ステップ式検索ウィザード - show状態の時のみ表示 */}
-            {showWizard && (
-              <StepSearchWizard
-                onViewDetails={viewUniversityDetails}
-                universities={universities}
-                setSearchQuery={setSearchQuery}
-                setSelectedRegions={setSelectedRegions}
-                setSelectedLeagues={setSelectedLeagues}
-                setSelectedQualifications={setSelectedQualifications}
-                setSportsRecommend={setSportsRecommend}
-                setSelectionAvailable={setSelectionAvailable}
-                setDormAvailable={setDormAvailable}
-                setJLeagueMinimum={setJLeagueMinimum}
-                useUniversitySearchInstance={{
-                  searchQuery,
-                  selectedRegions,
-                  selectedLeagues,
-                  selectedQualifications,
-                  sportsRecommend,
-                  selectionAvailable,
-                  dormAvailable,
-                  generalAdmissionAvailable,
-                  jLeagueMinimum,
-                  yearlyJLeagueFilter,
-                  memberSizeCategory,
-                  newMemberSizeCategory,
-                  maxGradeRequirement,
-                  coachBackgroundFilter,
-                  densoCupMinimum,
-                  sortOption,
-                  sortDirection
-                }}
-              />
-            )}
-
-            {/* 検索フォームの上に小さなボタンを追加して、ウィザードをトグルできるようにする */}
-            <div className="flex justify-center mb-4">
-              <button
-                className={`flex items-center ${showWizard ? 'bg-gray-200 text-gray-700' : 'bg-green-600 text-white'} px-4 py-2 rounded-lg hover:bg-green-700 hover:text-white transition-colors shadow-sm`}
-                onClick={toggleWizard}
-              >
-                {showWizard ? (
-                  <>
-                    <X size={16} className="mr-1" />
-                    ウィザードを閉じる
-                  </>
-                ) : (
-                  <>
-                    <Zap size={16} className="mr-1" />
-                    かんたん検索ウィザード
-                  </>
-                )}
-              </button>
-            </div>
-
-            {/* 3. 検索フォーム */}
-            <MultiSelectSearchForm
-              searchQuery={searchQuery}
-              setSearchQuery={setSearchQuery}
-              selectedRegions={selectedRegions}
-              setSelectedRegions={setSelectedRegions}
-              selectedLeagues={selectedLeagues}
-              setSelectedLeagues={setSelectedLeagues}
-              selectedQualifications={selectedQualifications}
-              setSelectedQualifications={setSelectedQualifications}
-              sportsRecommend={sportsRecommend}
-              setSportsRecommend={setSportsRecommend}
-              selectionAvailable={selectionAvailable}
-              setSelectionAvailable={setSelectionAvailable}
-              dormAvailable={dormAvailable}
-              setDormAvailable={setDormAvailable}
-              generalAdmissionAvailable={generalAdmissionAvailable}
-              setGeneralAdmissionAvailable={setGeneralAdmissionAvailable}
-              publicUniversity={publicUniversity}  // 新規追加
-              setPublicUniversity={setPublicUniversity} // 新規追加
-              privateUniversity={privateUniversity}  // 新規追加
-              setPrivateUniversity={setPrivateUniversity} // 新規追加
-              jLeagueMinimum={jLeagueMinimum}
-              setJLeagueMinimum={setJLeagueMinimum}
-              yearlyJLeagueFilter={yearlyJLeagueFilter}
-              setYearlyJLeagueFilter={setYearlyJLeagueFilter}
-              memberSizeCategory={memberSizeCategory}
-              setMemberSizeCategory={setMemberSizeCategory}
-              newMemberSizeCategory={newMemberSizeCategory}
-              setNewMemberSizeCategory={setNewMemberSizeCategory}
-              maxGradeRequirement={maxGradeRequirement}
-              setMaxGradeRequirement={setMaxGradeRequirement}
-              coachBackgroundFilter={coachBackgroundFilter}
-              setCoachBackgroundFilter={setCoachBackgroundFilter}
-              densoCupMinimum={densoCupMinimum}
-              setDensoCupMinimum={setDensoCupMinimum}
-              sortOption={sortOption}
-              setSortOption={setSortOption}
-              sortDirection={sortDirection}
-              setSortDirection={setSortDirection}
-            />
-            
-            {/* 4. 大学リスト */}
-            <UniversityList
-              filteredUniversities={filteredUniversities}
-              allUniversities={universities}
-              sortOption={sortOption}
-              setSortOption={setSortOption}
-              sortDirection={sortDirection}
-              setSortDirection={setSortDirection}
-              onViewDetails={viewUniversityDetails}
-              compareList={compareList}
-              onAddToCompare={addToCompare}
-              onRemoveFromCompare={removeFromCompare}
-              favoriteUniversities={favoriteUniversities}
-              onAddToFavorites={addToFavorites}
-              onRemoveFromFavorites={removeFromFavorites}
-              selectedRegion={selectedRegions}
-              sportsRecommend={sportsRecommend}
-              dormAvailable={dormAvailable}
-              selectionAvailable={selectionAvailable}
-              selectedLeague={selectedLeagues}
-              selectedQualification={selectedQualifications}
-            />
-          </>
-        );
-    }
+  // ViewManagerに渡すデータをまとめたオブジェクト
+  const viewData = {
+    universities,
+    selectedUniversity,
+    compareList,
+    favoriteUniversities,
+    playerProfileData,
+    showWizard,
+    searchState,
+    filteredUniversities: searchState.filteredUniversities
   };
 
   return (
@@ -451,7 +150,11 @@ const App = () => {
 
       {/* メインコンテンツ */}
       <main className="container mx-auto p-4">
-        {renderCurrentView()}
+        <ViewManager 
+          currentView={currentView}
+          data={viewData}
+          handlers={handlers}
+        />
       </main>
       
       {/* フッター */}
