@@ -137,15 +137,12 @@ const App = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* ヘッダー */}
+      {/* ヘッダー - ResponsiveHeaderに現在のビューとビュー切り替え関数を渡す */}
       <ResponsiveHeader 
+        currentView={currentView}
+        onChangeView={changeView}
         favoriteUniversities={favoriteUniversities}
         compareList={compareList}
-        onShowPortfolio={() => changeView('portfolio')}
-        onShowRecommendation={() => changeView('recommendation')}
-        onShowFavorites={() => changeView('favorites')}
-        onShowCompare={() => changeView('compare')}
-        onBackToList={() => changeView('list')}
       />
 
       {/* メインコンテンツ */}

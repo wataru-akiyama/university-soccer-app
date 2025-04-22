@@ -7,6 +7,7 @@ import CompareView from './CompareView';
 import MyCareerPlan from './MyCareerPlan';
 import SimpleRecommendationWizard from './SimpleRecommendationWizard';
 import HomeView from './HomeView';
+import AgentView from './AgentView'; // 新しいAgentViewをインポート
 
 /**
  * ViewManager - アプリケーションの現在のビューを管理するコンポーネント
@@ -82,6 +83,17 @@ const ViewManager = ({
       return (
         <SimpleRecommendationWizard
           universities={data.universities}
+          onViewDetails={handlers.viewUniversityDetails}
+        />
+      );
+    
+    // 新規追加: エージェント(代理人)ビュー
+    case 'agent':
+      return (
+        <AgentView
+          userProfile={data.playerProfileData}
+          universities={data.universities}
+          favoriteUniversities={data.favoriteUniversities}
           onViewDetails={handlers.viewUniversityDetails}
         />
       );

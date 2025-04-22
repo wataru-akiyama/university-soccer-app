@@ -1,22 +1,20 @@
+// src/components/ResponsiveHeader.jsx
 import React, { useState } from 'react';
-import { Menu, X, UserCircle, Zap, Heart, BarChart2 } from 'lucide-react';
-import soccerLogo from '../assets/soccer-logo.svg'; // パスを適切に調整してください
+import { Menu, X, UserCircle, Zap, Heart, Search, BarChart2 } from 'lucide-react';
+import soccerLogo from '../assets/soccer-logo.svg';
 
 const ResponsiveHeader = ({ 
+  currentView,
+  onChangeView,
   favoriteUniversities, 
-  compareList, 
-  onShowPortfolio, 
-  onShowRecommendation, 
-  onShowFavorites, 
-  onShowCompare,
-  onBackToList
+  compareList
 }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   
   // ナビゲーション項目のクリック処理
-  const handleNavClick = (handler) => {
+  const handleNavClick = (viewName) => {
     setIsMenuOpen(false); // メニューを閉じる
-    if (handler) handler();
+    onChangeView(viewName);
   };
 
   return (
@@ -27,7 +25,7 @@ const ResponsiveHeader = ({
           {/* ロゴとタイトル */}
           <div 
             className="flex items-center cursor-pointer" 
-            onClick={() => handleNavClick(onBackToList)}
+            onClick={() => handleNavClick('list')}
           >
             <img 
               src={soccerLogo} 
@@ -37,41 +35,65 @@ const ResponsiveHeader = ({
             <h1 className="text-xl font-bold hidden md:block">大学サッカー部お品書き</h1>
           </div>
           
-          {/* デスクトップビュー: メインナビゲーション */}
-          <div className="hidden md:flex items-center space-x-3">
+          {/* デスクトップビュー: メインナビゲーション（新しいタブ構造） */}
+          <div className="hidden md:flex items-center space-x-1">
             <button 
-                className="px-4 py-2 rounded-lg flex items-center bg-white text-green-700 shadow-sm hover:bg-green-50 transition-colors"
-                onClick={() => handleNavClick(onShowPortfolio)}
+              className={`px-4 py-2 rounded-lg flex items-center transition-colors ${
+                currentView === 'list' || currentView === 'details' ? 'bg-white text-green-700' : 'bg-white bg-opacity-10 hover:bg-opacity-20'
+              }`}
+              onClick={() => handleNavClick('list')}
             >
-                <UserCircle size={18} className="mr-2" />
-                <span>マイポートフォリオ</span>
+              <Search size={18} className="mr-2" />
+              <span>大学検索</span>
             </button>
             
             <button 
-              className="px-4 py-2 rounded-lg flex items-center bg-white bg-opacity-10 hover:bg-opacity-20 transition-colors"
-              onClick={() => handleNavClick(onShowRecommendation)}
+              className={`px-4 py-2 rounded-lg flex items-center transition-colors ${
+                currentView === 'portfolio' || currentView === 'templatePortfolio' ? 'bg-white text-green-700' : 'bg-white bg-opacity-10 hover:bg-opacity-20'
+              }`}
+              onClick={() => handleNavClick('portfolio')}
+            >
+              <UserCircle size={18} className="mr-2" />
+              <span>ポートフォリオ</span>
+            </button>
+            
+            <button 
+              className={`px-4 py-2 rounded-lg flex items-center transition-colors ${
+                currentView === 'agent' ? 'bg-white text-green-700' : 'bg-white bg-opacity-10 hover:bg-opacity-20'
+              }`}
+              onClick={() => handleNavClick('agent')}
             >
               <Zap size={18} className="mr-2" />
-              <span>あなたにぴったりの大学</span>
+              <span>マイエージェント</span>
+              {/* 新着情報を示す通知バッジ（仮の表示） */}
+              <div className="ml-2 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                2
+              </div>
             </button>
             
+            {/* サブメニュー: お気に入り */}
             {favoriteUniversities.length > 0 && (
               <button 
-                className="px-4 py-2 rounded-lg flex items-center bg-white bg-opacity-10 hover:bg-opacity-20 transition-colors"
-                onClick={() => handleNavClick(onShowFavorites)}
+                className={`px-4 py-2 rounded-lg flex items-center transition-colors ${
+                  currentView === 'favorites' ? 'bg-white text-green-700' : 'bg-white bg-opacity-10 hover:bg-opacity-20'
+                }`}
+                onClick={() => handleNavClick('favorites')}
               >
                 <Heart size={18} className="mr-2" />
-                <span>私の進路プラン</span>
+                <span>進路プラン</span>
                 <div className="ml-2 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
                   {favoriteUniversities.length}
                 </div>
               </button>
             )}
             
+            {/* サブメニュー: 比較リスト */}
             {compareList.length > 0 && (
               <button 
-                className="px-4 py-2 rounded-lg flex items-center bg-white bg-opacity-10 hover:bg-opacity-20 transition-colors"
-                onClick={() => handleNavClick(onShowCompare)}
+                className={`px-4 py-2 rounded-lg flex items-center transition-colors ${
+                  currentView === 'compare' ? 'bg-white text-green-700' : 'bg-white bg-opacity-10 hover:bg-opacity-20'
+                }`}
+                onClick={() => handleNavClick('compare')}
               >
                 <BarChart2 size={18} className="mr-2" />
                 <span>比較リスト</span>
@@ -84,13 +106,39 @@ const ResponsiveHeader = ({
           
           {/* モバイルビュー: アクションボタン */}
           <div className="flex md:hidden items-center space-x-2">
+            {/* タブナビゲーション (モバイル用コンパクト表示) */}
+            <button 
+              className={`p-2 rounded-full ${currentView === 'list' || currentView === 'details' ? 'bg-white text-green-700' : ''}`}
+              onClick={() => handleNavClick('list')}
+            >
+              <Search size={20} />
+            </button>
+            
+            <button 
+              className={`p-2 rounded-full ${currentView === 'portfolio' || currentView === 'templatePortfolio' ? 'bg-white text-green-700' : ''}`}
+              onClick={() => handleNavClick('portfolio')}
+            >
+              <UserCircle size={20} />
+            </button>
+            
+            <button 
+              className={`p-2 rounded-full ${currentView === 'agent' ? 'bg-white text-green-700' : ''} relative`}
+              onClick={() => handleNavClick('agent')}
+            >
+              <Zap size={20} />
+              {/* 通知バッジ */}
+              <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                2
+              </span>
+            </button>
+            
             {/* お気に入りと比較のカウンターを常に表示 */}
             {favoriteUniversities.length > 0 && (
               <button 
-                className="p-2 relative"
-                onClick={() => handleNavClick(onShowFavorites)}
+                className={`p-2 relative ${currentView === 'favorites' ? 'bg-white text-green-700 rounded-full' : ''}`}
+                onClick={() => handleNavClick('favorites')}
               >
-                <Heart size={24} />
+                <Heart size={20} />
                 <div className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
                   {favoriteUniversities.length}
                 </div>
@@ -99,10 +147,10 @@ const ResponsiveHeader = ({
             
             {compareList.length > 0 && (
               <button 
-                className="p-2 relative"
-                onClick={() => handleNavClick(onShowCompare)}
+                className={`p-2 relative ${currentView === 'compare' ? 'bg-white text-green-700 rounded-full' : ''}`}
+                onClick={() => handleNavClick('compare')}
               >
-                <BarChart2 size={24} />
+                <BarChart2 size={20} />
                 <div className="absolute -top-1 -right-1 bg-green-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
                   {compareList.length}
                 </div>
@@ -125,26 +173,37 @@ const ResponsiveHeader = ({
             <div className="space-y-2">
               <button 
                 className="w-full px-3 py-3 rounded-md flex items-center hover:bg-green-700 transition-colors"
-                onClick={() => handleNavClick(onShowPortfolio)}
+                onClick={() => handleNavClick('list')}
+              >
+                <Search size={20} className="mr-3" />
+                <span className="font-medium">大学検索</span>
+              </button>
+              
+              <button 
+                className="w-full px-3 py-3 rounded-md flex items-center hover:bg-green-700 transition-colors"
+                onClick={() => handleNavClick('portfolio')}
               >
                 <UserCircle size={20} className="mr-3" />
-                <span className="font-medium">マイポートフォリオ</span>
+                <span className="font-medium">ポートフォリオ</span>
               </button>
               
               <button 
                 className="w-full px-3 py-3 rounded-md flex items-center hover:bg-green-700 transition-colors"
-                onClick={() => handleNavClick(onShowRecommendation)}
+                onClick={() => handleNavClick('agent')}
               >
                 <Zap size={20} className="mr-3" />
-                <span className="font-medium">あなたにぴったりの大学</span>
+                <span className="font-medium">マイエージェント</span>
+                <div className="ml-auto bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                  2
+                </div>
               </button>
               
               <button 
                 className="w-full px-3 py-3 rounded-md flex items-center hover:bg-green-700 transition-colors"
-                onClick={() => handleNavClick(onShowFavorites)}
+                onClick={() => handleNavClick('favorites')}
               >
                 <Heart size={20} className="mr-3" />
-                <span className="font-medium">私の進路プラン</span>
+                <span className="font-medium">進路プラン</span>
                 {favoriteUniversities.length > 0 && (
                   <div className="ml-auto bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
                     {favoriteUniversities.length}
@@ -154,7 +213,7 @@ const ResponsiveHeader = ({
               
               <button 
                 className="w-full px-3 py-3 rounded-md flex items-center hover:bg-green-700 transition-colors"
-                onClick={() => handleNavClick(onShowCompare)}
+                onClick={() => handleNavClick('compare')}
               >
                 <BarChart2 size={20} className="mr-3" />
                 <span className="font-medium">比較リスト</span>
