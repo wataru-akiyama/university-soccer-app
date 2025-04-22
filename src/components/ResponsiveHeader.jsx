@@ -1,4 +1,4 @@
-// src/components/ResponsiveHeader.jsx
+// src/components/ResponsiveHeader.jsx (Updated)
 import React, { useState } from 'react';
 import { Menu, X, UserCircle, Zap, Heart, Search, BarChart2 } from 'lucide-react';
 import soccerLogo from '../assets/soccer-logo.svg';
@@ -65,7 +65,7 @@ const ResponsiveHeader = ({
             >
               <Zap size={18} className="mr-2" />
               <span>マイエージェント</span>
-              {/* 新着情報を示す通知バッジ（仮の表示） */}
+              {/* 新着情報を示す通知バッジ */}
               <div className="ml-2 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
                 2
               </div>

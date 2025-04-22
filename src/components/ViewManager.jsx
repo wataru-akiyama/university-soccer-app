@@ -95,6 +95,7 @@ const ViewManager = ({
           universities={data.universities}
           favoriteUniversities={data.favoriteUniversities}
           onViewDetails={handlers.viewUniversityDetails}
+          onAddToFavorites={handlers.addToFavorites}
         />
       );
       
@@ -116,6 +117,7 @@ const ViewManager = ({
           onToggleWizard={handlers.toggleWizard}
           onShowTemplatePortfolio={() => handlers.changeView('templatePortfolio')}
           onShowRecommendation={() => handlers.changeView('recommendation')}
+          onShowAgent={() => handlers.changeView('agent')} // エージェントビューへの遷移
         />
       );
   }

@@ -1,7 +1,8 @@
-// src/components/HomeView.jsx
+// Modified HomeView.jsx - Update the imports and add banner
 import React from 'react';
 import { ChevronRight, X, Zap, Trophy, BookOpen } from 'lucide-react';
 import PortfolioBanner from './PortfolioBanner';
+import AgentPromoBanner from './AgentPromoBanner'; // 新規追加
 import MultiSelectSearchForm from './MultiSelectSearchForm';
 import UniversityList from './UniversityList';
 import StepSearchWizard from './StepSearchWizard';
@@ -23,7 +24,8 @@ const HomeView = ({
   onRemoveFromFavorites,
   onToggleWizard,
   onShowTemplatePortfolio,
-  onShowRecommendation
+  onShowRecommendation,
+  onShowAgent // 新規追加
 }) => {
   return (
     <>
@@ -31,6 +33,11 @@ const HomeView = ({
       <PortfolioBanner
         onShowPortfolio={onShowTemplatePortfolio}
         showTemplateVersion={true}
+      />
+      
+      {/* 1.5 エージェントプロモバナー（新規追加） */}
+      <AgentPromoBanner
+        onShowAgent={onShowAgent}
       />
       
       {/* 2. 推薦ウィザードバナー */}
