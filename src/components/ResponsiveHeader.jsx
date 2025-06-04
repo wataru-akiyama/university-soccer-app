@@ -1,6 +1,6 @@
-// src/components/ResponsiveHeader.jsx (Updated)
+// src/components/ResponsiveHeader.jsx（シンプル版）
 import React, { useState } from 'react';
-import { Menu, X, UserCircle, Zap, Heart, Search, BarChart2 } from 'lucide-react';
+import { Menu, X, UserCircle, Heart, Search, BarChart2 } from 'lucide-react';
 import soccerLogo from '../assets/soccer-logo.svg';
 
 const ResponsiveHeader = ({ 
@@ -35,7 +35,7 @@ const ResponsiveHeader = ({
             <h1 className="text-xl font-bold hidden md:block">大学サッカー部お品書き</h1>
           </div>
           
-          {/* デスクトップビュー: メインナビゲーション（新しいタブ構造） */}
+          {/* デスクトップビュー: メインナビゲーション */}
           <div className="hidden md:flex items-center space-x-1">
             <button 
               className={`px-4 py-2 rounded-lg flex items-center transition-colors ${
@@ -55,20 +55,6 @@ const ResponsiveHeader = ({
             >
               <UserCircle size={18} className="mr-2" />
               <span>ポートフォリオ</span>
-            </button>
-            
-            <button 
-              className={`px-4 py-2 rounded-lg flex items-center transition-colors ${
-                currentView === 'agent' ? 'bg-white text-green-700' : 'bg-white bg-opacity-10 hover:bg-opacity-20'
-              }`}
-              onClick={() => handleNavClick('agent')}
-            >
-              <Zap size={18} className="mr-2" />
-              <span>マイエージェント</span>
-              {/* 新着情報を示す通知バッジ */}
-              <div className="ml-2 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
-                2
-              </div>
             </button>
             
             {/* サブメニュー: お気に入り */}
@@ -119,17 +105,6 @@ const ResponsiveHeader = ({
               onClick={() => handleNavClick('portfolio')}
             >
               <UserCircle size={20} />
-            </button>
-            
-            <button 
-              className={`p-2 rounded-full ${currentView === 'agent' ? 'bg-white text-green-700' : ''} relative`}
-              onClick={() => handleNavClick('agent')}
-            >
-              <Zap size={20} />
-              {/* 通知バッジ */}
-              <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
-                2
-              </span>
             </button>
             
             {/* お気に入りと比較のカウンターを常に表示 */}
@@ -185,17 +160,6 @@ const ResponsiveHeader = ({
               >
                 <UserCircle size={20} className="mr-3" />
                 <span className="font-medium">ポートフォリオ</span>
-              </button>
-              
-              <button 
-                className="w-full px-3 py-3 rounded-md flex items-center hover:bg-green-700 transition-colors"
-                onClick={() => handleNavClick('agent')}
-              >
-                <Zap size={20} className="mr-3" />
-                <span className="font-medium">マイエージェント</span>
-                <div className="ml-auto bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
-                  2
-                </div>
               </button>
               
               <button 
