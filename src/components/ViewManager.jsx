@@ -1,7 +1,6 @@
 // src/components/ViewManager.jsx（シンプル版）
 import React from 'react';
 import EnhancedPlayerPortfolio from './EnhancedPlayerPortfolio';
-import TemplatePortfolioCreator from './TemplatePortfolioCreator';
 import EnhancedUniversityDetails from './EnhancedUniversityDetails';
 import CompareView from './CompareView';
 import MyCareerPlan from './MyCareerPlan';
@@ -24,18 +23,7 @@ const ViewManager = ({
           favoriteUniversities={data.favoriteUniversities}
           onShowFavorites={() => handlers.changeView('favorites')}
           onShowCompare={() => handlers.changeView('compare')}
-          onEditWithTemplate={() => handlers.changeView('templatePortfolio')}
           userProfile={data.playerProfileData}
-        />
-      );
-      
-    case 'templatePortfolio':
-      return (
-        <TemplatePortfolioCreator
-          onBack={() => handlers.changeView('list')}
-          userProfile={data.playerProfileData}
-          onSaveProfile={handlers.handleSaveProfile}
-          favoriteUniversities={data.favoriteUniversities}
         />
       );
       

@@ -49,7 +49,7 @@ const ResponsiveHeader = ({
             
             <button 
               className={`px-4 py-2 rounded-lg flex items-center transition-colors ${
-                currentView === 'portfolio' || currentView === 'templatePortfolio' ? 'bg-white text-green-700' : 'bg-white bg-opacity-10 hover:bg-opacity-20'
+                currentView === 'portfolio' ? 'bg-white text-green-700' : 'bg-white bg-opacity-10 hover:bg-opacity-20'
               }`}
               onClick={() => handleNavClick('portfolio')}
             >
@@ -101,7 +101,7 @@ const ResponsiveHeader = ({
             </button>
             
             <button 
-              className={`p-2 rounded-full ${currentView === 'portfolio' || currentView === 'templatePortfolio' ? 'bg-white text-green-700' : ''}`}
+              className={`p-2 rounded-full ${currentView === 'portfolio' ? 'bg-white text-green-700' : ''}`}
               onClick={() => handleNavClick('portfolio')}
             >
               <UserCircle size={20} />

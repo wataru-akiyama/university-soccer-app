@@ -22,7 +22,6 @@ import {
     Instagram, 
     Linkedin, 
     Link,
-    FileEdit,
     Heart,
     Upload,
     ChevronUp,
@@ -36,7 +35,6 @@ const EnhancedPlayerPortfolio = ({
   onShowRecommendation,
   onShowFavorites,
   onShowCompare,
-  onEditWithTemplate, // 新しいプロップスを追加
   userProfile // プロフィールデータを追加
 }) => {
   const [activeTab, setActiveTab] = useState('playerCard');
@@ -136,14 +134,6 @@ const EnhancedPlayerPortfolio = ({
               <h2 className="text-xl font-medium">マイポートフォリオ</h2>
             </div>
             <div className="flex space-x-2">
-              {/* テンプレートで編集するボタンを追加 */}
-              <button 
-                className="bg-blue-500 text-white hover:bg-blue-400 px-3 py-1.5 rounded-md flex items-center text-sm transition-colors"
-                onClick={onEditWithTemplate}
-              >
-                <FileEdit size={16} className="mr-1.5" />
-                テンプレートで編集
-              </button>
               <button 
                 className="bg-white text-green-600 hover:bg-green-50 hover:text-green-700 px-3 py-1.5 rounded-md flex items-center text-sm transition-colors"
                 onClick={() => setEditMode(!editMode)}
@@ -204,27 +194,6 @@ const EnhancedPlayerPortfolio = ({
               // 追加：お気に入り表示機能を直接使えるようにする
               onShowFavorites={onShowFavorites}
             />
-          )}
-
-          {/* テンプレート編集へのリンクバナーを追加 - 特に編集モードでない場合に表示 */}
-          {!editMode && (
-            <div className="mt-6 bg-blue-50 p-4 rounded-lg border border-blue-200">
-              <div className="flex items-center">
-                <div className="bg-blue-100 p-2 rounded-full mr-3">
-                  <FileEdit size={20} className="text-blue-600" />
-                </div>
-                <div className="flex-1">
-                  <h3 className="font-medium text-blue-800">テンプレートでもっと簡単に編集！</h3>
-                  <p className="text-sm text-blue-600">簡単なステップで効果的なポートフォリオが作れるテンプレートエディタが利用できます。</p>
-                </div>
-                <button 
-                  className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-md text-sm ml-3"
-                  onClick={onEditWithTemplate}
-                >
-                  テンプレートで編集
-                </button>
-              </div>
-            </div>
           )}
         </div>
       </div>
