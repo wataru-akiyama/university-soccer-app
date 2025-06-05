@@ -1,6 +1,5 @@
-// App.js（統合版）
+// App.js（修正版 - 不要なコードを削除）
 import React, { useState, useEffect } from 'react';
-import { Trophy, BookOpen } from 'lucide-react';
 import universities from './data/universities';
 import ViewManager from './components/ViewManager';
 import ResponsiveHeader from './components/ResponsiveHeader';
@@ -11,12 +10,11 @@ const App = () => {
   // カスタムフックを使用して検索ロジックを実装
   const searchState = useUniversitySearch(universities);
   
-  // 主要な表示状態を一元管理（favorites関連のビューを削除）
+  // 主要な表示状態を一元管理
   const [currentView, setCurrentView] = useState('list');
   const [selectedUniversity, setSelectedUniversity] = useState(null);
   const [compareList, setCompareList] = useState([]);
   const [favoriteUniversities, setFavoriteUniversities] = useState([]);
-  const [showWizard, setShowWizard] = useState(false);
   const [playerProfileData, setPlayerProfileData] = useState(userProfile);
 
   // 統一されたビュー切り替え関数
@@ -28,19 +26,6 @@ const App = () => {
   const viewUniversityDetails = (university) => {
     setSelectedUniversity(university);
     changeView('details');
-  };
-
-  // ウィザード表示のトグル
-  const toggleWizard = () => {
-    setShowWizard(!showWizard);
-  };
-
-  // プロフィール保存ハンドラ
-  const handleSaveProfile = (profileData) => {
-    setPlayerProfileData(profileData);
-    localStorage.setItem('playerProfile', JSON.stringify(profileData));
-    changeView('portfolio');
-    alert("ポートフォリオが保存されました！");
   };
 
   // ローカルストレージからお気に入りを読み込む
@@ -102,7 +87,7 @@ const App = () => {
     setFavoriteUniversities(favoriteUniversities.filter(uni => uni.id !== universityId));
   };
 
-  // お気に入りの順序変更（統合版）
+  // お気に入りの順序変更
   const reorderFavorites = (startIndex, endIndex) => {
     const result = Array.from(favoriteUniversities);
     const [removed] = result.splice(startIndex, 1);
@@ -114,8 +99,6 @@ const App = () => {
   const handlers = {
     changeView,
     viewUniversityDetails,
-    toggleWizard,
-    handleSaveProfile,
     addToCompare,
     removeFromCompare,
     addToFavorites,
@@ -130,14 +113,13 @@ const App = () => {
     compareList,
     favoriteUniversities,
     playerProfileData,
-    showWizard,
     searchState,
     filteredUniversities: searchState.filteredUniversities
   };
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* ヘッダー - ResponsiveHeaderに現在のビューとビュー切り替え関数を渡す */}
+      {/* ヘッダー */}
       <ResponsiveHeader 
         currentView={currentView}
         onChangeView={changeView}

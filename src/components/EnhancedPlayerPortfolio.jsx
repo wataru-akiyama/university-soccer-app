@@ -32,7 +32,6 @@ import {
 const EnhancedPlayerPortfolio = ({ 
   onBack, 
   favoriteUniversities,
-  onShowFavorites, // この関数は不要になる
   onShowCompare,
   onRemoveFromFavorites, // 追加
   onReorderFavorites,    // 追加
