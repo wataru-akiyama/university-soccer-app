@@ -15,8 +15,6 @@ import {
   MessageSquare,
   X,
   Plus,
-  //BookOpen, 
-  //Star
 } from 'lucide-react';
 import universityExtendedData from '../data/universityExtendedData';
 

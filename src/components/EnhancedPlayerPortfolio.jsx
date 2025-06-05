@@ -25,17 +25,20 @@ import {
     Heart,
     Upload,
     ChevronUp,
-    ChevronDown
+    ChevronDown,
+    Info
 } from 'lucide-react';
 
-// メインコンポーネント
+// メインコンポーネント - 統合版
 const EnhancedPlayerPortfolio = ({ 
   onBack, 
   favoriteUniversities,
-  onShowRecommendation,
-  onShowFavorites,
+  onShowFavorites, // この関数は不要になる
   onShowCompare,
-  userProfile // プロフィールデータを追加
+  onRemoveFromFavorites, // 追加
+  onReorderFavorites,    // 追加
+  onViewDetails,         // 追加
+  userProfile
 }) => {
   const [activeTab, setActiveTab] = useState('playerCard');
   const [editMode, setEditMode] = useState(false);
@@ -64,18 +67,12 @@ const EnhancedPlayerPortfolio = ({
       physical: 72,
       speed: 76,
       vision: 84,
-      // 特殊能力
       specialAbilities: ["パスマスター", "守備意識", "チームプレイヤー", "コーナーキック"]
     },
     aspirations: {
       type: "A：プロを目指してやりたい",
       interests: ["コーチング・指導法", "スポーツマネジメント", "トレーニング科学"]
     },
-    favoriteUniversities: [
-      { id: 1, name: "早稲田大学", league: "関東大学サッカーリーグ1部", reason: "練習環境が整っており、Jリーグへの輩出実績が高いため" },
-      { id: 2, name: "筑波大学", league: "関東大学サッカーリーグ1部", reason: "教員免許の取得も目指しており、指導者としての知識も学びたい" },
-      { id: 3, name: "明治大学", league: "関東大学サッカーリーグ1部", reason: "OBとの繋がりがあり、チームの戦術が自分のプレースタイルに合っている" }
-    ],
     achievements: [
       { title: "全国高校サッカー選手権大会", result: "ベスト16", year: "2023" },
       { title: "高校総体（インターハイ）", result: "県大会優勝", year: "2024" },
@@ -95,20 +92,6 @@ const EnhancedPlayerPortfolio = ({
         title: "筑波大学から連絡",
         date: "2024-07-20T10:30:00Z",
         details: "入部に関する追加情報を受け取りました。"
-      },
-      {
-        id: 3,
-        type: "video",
-        title: "新規ハイライト動画をアップロード",
-        date: "2024-07-15T09:00:00Z",
-        details: "最新の試合映像をポートフォリオに追加しました。"
-      },
-      {
-        id: 4,
-        type: "practice",
-        title: "筑波大学サッカー部セレクション参加",
-        date: "2024-07-05T09:00:00Z",
-        details: "夏季セレクションに参加。実戦形式のゲームでプレー。"
       }
     ]
   };
@@ -124,7 +107,7 @@ const EnhancedPlayerPortfolio = ({
   return (
     <div className="bg-gray-50 min-h-screen">
       <div className="max-w-4xl mx-auto bg-white shadow-sm">
-        {/* ヘッダー - 緑系のグラデーションに変更 */}
+        {/* ヘッダー */}
         <div className="bg-gradient-to-r from-green-600 to-green-700 p-5 text-white">
           <div className="flex justify-between items-center">
             <div className="flex items-center">
@@ -160,7 +143,7 @@ const EnhancedPlayerPortfolio = ({
           >
             <div className="flex items-center">
               <User size={18} className={activeTab === 'playerCard' ? "text-green-600 mr-2" : "text-gray-500 mr-2"} />
-              選手カード
+              <span>選手カード</span>
             </div>
           </button>
           <button 
@@ -169,7 +152,12 @@ const EnhancedPlayerPortfolio = ({
           >
             <div className="flex items-center">
               <Heart size={18} className={activeTab === 'universities' ? "text-green-600 mr-2" : "text-gray-500 mr-2"} />
-              志望大学
+              <span>進路プラン</span>
+              {favoriteUniversities.length > 0 && (
+                <div className="ml-2 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                  {favoriteUniversities.length}
+                </div>
+              )}
             </div>
           </button>
         </div>
@@ -179,20 +167,12 @@ const EnhancedPlayerPortfolio = ({
           {activeTab === 'playerCard' ? (
             <PlayerCardTab player={playerProfile} editMode={editMode} />
           ) : (
-            <UniversitiesTab 
-              universities={
-                favoriteUniversities && favoriteUniversities.length > 0 
-                  ? favoriteUniversities.map(uni => ({
-                    id: uni.id, 
-                    name: uni.university_name, 
-                    league: uni.soccer_club.league,
-                    reason: "興味があるため" // デフォルト理由
-                  }))
-                  : playerProfile.favoriteUniversities
-              } 
+            <IntegratedUniversitiesTab 
+              universities={favoriteUniversities}
               editMode={editMode} 
-              // 追加：お気に入り表示機能を直接使えるようにする
-              onShowFavorites={onShowFavorites}
+              onRemoveFromFavorites={onRemoveFromFavorites}
+              onReorderFavorites={onReorderFavorites}
+              onViewDetails={onViewDetails}
             />
           )}
         </div>
@@ -202,126 +182,171 @@ const EnhancedPlayerPortfolio = ({
       {showShareModal && (
         <ShareModal 
           onClose={() => setShowShareModal(false)} 
-          player={playerProfile} // playerProfile 全体を渡す
+          player={playerProfile}
         />
       )}
     </div>
   );
 };
 
-// 共有モーダルコンポーネント
-const ShareModal = ({ onClose, player }) => {
-  const [shareOption, setShareOption] = useState('card');
-  const [copySuccess, setCopySuccess] = useState(false);
-  
-  const handleCopyLink = () => {
-    // 実際にはポートフォリオへのURLをコピーする処理
-    navigator.clipboard.writeText(`https://university-soccer.example.com/portfolio/${player.personalInfo.name}`);
-    setCopySuccess(true);
-    setTimeout(() => setCopySuccess(false), 2000);
+// 統合された志望大学タブコンポーネント
+const IntegratedUniversitiesTab = ({ 
+  universities = [], 
+  editMode = false,
+  onRemoveFromFavorites,
+  onReorderFavorites,
+  onViewDetails
+}) => {
+  // 上に移動
+  const moveUp = (index) => {
+    if (index > 0) {
+      onReorderFavorites(index, index - 1);
+    }
   };
-  
+
+  // 下に移動
+  const moveDown = (index) => {
+    if (index < universities.length - 1) {
+      onReorderFavorites(index, index + 1);
+    }
+  };
+
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50" onClick={onClose}>
-      <div className="bg-white rounded-lg p-5 max-w-md w-full shadow-xl" onClick={e => e.stopPropagation()}>
-        <div className="flex justify-between items-center mb-4">
-          <h3 className="text-lg font-medium">ポートフォリオを共有</h3>
-          <button className="text-gray-500 hover:text-gray-700" onClick={onClose}>
-            <X size={20} />
-          </button>
-        </div>
-        
-        {/* 共有オプション選択 */}
-        <div className="flex border-b mb-4">
-          <button 
-            className={`px-4 py-2 font-medium ${shareOption === 'card' ? 'border-b-2 border-green-600 text-green-700' : 'text-gray-500'}`}
-            onClick={() => setShareOption('card')}
-          >
-            選手カード
-          </button>
-          <button 
-            className={`px-4 py-2 font-medium ${shareOption === 'full' ? 'border-b-2 border-green-600 text-green-700' : 'text-gray-500'}`}
-            onClick={() => setShareOption('full')}
-          >
-            全体
-          </button>
-        </div>
-        
-        {/* 共有先アイコン */}
-        <div className="grid grid-cols-4 gap-4 mb-5">
-          <div className="flex flex-col items-center">
-            <button className="w-12 h-12 bg-[#1DA1F2] text-white rounded-full flex items-center justify-center">
-              <Twitter size={24} />
-            </button>
-            <span className="text-xs mt-1 text-gray-600">Twitter</span>
-          </div>
-          <div className="flex flex-col items-center">
-            <button className="w-12 h-12 bg-[#4267B2] text-white rounded-full flex items-center justify-center">
-              <Facebook size={24} />
-            </button>
-            <span className="text-xs mt-1 text-gray-600">Facebook</span>
-          </div>
-          <div className="flex flex-col items-center">
-            <button className="w-12 h-12 bg-gradient-to-tr from-[#FEDA75] via-[#FA7E1E] to-[#D62976] text-white rounded-full flex items-center justify-center">
-              <Instagram size={24} />
-            </button>
-            <span className="text-xs mt-1 text-gray-600">Instagram</span>
-          </div>
-          <div className="flex flex-col items-center">
-            <button className="w-12 h-12 bg-[#0077B5] text-white rounded-full flex items-center justify-center">
-              <Linkedin size={24} />
-            </button>
-            <span className="text-xs mt-1 text-gray-600">LinkedIn</span>
-          </div>
-        </div>
-        
-        {/* リンク共有 */}
-        <div className="border rounded-md flex overflow-hidden">
-          <div className="bg-gray-50 p-3 flex-grow text-gray-500 text-sm truncate">
-            https://university-soccer.example.com/portfolio/{player.personalInfo.name}
-          </div>
-          <button 
-            className="bg-green-600 text-white px-3 flex items-center"
-            onClick={handleCopyLink}
-          >
-            {copySuccess ? <CheckCircle size={18} /> : <Link size={18} />}
-          </button>
-        </div>
-        
-        {/* プレビュー */}
-        <div className="mt-4 text-center">
-          <p className="text-sm text-gray-500 mb-3">共有すると{shareOption === 'card' ? '選手カードのみ' : 'ポートフォリオ全体'}が表示されます</p>
-          <div className="bg-gray-100 p-3 rounded-md">
-            {shareOption === 'card' ? (
-              <div className="bg-white p-4 rounded border border-gray-200 inline-block shadow-sm mx-auto">
-                <div className="flex items-center mb-2">
-                  <div className="bg-green-600 text-white font-bold text-xl w-8 h-8 rounded-full flex items-center justify-center mr-2">
-                    {player.metrics.overall}
-                  </div>
-                    <span className="text-gray-800">
-                        {player.personalInfo.name} | {player.personalInfo.position}
-                    </span>
-                </div>
-                <div className="flex justify-center space-x-1 mt-1">
-                  {player.metrics.specialAbilities.slice(0, 2).map((ability, index) => (
-                    <div key={index} className="bg-green-50 text-green-600 text-xs px-1.5 py-0.5 rounded text-center">
-                      {ability}
-                    </div>
-                  ))}
-                </div>
-              </div>
-            ) : (
-              <div className="flex items-center justify-center h-20">
-                <User size={24} className="text-gray-400 mr-2" />
-                <div className="text-left">
-                  <p className="font-medium">{player.personalInfo.name}のポートフォリオ</p>
-                  <p className="text-xs text-gray-500">プロフィール・実績・志望大学などすべての情報</p>
-                </div>
-              </div>
-            )}
-          </div>
+    <div className="space-y-6">
+      <div className="flex justify-between items-center">
+        <h3 className="text-lg font-medium text-gray-800 flex items-center">
+          <Heart size={18} className="text-green-600 mr-2" />
+          私の進路プラン
+        </h3>
+        <div className="text-sm text-gray-500">
+          {universities.length > 0 && `${universities.length}校登録中`}
         </div>
       </div>
+      
+      {universities.length > 0 ? (
+        <div className="space-y-4">
+          {universities.map((university, index) => (
+            <div
+              key={university.id}
+              className="border rounded-xl p-5 flex justify-between bg-white shadow-md hover:shadow-lg transition-shadow"
+            >
+              <div className="flex">
+                {/* 順序変更ボタン */}
+                <div className="flex flex-col items-center justify-center mr-4">
+                  <button 
+                    onClick={() => moveUp(index)}
+                    disabled={index === 0}
+                    className={`p-2 rounded-full ${index === 0 ? 'text-gray-300' : 'text-green-500 hover:bg-green-50'}`}
+                    title="上に移動"
+                  >
+                    <ChevronUp size={16} />
+                  </button>
+                  <div className="h-4"></div>
+                  <button 
+                    onClick={() => moveDown(index)}
+                    disabled={index === universities.length - 1}
+                    className={`p-2 rounded-full ${index === universities.length - 1 ? 'text-gray-300' : 'text-green-500 hover:bg-green-50'}`}
+                    title="下に移動"
+                  >
+                    <ChevronDown size={16} />
+                  </button>
+                </div>
+                
+                <div className="mr-4 relative">
+                  {/* 大学イメージ */}
+                  <div className="w-24 h-24 bg-gradient-to-r from-green-500 to-green-600 rounded-lg overflow-hidden shadow-md relative">
+                    <img 
+                      src={`/images/universities/${university.id}.jpg`}
+                      alt=""
+                      className="w-full h-full object-cover opacity-80"
+                      onError={(e) => {
+                        e.target.onerror = null;
+                        e.target.src = `${process.env.PUBLIC_URL}/images/university-default.jpg`;
+                      }}
+                    />
+                    {/* ロゴオーバーレイ */}
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <div className="bg-white p-2 rounded-full shadow-sm">
+                        <img 
+                          src={`/images/logos/${university.id}.png`}
+                          alt={`${university.university_name} ロゴ`}
+                          className="w-10 h-10 object-contain"
+                          onError={(e) => {
+                            e.target.onerror = null;
+                            e.target.src = `${process.env.PUBLIC_URL}/images/default-logo.png`;
+                          }}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {/* 志望順位バッジ */}
+                  <div className="absolute -top-2 -left-2 bg-green-600 text-white rounded-full w-8 h-8 flex items-center justify-center shadow-md font-bold">
+                    {index + 1}
+                  </div>
+                </div>
+                
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-800 mb-1">{university.university_name}</h3>
+                  <p className="text-sm text-gray-600 mb-3">{university.soccer_club.league}</p>
+                  
+                  <div className="flex flex-wrap gap-2 mb-3">
+                    {university.entry_conditions.sports_recommend && (
+                      <span className="bg-green-100 text-green-800 text-xs px-3 py-1 rounded-full inline-block">
+                        スポーツ推薦あり
+                      </span>
+                    )}
+                    {university.soccer_club.dorm_available && (
+                      <span className="bg-purple-100 text-purple-800 text-xs px-3 py-1 rounded-full inline-block">
+                        寮あり
+                      </span>
+                    )}
+                  </div>
+                  
+                  <button 
+                    className="text-green-600 font-medium text-sm flex items-center hover:text-green-700 transition-colors" 
+                    onClick={() => onViewDetails(university)}
+                  >
+                    <Info size={14} className="mr-1" />
+                    詳細を見る
+                  </button>
+                </div>
+              </div>
+              
+              <div>
+                <button
+                  className="text-red-500 p-2 hover:bg-red-50 rounded-full transition-colors"
+                  onClick={() => onRemoveFromFavorites(university.id)}
+                >
+                  <X size={18} />
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div className="text-center py-10">
+          <div className="bg-gray-50 rounded-xl p-8 shadow-inner">
+            <div className="w-32 h-32 mx-auto mb-4 bg-gray-200 rounded-full flex items-center justify-center opacity-50">
+              <svg width="64" height="64" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 21L10.55 19.7C5.4 15.1 2 12.1 2 8.5C2 5.5 4.42 3 7.5 3C9.24 3 10.91 3.81 12 5.09C13.09 3.81 14.76 3 16.5 3C19.58 3 22 5.5 22 8.5C22 12.1 18.6 15.1 13.45 19.7L12 21Z" fill="#6B7280"/>
+              </svg>
+            </div>
+            <p className="text-lg font-medium mb-2 text-gray-700">志望大学がまだ登録されていません</p>
+            <p className="text-gray-500">大学の詳細ページから「お気に入りに追加」ボタンをクリックして登録できます</p>
+          </div>
+        </div>
+      )}
+      
+      {/* 編集時の保存ボタン */}
+      {editMode && universities.length > 0 && (
+        <div className="flex justify-end">
+          <button className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded flex items-center text-sm transition-colors">
+            <Save size={16} className="mr-2" />
+            順序を保存
+          </button>
+        </div>
+      )}
     </div>
   );
 };
@@ -905,83 +930,118 @@ const PlayerCardTab = ({ player, editMode }) => {
   );
 };
 
-// 志望大学タブのコンテンツ
-const UniversitiesTab = ({ 
-  universities = [], 
-  editMode = false, 
-  onShowFavorites 
-}) => {
+// 共有モーダルコンポーネント
+const ShareModal = ({ onClose, player }) => {
+  const [shareOption, setShareOption] = useState('card');
+  const [copySuccess, setCopySuccess] = useState(false);
+  
+  const handleCopyLink = () => {
+    // 実際にはポートフォリオへのURLをコピーする処理
+    navigator.clipboard.writeText(`https://university-soccer.example.com/portfolio/${player.personalInfo.name}`);
+    setCopySuccess(true);
+    setTimeout(() => setCopySuccess(false), 2000);
+  };
+  
   return (
-    <div className="space-y-6">
-      <h3 className="text-lg font-medium text-gray-800 mb-4 flex items-center">
-        <Heart size={18} className="text-green-600 mr-2" />
-        志望大学リスト
-      </h3>
-      
-      {universities.map((university, index) => (
-        <div key={university.id} className="bg-white rounded-lg border border-gray-200 overflow-hidden shadow-sm hover:shadow-md transition-all">
-          <div className="bg-gray-50 p-4 border-b flex justify-between items-center">
-            <div className="flex items-center">
-              <div className="bg-green-600 text-white w-8 h-8 rounded-full flex items-center justify-center mr-3 shadow-sm flex-shrink-0">
-                <span className="font-bold">{index + 1}</span>
-              </div>
-              <div>
-                <h4 className="font-medium text-gray-800">{university.name}</h4>
-                <p className="text-sm text-gray-500">{university.league}</p>
-              </div>
-            </div>
-            
-            {editMode && (
-              <div className="flex space-x-1">
-                <button className="p-1.5 text-green-600 hover:bg-green-50 rounded">
-                  <ChevronUp size={16} />
-                </button>
-                <button className="p-1.5 text-green-600 hover:bg-green-50 rounded">
-                  <ChevronDown size={16} />
-                </button>
-                <button className="p-1.5 text-red-500 hover:bg-red-50 rounded">
-                  <X size={16} />
-                </button>
-              </div>
-            )}
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50" onClick={onClose}>
+      <div className="bg-white rounded-lg p-5 max-w-md w-full shadow-xl" onClick={e => e.stopPropagation()}>
+        <div className="flex justify-between items-center mb-4">
+          <h3 className="text-lg font-medium">ポートフォリオを共有</h3>
+          <button className="text-gray-500 hover:text-gray-700" onClick={onClose}>
+            <X size={20} />
+          </button>
+        </div>
+        
+        {/* 共有オプション選択 */}
+        <div className="flex border-b mb-4">
+          <button 
+            className={`px-4 py-2 font-medium ${shareOption === 'card' ? 'border-b-2 border-green-600 text-green-700' : 'text-gray-500'}`}
+            onClick={() => setShareOption('card')}
+          >
+            選手カード
+          </button>
+          <button 
+            className={`px-4 py-2 font-medium ${shareOption === 'full' ? 'border-b-2 border-green-600 text-green-700' : 'text-gray-500'}`}
+            onClick={() => setShareOption('full')}
+          >
+            全体
+          </button>
+        </div>
+        
+        {/* 共有先アイコン */}
+        <div className="grid grid-cols-4 gap-4 mb-5">
+          <div className="flex flex-col items-center">
+            <button className="w-12 h-12 bg-[#1DA1F2] text-white rounded-full flex items-center justify-center">
+              <Twitter size={24} />
+            </button>
+            <span className="text-xs mt-1 text-gray-600">Twitter</span>
           </div>
-          <div className="p-4">
-            <div className="flex items-start">
-              <Star size={16} className="text-green-500 mr-2 mt-0.5 flex-shrink-0" />
-              <div>
-                <h5 className="text-sm font-medium text-gray-700 mb-1">志望理由</h5>
-                <p className="text-gray-600 text-sm">{university.reason}</p>
+          <div className="flex flex-col items-center">
+            <button className="w-12 h-12 bg-[#4267B2] text-white rounded-full flex items-center justify-center">
+              <Facebook size={24} />
+            </button>
+            <span className="text-xs mt-1 text-gray-600">Facebook</span>
+          </div>
+          <div className="flex flex-col items-center">
+            <button className="w-12 h-12 bg-gradient-to-tr from-[#FEDA75] via-[#FA7E1E] to-[#D62976] text-white rounded-full flex items-center justify-center">
+              <Instagram size={24} />
+            </button>
+            <span className="text-xs mt-1 text-gray-600">Instagram</span>
+          </div>
+          <div className="flex flex-col items-center">
+            <button className="w-12 h-12 bg-[#0077B5] text-white rounded-full flex items-center justify-center">
+              <Linkedin size={24} />
+            </button>
+            <span className="text-xs mt-1 text-gray-600">LinkedIn</span>
+          </div>
+        </div>
+        
+        {/* リンク共有 */}
+        <div className="border rounded-md flex overflow-hidden">
+          <div className="bg-gray-50 p-3 flex-grow text-gray-500 text-sm truncate">
+            https://university-soccer.example.com/portfolio/{player.personalInfo.name}
+          </div>
+          <button 
+            className="bg-green-600 text-white px-3 flex items-center"
+            onClick={handleCopyLink}
+          >
+            {copySuccess ? <CheckCircle size={18} /> : <Link size={18} />}
+          </button>
+        </div>
+        
+        {/* プレビュー */}
+        <div className="mt-4 text-center">
+          <p className="text-sm text-gray-500 mb-3">共有すると{shareOption === 'card' ? '選手カードのみ' : 'ポートフォリオ全体'}が表示されます</p>
+          <div className="bg-gray-100 p-3 rounded-md">
+            {shareOption === 'card' ? (
+              <div className="bg-white p-4 rounded border border-gray-200 inline-block shadow-sm mx-auto">
+                <div className="flex items-center mb-2">
+                  <div className="bg-green-600 text-white font-bold text-xl w-8 h-8 rounded-full flex items-center justify-center mr-2">
+                    {player.metrics.overall}
+                  </div>
+                    <span className="text-gray-800">
+                        {player.personalInfo.name} | {player.personalInfo.position}
+                    </span>
+                </div>
+                <div className="flex justify-center space-x-1 mt-1">
+                  {player.metrics.specialAbilities.slice(0, 2).map((ability, index) => (
+                    <div key={index} className="bg-green-50 text-green-600 text-xs px-1.5 py-0.5 rounded text-center">
+                      {ability}
+                    </div>
+                  ))}
+                </div>
               </div>
-            </div>
-            
-            {editMode && (
-              <div className="flex justify-end mt-2">
-                <button className="text-green-600 text-xs flex items-center">
-                  <Edit size={12} className="mr-1" />
-                  志望理由を編集
-                </button>
+            ) : (
+              <div className="flex items-center justify-center h-20">
+                <User size={24} className="text-gray-400 mr-2" />
+                <div className="text-left">
+                  <p className="font-medium">{player.personalInfo.name}のポートフォリオ</p>
+                  <p className="text-xs text-gray-500">プロフィール・実績・志望大学などすべての情報</p>
+                </div>
               </div>
             )}
           </div>
         </div>
-      ))}
-      
-      {editMode && (
-        <button className="w-full py-2.5 bg-green-600 hover:bg-green-700 text-white rounded flex items-center justify-center text-sm transition-colors">
-          <Plus size={16} className="mr-1" />
-          志望大学を追加
-        </button>
-      )}
-      
-      {/* 「私の進路プラン」に移動するためのボタン */}
-      <div className="mt-6">
-        <button 
-          className="w-full py-3 bg-green-600 hover:bg-green-700 text-white rounded flex items-center justify-center transition-colors"
-          onClick={onShowFavorites}
-        >
-          <Heart size={18} className="mr-2" />
-          「私の進路プラン」ページで詳細を管理する
-        </button>
       </div>
     </div>
   );

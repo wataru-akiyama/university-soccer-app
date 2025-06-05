@@ -1,4 +1,4 @@
-// src/components/ResponsiveHeader.jsx（シンプル版）
+// src/components/ResponsiveHeader.jsx（簡素化・統合版）
 import React, { useState } from 'react';
 import { Menu, X, UserCircle, Heart, Search, BarChart2 } from 'lucide-react';
 import soccerLogo from '../assets/soccer-logo.svg';
@@ -55,25 +55,15 @@ const ResponsiveHeader = ({
             >
               <UserCircle size={18} className="mr-2" />
               <span>ポートフォリオ</span>
-            </button>
-            
-            {/* サブメニュー: お気に入り */}
-            {favoriteUniversities.length > 0 && (
-              <button 
-                className={`px-4 py-2 rounded-lg flex items-center transition-colors ${
-                  currentView === 'favorites' ? 'bg-white text-green-700' : 'bg-white bg-opacity-10 hover:bg-opacity-20'
-                }`}
-                onClick={() => handleNavClick('favorites')}
-              >
-                <Heart size={18} className="mr-2" />
-                <span>進路プラン</span>
+              {/* お気に入り数をポートフォリオボタンに統合 */}
+              {favoriteUniversities.length > 0 && (
                 <div className="ml-2 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
                   {favoriteUniversities.length}
                 </div>
-              </button>
-            )}
+              )}
+            </button>
             
-            {/* サブメニュー: 比較リスト */}
+            {/* 比較リストボタン（変更なし） */}
             {compareList.length > 0 && (
               <button 
                 className={`px-4 py-2 rounded-lg flex items-center transition-colors ${
@@ -101,25 +91,19 @@ const ResponsiveHeader = ({
             </button>
             
             <button 
-              className={`p-2 rounded-full ${currentView === 'portfolio' ? 'bg-white text-green-700' : ''}`}
+              className={`p-2 rounded-full relative ${currentView === 'portfolio' ? 'bg-white text-green-700' : ''}`}
               onClick={() => handleNavClick('portfolio')}
             >
               <UserCircle size={20} />
-            </button>
-            
-            {/* お気に入りと比較のカウンターを常に表示 */}
-            {favoriteUniversities.length > 0 && (
-              <button 
-                className={`p-2 relative ${currentView === 'favorites' ? 'bg-white text-green-700 rounded-full' : ''}`}
-                onClick={() => handleNavClick('favorites')}
-              >
-                <Heart size={20} />
+              {/* ポートフォリオボタンにお気に入り数を表示 */}
+              {favoriteUniversities.length > 0 && (
                 <div className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
                   {favoriteUniversities.length}
                 </div>
-              </button>
-            )}
+              )}
+            </button>
             
+            {/* 比較のカウンターを常に表示 */}
             {compareList.length > 0 && (
               <button 
                 className={`p-2 relative ${currentView === 'compare' ? 'bg-white text-green-700 rounded-full' : ''}`}
@@ -160,14 +144,6 @@ const ResponsiveHeader = ({
               >
                 <UserCircle size={20} className="mr-3" />
                 <span className="font-medium">ポートフォリオ</span>
-              </button>
-              
-              <button 
-                className="w-full px-3 py-3 rounded-md flex items-center hover:bg-green-700 transition-colors"
-                onClick={() => handleNavClick('favorites')}
-              >
-                <Heart size={20} className="mr-3" />
-                <span className="font-medium">進路プラン</span>
                 {favoriteUniversities.length > 0 && (
                   <div className="ml-auto bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
                     {favoriteUniversities.length}

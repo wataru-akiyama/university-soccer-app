@@ -1,4 +1,4 @@
-// App.js
+// App.js（統合版）
 import React, { useState, useEffect } from 'react';
 import { Trophy, BookOpen } from 'lucide-react';
 import universities from './data/universities';
@@ -11,7 +11,7 @@ const App = () => {
   // カスタムフックを使用して検索ロジックを実装
   const searchState = useUniversitySearch(universities);
   
-  // 主要な表示状態を一元管理
+  // 主要な表示状態を一元管理（favorites関連のビューを削除）
   const [currentView, setCurrentView] = useState('list');
   const [selectedUniversity, setSelectedUniversity] = useState(null);
   const [compareList, setCompareList] = useState([]);
@@ -102,7 +102,7 @@ const App = () => {
     setFavoriteUniversities(favoriteUniversities.filter(uni => uni.id !== universityId));
   };
 
-  // お気に入りの順序変更
+  // お気に入りの順序変更（統合版）
   const reorderFavorites = (startIndex, endIndex) => {
     const result = Array.from(favoriteUniversities);
     const [removed] = result.splice(startIndex, 1);

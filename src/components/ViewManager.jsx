@@ -1,13 +1,12 @@
-// src/components/ViewManager.jsx（シンプル版）
+// src/components/ViewManager.jsx（簡素化・統合版）
 import React from 'react';
 import EnhancedPlayerPortfolio from './EnhancedPlayerPortfolio';
 import EnhancedUniversityDetails from './EnhancedUniversityDetails';
 import CompareView from './CompareView';
-import MyCareerPlan from './MyCareerPlan';
 import HomeView from './HomeView';
 
 /**
- * ViewManager - アプリケーションの現在のビューを管理するコンポーネント
+ * ViewManager - アプリケーションの現在のビューを管理するコンポーネント（統合版）
  */
 const ViewManager = ({
   currentView,
@@ -21,9 +20,12 @@ const ViewManager = ({
         <EnhancedPlayerPortfolio 
           onBack={() => handlers.changeView('list')}
           favoriteUniversities={data.favoriteUniversities}
-          onShowFavorites={() => handlers.changeView('favorites')}
           onShowCompare={() => handlers.changeView('compare')}
           userProfile={data.playerProfileData}
+          // 進路プラン管理機能を統合
+          onRemoveFromFavorites={handlers.removeFromFavorites}
+          onReorderFavorites={handlers.reorderFavorites}
+          onViewDetails={handlers.viewUniversityDetails}
         />
       );
       
@@ -52,18 +54,8 @@ const ViewManager = ({
         />
       );
       
-    case 'favorites':
-      return (
-        <MyCareerPlan 
-          favoriteUniversities={data.favoriteUniversities}
-          onBack={() => handlers.changeView('list')}
-          onRemoveFromFavorites={handlers.removeFromFavorites}
-          onReorderFavorites={handlers.reorderFavorites}
-          onViewDetails={handlers.viewUniversityDetails}
-          onShowPortfolio={() => handlers.changeView('portfolio')}
-        />
-      );
-      
+    // 'favorites' ケースを削除 - ポートフォリオに統合されたため
+    
     case 'list':
     default:
       return (
