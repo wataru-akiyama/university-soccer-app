@@ -1,7 +1,6 @@
-// src/components/SimpleUniversityCard.jsx
+// src/components/SimpleUniversityCard.jsx (コメント削除版)
 import React from 'react';
-import { Heart, Plus, Check, Star, MapPin } from 'lucide-react';
-import universityExtendedData from '../data/universityExtendedData';
+import { Heart, Plus, Check, MapPin } from 'lucide-react';
 
 const SimpleUniversityCard = ({ 
   university, 
@@ -13,19 +12,6 @@ const SimpleUniversityCard = ({
   onRemoveFromFavorites,
   isInFavorites
 }) => {
-  // PLAYMAKERコメントがあれば要約表示（最初の2文程度に制限）
-  const getSummarizedComment = () => {
-    const extData = universityExtendedData[university.id];
-    const comment = extData?.playmakerComment || university.playmakerComment;
-    
-    if (!comment) return "詳細情報はありません";
-    
-    // 文を分割（。や．で区切る）
-    const sentences = comment.split(/[。.．]/);
-    // 最初の2文を取得して結合（末尾に句点を追加）
-    return sentences.slice(0, 2).join('。') + '。';
-  };
-  
   // リーグに基づく色を取得
   const getLeagueColor = (league) => {
     if (league.includes('1部')) return 'bg-green-100 text-green-800';
@@ -111,18 +97,30 @@ const SimpleUniversityCard = ({
         </div>
       </div>
       
-      {/* PLAYMAKERコメント要約 */}
-      <div className="p-4 bg-yellow-50 border-b border-yellow-100">
-        <div className="flex items-start">
-          <Star size={16} className="text-yellow-500 mr-2 mt-0.5 flex-shrink-0" />
-          <p className="text-sm text-yellow-800 line-clamp-2">
-            {getSummarizedComment()}
-          </p>
-        </div>
-      </div>
-      
       {/* カード本体 */}
       <div className="p-4">
+        {/* 基本情報 */}
+        <div className="mb-4">
+          <div className="grid grid-cols-2 gap-2 text-sm">
+            <div className="flex justify-between">
+              <span className="text-gray-600">部員数:</span>
+              <span className="font-medium">{university.soccer_club.total_members}名</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-gray-600">監督:</span>
+              <span className="font-medium">{university.soccer_club.coach_name}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-gray-600">Jリーグ内定:</span>
+              <span className="font-medium text-yellow-600">{university.soccer_club.j_league_nominees_2022_24 || 0}名</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-gray-600">コート数:</span>
+              <span className="font-medium">{university.soccer_club.soccer_field_count}面</span>
+            </div>
+          </div>
+        </div>
+        
         {/* 特徴タグ */}
         <div className="flex flex-wrap gap-1 mb-4">
           {university.entry_conditions.sports_recommend && (
@@ -140,6 +138,12 @@ const SimpleUniversityCard = ({
           {university.entry_conditions.selection && (
             <span className="bg-blue-50 text-blue-700 text-xs px-2 py-1 rounded-full border border-blue-100">
               セレクション
+            </span>
+          )}
+          
+          {university.soccer_club.sports_scholarship && (
+            <span className="bg-yellow-50 text-yellow-700 text-xs px-2 py-1 rounded-full border border-yellow-100">
+              奨学金あり
             </span>
           )}
         </div>

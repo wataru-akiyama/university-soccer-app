@@ -1,6 +1,6 @@
-// src/components/MultiSelectSearchForm.jsx
+// src/components/MultiSelectSearchForm.jsx (簡潔版)
 import React, { useState, useEffect, useRef } from 'react';
-import { Search, ChevronDown, ChevronUp, X, Filter, Trophy, Home, Calendar, BookOpen, SlidersHorizontal, Medal, Users, Zap, Star, Save, Bookmark, Trash, School } from 'lucide-react';
+import { Search, ChevronDown, X, Filter, Trophy, Home, BookOpen, Save, Bookmark, Trash, School, ArrowDown, ArrowUp } from 'lucide-react';
 import regions from '../data/regions';
 import leagues from '../data/leagues';
 import availableQualifications from '../data/qualifications';
@@ -27,28 +27,11 @@ const MultiSelectSearchForm = ({
   setPublicUniversity,
   privateUniversity,
   setPrivateUniversity,
-  jLeagueMinimum,
-  setJLeagueMinimum,
-  yearlyJLeagueFilter,
-  setYearlyJLeagueFilter,
-  memberSizeCategory,
-  setMemberSizeCategory,
-  newMemberSizeCategory,
-  setNewMemberSizeCategory,
-  maxGradeRequirement,
-  setMaxGradeRequirement,
-  coachBackgroundFilter,
-  setCoachBackgroundFilter,
-  densoCupMinimum,
-  setDensoCupMinimum,
   sortOption,
   setSortOption,
   sortDirection,
   setSortDirection
 }) => {
-  // 詳細検索オプションの表示状態
-  const [showAdvancedOptions, setShowAdvancedOptions] = useState(false);
-  
   // 保存済み検索条件の表示状態
   const [savedSearches, setSavedSearches] = useState([]);
   const [showSavedSearchesDropdown, setShowSavedSearchesDropdown] = useState(false);
@@ -56,9 +39,6 @@ const MultiSelectSearchForm = ({
   // 検索条件保存モーダル
   const [showSaveModal, setShowSaveModal] = useState(false);
   const [newSearchName, setNewSearchName] = useState('');
-  
-  // スライダー表示用の値
-  const [sliderValue, setSliderValue] = useState(jLeagueMinimum || 0);
   
   // ドロップダウンの外側クリックを検知するためのref
   const savedSearchesRef = useRef(null);
@@ -95,68 +75,6 @@ const MultiSelectSearchForm = ({
     };
   }, []);
   
-  // コンポーネントマウント時にスライダー値を初期化
-  useEffect(() => {
-    setSliderValue(jLeagueMinimum || 0);
-  }, [jLeagueMinimum]);
-  
-  // スライダーの値変更ハンドラー
-  const handleSliderChange = (e) => {
-    const value = parseInt(e.target.value, 10);
-    setSliderValue(value);
-    setJLeagueMinimum(value);
-  };
-  
-  // 年度別Jリーグ内定者数フィルター変更ハンドラー
-  const handleYearlyJLeagueChange = (year, value) => {
-    const numValue = value === "" ? 0 : parseInt(value, 10);
-    setYearlyJLeagueFilter(prev => ({
-      ...prev,
-      [`year${year}`]: numValue
-    }));
-  };
-  
-  // 部員数カテゴリー変更ハンドラー
-  const handleMemberSizeChange = (e) => {
-    setMemberSizeCategory(e.target.value);
-  };
-  
-  // 新入部員数カテゴリー変更ハンドラー
-  const handleNewMemberSizeChange = (e) => {
-    setNewMemberSizeCategory(e.target.value);
-  };
-  
-  // 監督キャリア変更ハンドラー
-  const handleCoachBackgroundChange = (e) => {
-    setCoachBackgroundFilter(e.target.value);
-  };
-  
-  // 評定基準変更ハンドラー
-  const handleGradeChange = (e) => {
-    const value = e.target.value;
-    let gradeValue = 0;
-    
-    // 評定値を設定
-    if (value.includes('3.5')) {
-      gradeValue = 3.5;
-    } else if (value.includes('3.0')) {
-      gradeValue = 3.0;
-    } else if (value.includes('2.7')) {
-      gradeValue = 2.7;
-    } else if (value.includes('2.5')) {
-      gradeValue = 2.5;
-    }
-    
-    setMaxGradeRequirement(gradeValue);
-  };
-  
-  // デンソーカップ出場者数変更ハンドラー
-  const handleDensoCupChange = (e) => {
-    const value = e.target.value;
-    const numValue = value === "" ? 0 : parseInt(value.replace(/[^0-9]/g, ''), 10);
-    setDensoCupMinimum(numValue);
-  };
-  
   // 全条件クリアハンドラー
   const clearAllFilters = () => {
     setSearchQuery('');
@@ -169,20 +87,6 @@ const MultiSelectSearchForm = ({
     setGeneralAdmissionAvailable(false);
     setPublicUniversity(false);
     setPrivateUniversity(false);
-    
-    // 詳細検索条件もリセット
-    setJLeagueMinimum(0);
-    setSliderValue(0);
-    setYearlyJLeagueFilter({
-      year2022: 0,
-      year2023: 0,
-      year2024: 0
-    });
-    setMemberSizeCategory('');
-    setNewMemberSizeCategory('');
-    setCoachBackgroundFilter('');
-    setMaxGradeRequirement(0);
-    setDensoCupMinimum(0);
     setSortOption('');
     setSortDirection('desc');
   };
@@ -200,13 +104,6 @@ const MultiSelectSearchForm = ({
       generalAdmissionAvailable,
       publicUniversity,
       privateUniversity,
-      jLeagueMinimum,
-      yearlyJLeagueFilter,
-      memberSizeCategory,
-      newMemberSizeCategory,
-      maxGradeRequirement,
-      coachBackgroundFilter,
-      densoCupMinimum,
       sortOption,
       sortDirection
     };
@@ -253,24 +150,8 @@ const MultiSelectSearchForm = ({
     setSelectionAvailable(conditions.selectionAvailable || false);
     setDormAvailable(conditions.dormAvailable || false);
     setGeneralAdmissionAvailable(conditions.generalAdmissionAvailable || false);
-    
-    // 国公立・私立フィルター
     setPublicUniversity(conditions.publicUniversity || false);
     setPrivateUniversity(conditions.privateUniversity || false);
-    
-    // 詳細検索条件
-    setJLeagueMinimum(conditions.jLeagueMinimum || 0);
-    setSliderValue(conditions.jLeagueMinimum || 0);
-    setYearlyJLeagueFilter(conditions.yearlyJLeagueFilter || {
-      year2022: 0,
-      year2023: 0,
-      year2024: 0
-    });
-    setMemberSizeCategory(conditions.memberSizeCategory || '');
-    setNewMemberSizeCategory(conditions.newMemberSizeCategory || '');
-    setMaxGradeRequirement(conditions.maxGradeRequirement || 0);
-    setCoachBackgroundFilter(conditions.coachBackgroundFilter || '');
-    setDensoCupMinimum(conditions.densoCupMinimum || 0);
     setSortOption(conditions.sortOption || '');
     setSortDirection(conditions.sortDirection || 'desc');
     
@@ -280,7 +161,7 @@ const MultiSelectSearchForm = ({
   
   // 保存済み検索条件を削除するハンドラー
   const deleteSavedSearch = (e, id) => {
-    e.stopPropagation(); // クリックイベントの伝播を停止
+    e.stopPropagation();
     
     if (window.confirm('この保存済み検索条件を削除しますか？')) {
       const updatedSavedSearches = savedSearches.filter(search => search.id !== id);
@@ -295,7 +176,6 @@ const MultiSelectSearchForm = ({
   const getActiveFiltersCount = () => {
     let count = 0;
     
-    // 基本フィルター
     if (searchQuery) count++;
     count += selectedRegions.length;
     count += selectedLeagues.length;
@@ -306,17 +186,6 @@ const MultiSelectSearchForm = ({
     if (generalAdmissionAvailable) count++;
     if (publicUniversity) count++;
     if (privateUniversity) count++;
-    
-    // 詳細フィルター
-    if (jLeagueMinimum > 0) count++;
-    if (yearlyJLeagueFilter.year2022 > 0) count++;
-    if (yearlyJLeagueFilter.year2023 > 0) count++;
-    if (yearlyJLeagueFilter.year2024 > 0) count++;
-    if (memberSizeCategory) count++;
-    if (newMemberSizeCategory) count++;
-    if (coachBackgroundFilter) count++;
-    if (maxGradeRequirement > 0) count++;
-    if (densoCupMinimum > 0) count++;
     
     return count;
   };
@@ -405,84 +274,6 @@ const MultiSelectSearchForm = ({
       });
     }
     
-    // その他の詳細条件
-    if (jLeagueMinimum > 0) {
-      tags.push({
-        id: 'jleague-minimum',
-        label: `Jリーグ内定${jLeagueMinimum}名以上`,
-        type: 'jLeagueMinimum'
-      });
-    }
-    
-    if (memberSizeCategory) {
-      const labelMap = {
-        'small': '少数精鋭 (〜49名)',
-        'medium': '中規模 (50〜79名)',
-        'large': '大規模 (80名以上)'
-      };
-      tags.push({
-        id: 'member-size',
-        label: `部員数: ${labelMap[memberSizeCategory] || memberSizeCategory}`,
-        type: 'memberSizeCategory'
-      });
-    }
-    
-    if (newMemberSizeCategory) {
-      const labelMap = {
-        'small': '少数選抜 (〜15名)',
-        'medium': '中規模 (16〜25名)',
-        'large': '多数受入 (26名以上)'
-      };
-      tags.push({
-        id: 'new-member-size',
-        label: `新入部員: ${labelMap[newMemberSizeCategory] || newMemberSizeCategory}`,
-        type: 'newMemberSizeCategory'
-      });
-    }
-    
-    if (coachBackgroundFilter) {
-      const labelMap = {
-        'jleaguer': '元Jリーガー',
-        'national': '元日本代表',
-        'student': '学生出身'
-      };
-      tags.push({
-        id: 'coach-background',
-        label: `監督: ${labelMap[coachBackgroundFilter] || coachBackgroundFilter}`,
-        type: 'coachBackgroundFilter'
-      });
-    }
-    
-    if (maxGradeRequirement > 0) {
-      tags.push({
-        id: 'grade-requirement',
-        label: `評定${maxGradeRequirement}以上`,
-        type: 'maxGradeRequirement'
-      });
-    }
-    
-    if (densoCupMinimum > 0) {
-      tags.push({
-        id: 'denso-cup-minimum',
-        label: `デンソーカップ${densoCupMinimum}名以上`,
-        type: 'densoCupMinimum'
-      });
-    }
-    
-    // 年度別Jリーグ内定者数
-    Object.entries(yearlyJLeagueFilter).forEach(([key, value]) => {
-      if (value > 0) {
-        const year = key.replace('year', '');
-        tags.push({
-          id: `yearly-j-league-${year}`,
-          label: `${year}年Jリーグ内定${value}名以上`,
-          type: 'yearlyJLeagueFilter',
-          year,
-          value
-        });
-      }
-    });
-    
     return tags;
   };
   
@@ -515,31 +306,6 @@ const MultiSelectSearchForm = ({
         break;
       case 'privateUniversity':
         setPrivateUniversity(false);
-        break;
-      case 'jLeagueMinimum':
-        setJLeagueMinimum(0);
-        setSliderValue(0);
-        break;
-      case 'memberSizeCategory':
-        setMemberSizeCategory('');
-        break;
-      case 'newMemberSizeCategory':
-        setNewMemberSizeCategory('');
-        break;
-      case 'coachBackgroundFilter':
-        setCoachBackgroundFilter('');
-        break;
-      case 'maxGradeRequirement':
-        setMaxGradeRequirement(0);
-        break;
-      case 'densoCupMinimum':
-        setDensoCupMinimum(0);
-        break;
-      case 'yearlyJLeagueFilter':
-        setYearlyJLeagueFilter(prev => ({
-          ...prev,
-          [`year${tag.year}`]: 0
-        }));
         break;
       default:
         break;
@@ -716,206 +482,33 @@ const MultiSelectSearchForm = ({
         </label>
       </div>
       
-      {/* 詳細検索オプショントグル */}
-      <button 
-        className="flex items-center text-green-600 hover:text-green-700 transition-colors mb-4"
-        onClick={() => setShowAdvancedOptions(!showAdvancedOptions)}
-      >
-        {showAdvancedOptions ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
-        <span className="ml-1 font-medium">詳細検索オプション</span>
-      </button>
-      
-      {/* 詳細検索オプション */}
-      {showAdvancedOptions && (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
-          {/* Jリーグ内定者数の範囲指定 */}
-          <div className="space-y-2">
-            <label className="text-sm font-medium text-gray-700 flex items-center">
-              <Medal size={16} className="mr-1 text-yellow-600" />
-              Jリーグ内定者数
-            </label>
-            <div className="flex items-center">
-              <SlidersHorizontal size={16} className="mr-2 text-gray-400" />
-              <input 
-                type="range" 
-                min="0" 
-                max="15" 
-                step="1" 
-                value={sliderValue}
-                onChange={handleSliderChange}
-                className="w-full h-2 bg-green-100 rounded-lg appearance-none cursor-pointer"
-              />
-            </div>
-            <div className="flex justify-between text-xs text-gray-500">
-              <span>指定なし</span>
-              <span>5名以上</span>
-              <span>10名以上</span>
-            </div>
-            <div className="text-center text-sm font-medium text-green-600">
-              {sliderValue > 0 ? `${sliderValue}名以上` : '指定なし'}
-            </div>
-          </div>
-          
-          {/* 年度別Jリーグ内定者検索 */}
-          <div className="space-y-2">
-            <label className="text-sm font-medium text-gray-700 flex items-center">
-              <Calendar size={16} className="mr-1 text-blue-600" />
-              年度別内定者数
-            </label>
-            <div className="grid grid-cols-3 gap-2">
-              <select 
-                className="p-2 border rounded-md text-sm"
-                onChange={(e) => handleYearlyJLeagueChange('2022', e.target.value)}
-                value={yearlyJLeagueFilter.year2022 || ""}
-              >
-                <option value="">2022年</option>
-                <option value="1">1名以上</option>
-                <option value="3">3名以上</option>
-                <option value="5">5名以上</option>
-              </select>
-              <select 
-                className="p-2 border rounded-md text-sm"
-                onChange={(e) => handleYearlyJLeagueChange('2023', e.target.value)}
-                value={yearlyJLeagueFilter.year2023 || ""}
-              >
-                <option value="">2023年</option>
-                <option value="1">1名以上</option>
-                <option value="3">3名以上</option>
-                <option value="5">5名以上</option>
-              </select>
-              <select 
-                className="p-2 border rounded-md text-sm"
-                onChange={(e) => handleYearlyJLeagueChange('2024', e.target.value)}
-                value={yearlyJLeagueFilter.year2024 || ""}
-              >
-                <option value="">2024年</option>
-                <option value="1">1名以上</option>
-                <option value="3">3名以上</option>
-                <option value="5">5名以上</option>
-              </select>
-            </div>
-          </div>
-          
-          {/* 部員数フィルター */}
-          <div className="space-y-2">
-            <label className="text-sm font-medium text-gray-700 flex items-center">
-              <Users size={16} className="mr-1 text-green-600" />
-              部員数
-            </label>
+      {/* 簡単なソートオプション */}
+      <div className="bg-gray-50 p-3 rounded-lg mb-4">
+        <div className="flex justify-between items-center">
+          <div className="flex items-center gap-3">
+            <span className="text-sm text-gray-700 font-medium">並べ替え:</span>
             <select 
-              className="w-full p-2 border rounded-md"
-              value={memberSizeCategory}
-              onChange={handleMemberSizeChange}
+              className="p-2 border rounded-md text-sm"
+              value={sortOption}
+              onChange={(e) => setSortOption(e.target.value)}
             >
-              <option value="">指定なし</option>
-              <option value="small">少数精鋭 (〜49名)</option>
-              <option value="medium">中規模 (50〜79名)</option>
-              <option value="large">大規模 (80名以上)</option>
+              <option value="">並び替えなし</option>
+              <option value="j_league">Jリーグ内定者数順</option>
+              <option value="members">部員数順</option>
+              <option value="name">大学名順</option>
             </select>
           </div>
           
-          {/* 新入部員受入数 */}
-          <div className="space-y-2">
-            <label className="text-sm font-medium text-gray-700 flex items-center">
-              <BookOpen size={16} className="mr-1 text-purple-600" />
-              新入部員数
-            </label>
-            <select 
-              className="w-full p-2 border rounded-md"
-              value={newMemberSizeCategory}
-              onChange={handleNewMemberSizeChange}
-            >
-              <option value="">指定なし</option>
-              <option value="small">少数選抜 (〜15名)</option>
-              <option value="medium">中規模 (16〜25名)</option>
-              <option value="large">多数受入 (26名以上)</option>
-            </select>
-          </div>
-          
-          {/* 評定範囲指定 */}
-          <div className="space-y-2">
-            <label className="text-sm font-medium text-gray-700 flex items-center">
-              <BookOpen size={16} className="mr-1 text-orange-600" />
-              評定基準
-            </label>
-            <select 
-              className="w-full p-2 border rounded-md"
-              onChange={handleGradeChange}
-              value={maxGradeRequirement ? String(maxGradeRequirement) : ""}
-            >
-              <option value="">指定なし</option>
-              <option value="3.5">3.5以上必要</option>
-              <option value="3.0">3.0以上必要</option>
-              <option value="2.7">2.7以上必要</option>
-              <option value="2.5">2.5以上必要</option>
-            </select>
-          </div>
-          
-          {/* 監督キャリア検索 */}
-          <div className="space-y-2">
-            <label className="text-sm font-medium text-gray-700 flex items-center">
-              <Trophy size={16} className="mr-1 text-yellow-600" />
-              監督キャリア
-            </label>
-            <select 
-              className="w-full p-2 border rounded-md"
-              value={coachBackgroundFilter}
-              onChange={handleCoachBackgroundChange}
-            >
-              <option value="">指定なし</option>
-              <option value="jleaguer">元Jリーガー</option>
-              <option value="national">元日本代表</option>
-              <option value="student">学生出身</option>
-            </select>
-          </div>
-          
-          {/* デンソーカップ出場者数 */}
-          <div className="space-y-2">
-            <label className="text-sm font-medium text-gray-700 flex items-center">
-              <Zap size={16} className="mr-1 text-blue-600" />
-              デンソーカップ出場
-            </label>
-            <select 
-              className="w-full p-2 border rounded-md"
-              onChange={handleDensoCupChange}
-              value={densoCupMinimum || ""}
-            >
-              <option value="">指定なし</option>
-              <option value="1">出場者あり</option>
-              <option value="2">2名以上</option>
-              <option value="3">3名以上</option>
-            </select>
-          </div>
-          
-          {/* ソートオプション */}
-          <div className="space-y-2">
-            <label className="text-sm font-medium text-gray-700 flex items-center">
-              <Star size={16} className="mr-1 text-yellow-600" />
-              並び替え
-            </label>
-            <div className="flex space-x-2">
-              <select 
-                className="flex-grow p-2 border rounded-md"
-                value={sortOption}
-                onChange={(e) => setSortOption(e.target.value)}
-              >
-                <option value="">指定なし</option>
-                <option value="j_league">Jリーグ内定者数順</option>
-                <option value="members">部員数順</option>
-                <option value="grade_requirement">評定基準順</option>
-                <option value="denso_cup">デンソーカップ出場者順</option>
-              </select>
-              <button
-                className="bg-gray-200 p-2 rounded text-gray-700 hover:bg-gray-300"
-                onClick={() => setSortDirection(sortDirection === 'desc' ? 'asc' : 'desc')}
-                title={sortDirection === 'desc' ? '降順' : '昇順'}
-              >
-                {sortDirection === 'desc' ? '↓' : '↑'}
-              </button>
-            </div>
-          </div>
+          {/* 並び替え順序ボタン */}
+          <button 
+            className="bg-gray-200 p-1 rounded text-gray-700 hover:bg-gray-300"
+            onClick={() => setSortDirection(sortDirection === 'desc' ? 'asc' : 'desc')}
+            title={sortDirection === 'desc' ? '降順' : '昇順'}
+          >
+            {sortDirection === 'desc' ? <ArrowDown size={16} /> : <ArrowUp size={16} />}
+          </button>
         </div>
-      )}
+      </div>
       
       {/* 選択中のタグ表示 */}
       {tags.length > 0 && (
@@ -955,15 +548,13 @@ const MultiSelectSearchForm = ({
         </div>
       )}
       
-      {/* 人気の検索条件ボタン */}
+      {/* 人気の検索条件ボタン（簡潔版） */}
       <div className="flex flex-wrap gap-2 mb-6">
         <button 
           type="button"
           className="bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm hover:bg-green-200"
           onClick={() => {
             setSportsRecommend(true);
-            setSelectionAvailable(false);
-            setDormAvailable(false);
           }}
         >
           スポーツ推薦がある大学
@@ -973,8 +564,6 @@ const MultiSelectSearchForm = ({
           className="bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm hover:bg-green-200"
           onClick={() => {
             setSortOption("j_league");
-            setJLeagueMinimum(5); // 5名以上に設定
-            setSliderValue(5);
           }}
         >
           Jリーグ内定者数が多い大学
@@ -988,25 +577,6 @@ const MultiSelectSearchForm = ({
         >
           寮がある大学
         </button>
-        <button 
-          type="button"
-          className="bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm hover:bg-green-200"
-          onClick={() => {
-            setSelectedQualifications(["JFA公認コーチングライセンス"]);
-          }}
-        >
-          コーチングライセンス取得可能
-        </button>
-        <button 
-          type="button"
-          className="bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm hover:bg-green-200"
-          onClick={() => {
-            setSelectedQualifications(["教員免許（保健体育）"]);
-          }}
-        >
-          教員免許取得可能
-        </button>
-        {/* 国公立・私立大学ボタン */}
         <button 
           type="button"
           className="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-sm hover:bg-blue-200"

@@ -1,4 +1,4 @@
-// Modified HomeView.jsx - シンプル版（バナーとウィザードを削除）
+// src/components/HomeView.jsx (更新版)
 import React from 'react';
 import MultiSelectSearchForm from './MultiSelectSearchForm';
 import UniversityList from './UniversityList';
@@ -20,7 +20,7 @@ const HomeView = ({
 }) => {
   return (
     <>
-      {/* 検索フォーム */}
+      {/* 検索フォーム（簡潔版） */}
       <MultiSelectSearchForm
         searchQuery={searchState.searchQuery}
         setSearchQuery={searchState.setSearchQuery}
@@ -42,20 +42,6 @@ const HomeView = ({
         setPublicUniversity={searchState.setPublicUniversity}
         privateUniversity={searchState.privateUniversity}
         setPrivateUniversity={searchState.setPrivateUniversity}
-        jLeagueMinimum={searchState.jLeagueMinimum}
-        setJLeagueMinimum={searchState.setJLeagueMinimum}
-        yearlyJLeagueFilter={searchState.yearlyJLeagueFilter}
-        setYearlyJLeagueFilter={searchState.setYearlyJLeagueFilter}
-        memberSizeCategory={searchState.memberSizeCategory}
-        setMemberSizeCategory={searchState.setMemberSizeCategory}
-        newMemberSizeCategory={searchState.newMemberSizeCategory}
-        setNewMemberSizeCategory={searchState.setNewMemberSizeCategory}
-        maxGradeRequirement={searchState.maxGradeRequirement}
-        setMaxGradeRequirement={searchState.setMaxGradeRequirement}
-        coachBackgroundFilter={searchState.coachBackgroundFilter}
-        setCoachBackgroundFilter={searchState.setCoachBackgroundFilter}
-        densoCupMinimum={searchState.densoCupMinimum}
-        setDensoCupMinimum={searchState.setDensoCupMinimum}
         sortOption={searchState.sortOption}
         setSortOption={searchState.setSortOption}
         sortDirection={searchState.sortDirection}
