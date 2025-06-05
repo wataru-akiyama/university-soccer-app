@@ -37,52 +37,27 @@ const EnhancedPlayerPortfolio = ({
   onRemoveFromFavorites, // 追加
   onReorderFavorites,    // 追加
   onViewDetails,         // 追加
-  userProfile
+  userProfile            // userProfile.jsからのデータを使用
 }) => {
   const [activeTab, setActiveTab] = useState('playerCard');
   const [editMode, setEditMode] = useState(false);
   const [showShareModal, setShowShareModal] = useState(false);
   
-  // ダミーデータ（能力値関連を削除）
-  const playerProfile = {
+  // userProfileがない場合のデフォルト値
+  const playerData = userProfile || {
     personalInfo: {
-      name: "佐藤 翔太",
-      highSchool: "青山高等学校",
-      height: 178,
-      weight: 70,
-      position: "MF",
-      subPosition: "CMF",
-      footedness: "右足",
-      graduationYear: 2026,
-      playStyle: "インサイドレシーバー",
-      appeal: "小学2年生からサッカーを始め、中学・高校と県選抜に選ばれました。テクニックと戦術理解に自信があり、チームプレーを大切にしています。大学ではより高いレベルでプレーし、将来はJリーガーを目指しています。球際の強さとフィジカル面の向上が今後の課題です。"
+      name: "名前未設定",
+      highSchool: "高校名未設定",
+      height: 0,
+      weight: 0,
+      position: "未設定",
+      footedness: "未設定",
+      graduationYear: new Date().getFullYear(),
+      playStyle: "プレースタイル未設定",
+      appeal: "自己PR未設定"
     },
-    // 能力値データを削除
-    aspirations: {
-      type: "A：プロを目指してやりたい",
-      interests: ["コーチング・指導法", "スポーツマネジメント", "トレーニング科学"]
-    },
-    achievements: [
-      { title: "全国高校サッカー選手権大会", result: "ベスト16", year: "2023" },
-      { title: "高校総体（インターハイ）", result: "県大会優勝", year: "2024" },
-      { title: "U-18県選抜", result: "選出", year: "2023" }
-    ],
-    activities: [
-      {
-        id: 1,
-        type: "practice",
-        title: "早稲田大学サッカー部練習参加",
-        date: "2024-08-15T13:00:00Z",
-        details: "夏季練習会に参加。監督やコーチから技術面での評価をいただきました。"
-      },
-      {
-        id: 2,
-        type: "message",
-        title: "筑波大学から連絡",
-        date: "2024-07-20T10:30:00Z",
-        details: "入部に関する追加情報を受け取りました。"
-      }
-    ]
+    achievements: [],
+    activities: []
   };
   
   // タブ切り替え
@@ -154,7 +129,7 @@ const EnhancedPlayerPortfolio = ({
         {/* タブコンテンツ */}
         <div className="p-6">
           {activeTab === 'playerCard' ? (
-            <PlayerCardTab player={playerProfile} editMode={editMode} />
+            <PlayerCardTab player={playerData} editMode={editMode} />
           ) : (
             <IntegratedUniversitiesTab 
               universities={favoriteUniversities}
@@ -171,7 +146,7 @@ const EnhancedPlayerPortfolio = ({
       {showShareModal && (
         <ShareModal 
           onClose={() => setShowShareModal(false)} 
-          player={playerProfile}
+          player={playerData}
         />
       )}
     </div>
@@ -340,7 +315,7 @@ const IntegratedUniversitiesTab = ({
   );
 };
 
-// 選手カードタブのコンテンツ（簡素化版）
+// 選手カードタブのコンテンツ（userProfileを使用するように修正）
 const PlayerCardTab = ({ player, editMode }) => {
   // 数値編集用のステート
   const [editing, setEditing] = useState(null);
@@ -374,11 +349,13 @@ const PlayerCardTab = ({ player, editMode }) => {
               <h3 className="text-xl font-medium mb-1 text-gray-800">{player.personalInfo.name}</h3>
               <p className="text-gray-600 text-sm mb-4">{player.personalInfo.playStyle}</p>
               
-              {/* 志向タイプ */}
-              <div className="inline-block bg-green-50 rounded px-3 py-1.5 text-sm">
-                <span className="text-gray-500 mr-2">志向:</span>
-                <span className="text-green-600 font-medium">{player.aspirations.type}</span>
-              </div>
+              {/* 志向タイプ（userProfileには含まれていないので条件付きで表示） */}
+              {player.aspirations?.type && (
+                <div className="inline-block bg-green-50 rounded px-3 py-1.5 text-sm">
+                  <span className="text-gray-500 mr-2">志向:</span>
+                  <span className="text-green-600 font-medium">{player.aspirations.type}</span>
+                </div>
+              )}
             </div>
             
             {/* プロフィール写真スペース */}
@@ -428,53 +405,60 @@ const PlayerCardTab = ({ player, editMode }) => {
         </div>
       </div>
       
-      {/* 学びたいこと */}
-      <div className="bg-white p-5 rounded-lg shadow-sm border border-gray-200">
-        <h3 className="text-lg font-medium text-gray-800 mb-4 flex items-center">
-          <BookOpen size={18} className="text-green-600 mr-2" />
-          学びたいこと
-        </h3>
-        <div className="flex flex-wrap gap-2">
-          {player.aspirations.interests.map((interest, index) => (
-            <div key={index} className="bg-green-50 text-green-700 px-3 py-1.5 rounded border border-green-100">
-              {interest}
-            </div>
-          ))}
-          {editMode && (
-            <button className="bg-white text-green-600 px-3 py-1.5 rounded border border-green-300 flex items-center">
-              <Plus size={14} className="mr-1" />
-              追加
-            </button>
-          )}
+      {/* 学びたいこと（aspirationsがある場合のみ表示） */}
+      {player.aspirations?.interests && (
+        <div className="bg-white p-5 rounded-lg shadow-sm border border-gray-200">
+          <h3 className="text-lg font-medium text-gray-800 mb-4 flex items-center">
+            <BookOpen size={18} className="text-green-600 mr-2" />
+            学びたいこと
+          </h3>
+          <div className="flex flex-wrap gap-2">
+            {player.aspirations.interests.map((interest, index) => (
+              <div key={index} className="bg-green-50 text-green-700 px-3 py-1.5 rounded border border-green-100">
+                {interest}
+              </div>
+            ))}
+            {editMode && (
+              <button className="bg-white text-green-600 px-3 py-1.5 rounded border border-green-300 flex items-center">
+                <Plus size={14} className="mr-1" />
+                追加
+              </button>
+            )}
+          </div>
         </div>
-      </div>
+      )}
       
       {/* 実績 */}
-      <div className="bg-white p-5 rounded-lg shadow-sm border border-gray-200">
-        <div className="flex justify-between items-center mb-4">
-          <h3 className="text-lg font-medium text-gray-800 flex items-center">
-            <Trophy size={18} className="text-green-600 mr-2" />
-            実績
-          </h3>
-          {editMode && (
-            <button className="text-green-600 text-sm flex items-center">
-              <Edit size={14} className="mr-1" />
-              実績を追加
-            </button>
-          )}
-        </div>
-        <div className="space-y-3">
-          {player.achievements.map((achievement, index) => (
-            <div key={index} className="bg-gray-50 p-3 rounded border border-gray-100">
-              <div className="flex justify-between">
-                <h4 className="font-medium text-gray-800">{achievement.title}</h4>
-                <span className="text-gray-500 text-sm">{achievement.year}</span>
+      {player.achievements && player.achievements.length > 0 && (
+        <div className="bg-white p-5 rounded-lg shadow-sm border border-gray-200">
+          <div className="flex justify-between items-center mb-4">
+            <h3 className="text-lg font-medium text-gray-800 flex items-center">
+              <Trophy size={18} className="text-green-600 mr-2" />
+              実績
+            </h3>
+            {editMode && (
+              <button className="text-green-600 text-sm flex items-center">
+                <Edit size={14} className="mr-1" />
+                実績を追加
+              </button>
+            )}
+          </div>
+          <div className="space-y-3">
+            {player.achievements.map((achievement, index) => (
+              <div key={index} className="bg-gray-50 p-3 rounded border border-gray-100">
+                <div className="flex justify-between">
+                  <h4 className="font-medium text-gray-800">{achievement.title}</h4>
+                  <span className="text-gray-500 text-sm">{achievement.year}</span>
+                </div>
+                <p className="text-green-600 mt-1">{achievement.result}</p>
+                {achievement.description && (
+                  <p className="text-gray-600 text-sm mt-1">{achievement.description}</p>
+                )}
               </div>
-              <p className="text-green-600 mt-1">{achievement.result}</p>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
-      </div>
+      )}
       
       {/* 自己PR */}
       <div className="bg-white p-5 rounded-lg shadow-sm border border-gray-200">
@@ -493,49 +477,70 @@ const PlayerCardTab = ({ player, editMode }) => {
         <p className="text-gray-600 leading-relaxed">{player.personalInfo.appeal}</p>
       </div>
       
+      {/* 大学へのメッセージ（userProfileに含まれている場合） */}
+      {player.universityMessages && (
+        <div className="bg-white p-5 rounded-lg shadow-sm border border-gray-200">
+          <div className="flex justify-between items-center mb-4">
+            <h3 className="text-lg font-medium text-gray-800 flex items-center">
+              <MessageSquare size={18} className="text-green-600 mr-2" />
+              大学へのメッセージ
+            </h3>
+            {editMode && (
+              <button className="text-green-600 text-sm flex items-center">
+                <Edit size={14} className="mr-1" />
+                編集
+              </button>
+            )}
+          </div>
+          <p className="text-gray-600 leading-relaxed">{player.universityMessages}</p>
+        </div>
+      )}
+      
       {/* 活動実績 */}
-      <div className="bg-white p-5 rounded-lg shadow-sm border border-gray-200">
-        <div className="flex justify-between items-center mb-4">
-          <h3 className="text-lg font-medium text-gray-800 flex items-center">
-            <Clock size={18} className="text-green-600 mr-2" />
-            活動実績
-          </h3>
-          {editMode && (
-            <button className="text-green-600 text-sm flex items-center">
-              <Edit size={14} className="mr-1" />
-              活動を追加
-            </button>
-          )}
-        </div>
-        <div className="space-y-4">
-          {player.activities.map((activity) => (
-            <div key={activity.id} className="flex items-start p-3 bg-gray-50 rounded border border-gray-100">
-              <div className="mr-3 flex-shrink-0">
-                {activity.type === 'practice' ? (
-                  <div className="bg-green-100 p-1.5 rounded-full">
-                    <CheckCircle size={16} className="text-green-600" />
-                  </div>
-                ) : activity.type === 'message' ? (
-                  <div className="bg-green-100 p-1.5 rounded-full">
-                    <MessageSquare size={16} className="text-green-600" />
-                  </div>
-                ) : (
-                  <div className="bg-green-100 p-1.5 rounded-full">
-                    <Download size={16} className="text-green-600" />
-                  </div>
-                )}
-              </div>
-              <div className="flex-1">
-                <div className="flex justify-between">
-                  <h4 className="font-medium text-gray-800">{activity.title}</h4>
-                  <span className="text-gray-500 text-xs">{formatDate(activity.date)}</span>
+      {player.activities && player.activities.length > 0 && (
+        <div className="bg-white p-5 rounded-lg shadow-sm border border-gray-200">
+          <div className="flex justify-between items-center mb-4">
+            <h3 className="text-lg font-medium text-gray-800 flex items-center">
+              <Clock size={18} className="text-green-600 mr-2" />
+              活動実績
+            </h3>
+            {editMode && (
+              <button className="text-green-600 text-sm flex items-center">
+                <Edit size={14} className="mr-1" />
+                活動を追加
+              </button>
+            )}
+          </div>
+          <div className="space-y-4">
+            {player.activities.map((activity) => (
+              <div key={activity.id} className="flex items-start p-3 bg-gray-50 rounded border border-gray-100">
+                <div className="mr-3 flex-shrink-0">
+                  {activity.type === 'practice' ? (
+                    <div className="bg-green-100 p-1.5 rounded-full">
+                      <CheckCircle size={16} className="text-green-600" />
+                    </div>
+                  ) : activity.type === 'message' ? (
+                    <div className="bg-green-100 p-1.5 rounded-full">
+                      <MessageSquare size={16} className="text-green-600" />
+                    </div>
+                  ) : (
+                    <div className="bg-green-100 p-1.5 rounded-full">
+                      <Download size={16} className="text-green-600" />
+                    </div>
+                  )}
                 </div>
-                <p className="text-gray-600 text-sm mt-1">{activity.details}</p>
+                <div className="flex-1">
+                  <div className="flex justify-between">
+                    <h4 className="font-medium text-gray-800">{activity.title}</h4>
+                    <span className="text-gray-500 text-xs">{formatDate(activity.date)}</span>
+                  </div>
+                  <p className="text-gray-600 text-sm mt-1">{activity.details}</p>
+                </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
-      </div>
+      )}
       
       {/* 編集時の保存ボタン */}
       {editMode && (
