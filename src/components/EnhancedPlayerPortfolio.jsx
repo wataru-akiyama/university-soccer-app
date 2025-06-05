@@ -7,7 +7,6 @@ import {
     Star, 
     Camera,
     MessageSquare, 
-    Video, 
     BookOpen, 
     User, 
     Save, 
@@ -44,7 +43,7 @@ const EnhancedPlayerPortfolio = ({
   const [editMode, setEditMode] = useState(false);
   const [showShareModal, setShowShareModal] = useState(false);
   
-  // ダミーデータ
+  // ダミーデータ（能力値関連を削除）
   const playerProfile = {
     personalInfo: {
       name: "佐藤 翔太",
@@ -58,17 +57,7 @@ const EnhancedPlayerPortfolio = ({
       playStyle: "インサイドレシーバー",
       appeal: "小学2年生からサッカーを始め、中学・高校と県選抜に選ばれました。テクニックと戦術理解に自信があり、チームプレーを大切にしています。大学ではより高いレベルでプレーし、将来はJリーガーを目指しています。球際の強さとフィジカル面の向上が今後の課題です。"
     },
-    metrics: {
-      overall: 76,
-      passing: 82,
-      shooting: 75,
-      dribbling: 79,
-      defense: 68,
-      physical: 72,
-      speed: 76,
-      vision: 84,
-      specialAbilities: ["パスマスター", "守備意識", "チームプレイヤー", "コーナーキック"]
-    },
+    // 能力値データを削除
     aspirations: {
       type: "A：プロを目指してやりたい",
       interests: ["コーチング・指導法", "スポーツマネジメント", "トレーニング科学"]
@@ -351,92 +340,9 @@ const IntegratedUniversitiesTab = ({
   );
 };
 
-// レーダーチャートコンポーネント
-const StatsRadarChart = ({ stats }) => {
-  // SVG用の計算
-  const centerX = 100;
-  const centerY = 100;
-  const radius = 80;
-  
-  // 能力値の正規化 (0-100) -> (0-1)
-  const normalized = {
-    passing: stats.passing / 100,
-    shooting: stats.shooting / 100,
-    dribbling: stats.dribbling / 100,
-    defense: stats.defense / 100,
-    physical: stats.physical / 100,
-    speed: stats.speed / 100
-  };
-  
-  // 頂点の計算
-  const angle = Math.PI * 2 / 6; // 6つの能力値
-  const points = [
-    { x: centerX, y: centerY - radius * normalized.passing }, // 上（パス）
-    { x: centerX + radius * normalized.shooting * Math.sin(angle), y: centerY - radius * normalized.shooting * Math.cos(angle) }, // 右上（シュート）
-    { x: centerX + radius * normalized.dribbling * Math.sin(2 * angle), y: centerY - radius * normalized.dribbling * Math.cos(2 * angle) }, // 右下（ドリブル）
-    { x: centerX, y: centerY + radius * normalized.defense }, // 下（守備）
-    { x: centerX - radius * normalized.physical * Math.sin(2 * angle), y: centerY - radius * normalized.physical * Math.cos(2 * angle) }, // 左下（フィジカル）
-    { x: centerX - radius * normalized.speed * Math.sin(angle), y: centerY - radius * normalized.speed * Math.cos(angle) } // 左上（スピード）
-  ];
-  
-  // ポリゴンの頂点を文字列に変換
-  const polygonPoints = points.map(p => `${p.x},${p.y}`).join(' ');
-  
-  return (
-    <div className="flex justify-center">
-      <svg width="200" height="200" viewBox="0 0 200 200">
-        {/* 背景の六角形（レーダーチャートの枠） */}
-        <polygon 
-          points={`${centerX},${centerY-radius} ${centerX+radius*Math.sin(angle)},${centerY-radius*Math.cos(angle)} ${centerX+radius*Math.sin(2*angle)},${centerY-radius*Math.cos(2*angle)} ${centerX},${centerY+radius} ${centerX-radius*Math.sin(2*angle)},${centerY-radius*Math.cos(2*angle)} ${centerX-radius*Math.sin(angle)},${centerY-radius*Math.cos(angle)}`} 
-          fill="none" 
-          stroke="#e5e7eb" 
-          strokeWidth="1" 
-        />
-        
-        {/* 70%ライン */}
-        <polygon 
-          points={`${centerX},${centerY-radius*0.7} ${centerX+radius*0.7*Math.sin(angle)},${centerY-radius*0.7*Math.cos(angle)} ${centerX+radius*0.7*Math.sin(2*angle)},${centerY-radius*0.7*Math.cos(2*angle)} ${centerX},${centerY+radius*0.7} ${centerX-radius*0.7*Math.sin(2*angle)},${centerY-radius*0.7*Math.cos(2*angle)} ${centerX-radius*0.7*Math.sin(angle)},${centerY-radius*0.7*Math.cos(angle)}`} 
-          fill="none" 
-          stroke="#e5e7eb" 
-          strokeWidth="1" 
-        />
-        
-        {/* 40%ライン */}
-        <polygon 
-          points={`${centerX},${centerY-radius*0.4} ${centerX+radius*0.4*Math.sin(angle)},${centerY-radius*0.4*Math.cos(angle)} ${centerX+radius*0.4*Math.sin(2*angle)},${centerY-radius*0.4*Math.cos(2*angle)} ${centerX},${centerY+radius*0.4} ${centerX-radius*0.4*Math.sin(2*angle)},${centerY-radius*0.4*Math.cos(2*angle)} ${centerX-radius*0.4*Math.sin(angle)},${centerY-radius*0.4*Math.cos(angle)}`} 
-          fill="none" 
-          stroke="#e5e7eb" 
-          strokeWidth="1" 
-        />
-        
-        {/* 基準線 */}
-        <line x1={centerX} y1={centerY-radius} x2={centerX} y2={centerY+radius} stroke="#e5e7eb" strokeWidth="1" />
-        <line x1={centerX+radius*Math.sin(angle)} y1={centerY-radius*Math.cos(angle)} x2={centerX-radius*Math.sin(angle)} y2={centerY+radius*Math.cos(angle)} stroke="#e5e7eb" strokeWidth="1" />
-        <line x1={centerX+radius*Math.sin(2*angle)} y1={centerY-radius*Math.cos(2*angle)} x2={centerX-radius*Math.sin(2*angle)} y2={centerY+radius*Math.cos(2*angle)} stroke="#e5e7eb" strokeWidth="1" />
-        
-        {/* 能力値ポリゴン - 緑色に変更 */}
-        <polygon 
-          points={polygonPoints}
-          fill="rgba(22, 163, 74, 0.2)" 
-          stroke="#16a34a" 
-          strokeWidth="1.5" 
-        />
-        
-        {/* 能力値のラベル */}
-        <text x={centerX} y={centerY-radius-10} textAnchor="middle" fontSize="11" fill="#6b7280">パス</text>
-        <text x={centerX+radius*Math.sin(angle)+10} y={centerY-radius*Math.cos(angle)} textAnchor="start" fontSize="11" fill="#6b7280">シュート</text>
-        <text x={centerX+radius*Math.sin(2*angle)+10} y={centerY-radius*Math.cos(2*angle)} textAnchor="start" fontSize="11" fill="#6b7280">ドリブル</text>
-        <text x={centerX} y={centerY+radius+15} textAnchor="middle" fontSize="11" fill="#6b7280">守備</text>
-        <text x={centerX-radius*Math.sin(2*angle)-10} y={centerY-radius*Math.cos(2*angle)} textAnchor="end" fontSize="11" fill="#6b7280">フィジカル</text>
-        <text x={centerX-radius*Math.sin(angle)-10} y={centerY-radius*Math.cos(angle)} textAnchor="end" fontSize="11" fill="#6b7280">スピード</text>
-      </svg>
-    </div>
-  );
-};
-
-// 選手カードタブのコンテンツ
+// 選手カードタブのコンテンツ（簡素化版）
 const PlayerCardTab = ({ player, editMode }) => {
-  // 数値編集用のステート - 実際の実装では各能力値ごとに作成
+  // 数値編集用のステート
   const [editing, setEditing] = useState(null);
   const [editValue, setEditValue] = useState(0);
   
@@ -450,81 +356,15 @@ const PlayerCardTab = ({ player, editMode }) => {
     });
   };
   
-  // 数値編集関数
-  const startEditing = (stat, value) => {
-    if (!editMode) return;
-    setEditing(stat);
-    setEditValue(value);
-  };
-  
-  const saveEdit = () => {
-    // 実際の実装では値を更新する処理
-    setEditing(null);
-  };
-  
-  // フォーカスが外れたときに保存
-  const handleBlur = () => {
-    saveEdit();
-  };
-  
-  // Enterキーで保存
-  const handleKeyDown = (e) => {
-    if (e.key === 'Enter') {
-      saveEdit();
-    }
-  };
-  
   return (
     <div className="space-y-8">
-      {/* プレー動画セクション */}
-        <div className="group relative bg-black rounded-lg overflow-hidden" style={{ paddingTop: '56.25%' }}>
-            <div className="absolute inset-0">
-                {/* 実際のビデオ要素 */}
-                <video 
-                className="w-full h-full object-cover"
-                controls
-                poster="/assets/images/video-thumbnail.jpg" // サムネイル画像（オプション）
-                >
-                <source src="/assets/videos/sample-play.mp4" type="video/mp4" />
-                あなたのブラウザは動画再生をサポートしていません
-                </video>
-                
-                {/* 編集モード時のオーバーレイ */}
-                {editMode && (
-                <div className="absolute inset-0 bg-black/70 flex items-center justify-center">
-                    <button className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded flex items-center text-sm">
-                    <Upload size={14} className="mr-2" />
-                    動画を変更
-                    </button>
-                </div>
-                )}
-            </div>
-        </div>
-      
-      {/* 選手基本情報カード - 白背景に変更 */}
+      {/* 選手基本情報カード - 白背景 */}
       <div className="bg-white rounded-lg overflow-hidden border border-gray-200 shadow-sm">
         <div className="p-5">
           <div className="flex justify-between items-start">
             <div>
-              {/* ポジションと総合評価 */}
+              {/* ポジション表示 */}
               <div className="flex items-center mb-3">
-                <div className="bg-green-600 text-white font-bold text-3xl w-12 h-12 rounded-full flex items-center justify-center mr-3">
-                  {editMode && editing === 'overall' ? (
-                    <input
-                      type="number"
-                      value={editValue}
-                      onChange={(e) => setEditValue(e.target.value)}
-                      onBlur={handleBlur}
-                      onKeyDown={handleKeyDown}
-                      className="bg-green-700 w-10 text-center outline-none border border-green-500"
-                      autoFocus
-                    />
-                  ) : (
-                    <span onClick={() => startEditing('overall', player.metrics.overall)}>
-                      {player.metrics.overall}
-                    </span>
-                  )}
-                </div>
                 <div className="border border-green-600 text-green-600 font-medium rounded px-3 py-1 text-sm">
                   {player.personalInfo.position}
                 </div>
@@ -543,31 +383,31 @@ const PlayerCardTab = ({ player, editMode }) => {
             
             {/* プロフィール写真スペース */}
             <div className="relative">
-                <div className="w-20 h-20 bg-gray-100 rounded-full border border-gray-200 overflow-hidden">
-                    <img 
-                    src="/assets/images/profile-photo.jpg"
-                    alt="プロフィール写真"
-                    className="w-full h-full object-cover"
-                    onError={(e) => {
-                        // 画像読み込みエラー時にフォールバックとしてアイコンを表示
-                        e.target.style.display = 'none';
-                        e.currentTarget.parentNode.innerHTML += `
-                        <div class="w-full h-full flex items-center justify-center">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                            <circle cx="12" cy="7" r="4"></circle>
-                            </svg>
-                        </div>
-                        `;
-                    }}
-                    />
-                </div>
-                {editMode && (
-                    <button className="absolute bottom-0 right-0 bg-green-600 rounded-full p-1 border border-green-700">
-                    <Camera size={14} className="text-white" />
-                    </button>
-                )}
-                </div>
+              <div className="w-20 h-20 bg-gray-100 rounded-full border border-gray-200 overflow-hidden">
+                <img 
+                  src="/assets/images/profile-photo.jpg"
+                  alt="プロフィール写真"
+                  className="w-full h-full object-cover"
+                  onError={(e) => {
+                    // 画像読み込みエラー時にフォールバックとしてアイコンを表示
+                    e.target.style.display = 'none';
+                    e.currentTarget.parentNode.innerHTML += `
+                    <div class="w-full h-full flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="12" cy="7" r="4"></circle>
+                        </svg>
+                    </div>
+                    `;
+                  }}
+                />
+              </div>
+              {editMode && (
+                <button className="absolute bottom-0 right-0 bg-green-600 rounded-full p-1 border border-green-700">
+                  <Camera size={14} className="text-white" />
+                </button>
+              )}
+            </div>
           </div>
           
           {/* 基本情報のバッジ */}
@@ -583,222 +423,6 @@ const PlayerCardTab = ({ player, editMode }) => {
             </div>
             <div className="rounded bg-gray-50 px-2.5 py-1 text-xs">
               <span className="text-gray-500">利き足:</span> {player.personalInfo.footedness}
-            </div>
-          </div>
-        </div>
-        
-        {/* 特殊能力アイコン */}
-        <div className="bg-green-50 px-4 py-2.5 flex flex-wrap gap-2">
-          {player.metrics.specialAbilities.map((ability, index) => (
-            <div key={index} className="bg-white text-green-600 text-xs px-2 py-0.5 rounded border border-green-200">
-              {ability}
-            </div>
-          ))}
-          {editMode && (
-            <button className="bg-white text-green-600 text-xs px-2 py-0.5 rounded border border-green-200 flex items-center">
-              <Plus size={10} className="mr-1" />
-              追加
-            </button>
-          )}
-        </div>
-      </div>
-      
-      {/* 能力値グリッド */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        {/* レーダーチャート */}
-        <div className="bg-white p-5 rounded-lg shadow-sm border border-gray-200">
-          <h3 className="text-lg font-medium text-gray-800 mb-4 flex items-center">
-            <span className="w-3 h-3 bg-green-600 rounded-full inline-block mr-2"></span>
-            能力レーダーチャート
-          </h3>
-          <StatsRadarChart stats={player.metrics} />
-        </div>
-        
-        {/* 詳細能力値 */}
-        <div className="bg-white p-5 rounded-lg shadow-sm border border-gray-200">
-          <h3 className="text-lg font-medium text-gray-800 mb-4 flex items-center">
-            <span className="w-3 h-3 bg-green-600 rounded-full inline-block mr-2"></span>
-            詳細能力値
-          </h3>
-          <div className="space-y-4">
-            <div>
-              <div className="flex justify-between mb-1">
-                <span className="text-gray-600">パス</span>
-                {editMode && editing === 'passing' ? (
-                  <input
-                    type="number"
-                    min="0"
-                    max="99"
-                    value={editValue}
-                    onChange={(e) => setEditValue(e.target.value)}
-                    onBlur={handleBlur}
-                    onKeyDown={handleKeyDown}
-                    className="w-12 text-right bg-gray-100 border border-green-200 rounded px-1 text-green-600 font-medium"
-                    autoFocus
-                  />
-                ) : (
-                  <span 
-                    className="text-green-600 font-medium cursor-pointer"
-                    onClick={() => startEditing('passing', player.metrics.passing)}
-                  >
-                    {player.metrics.passing}
-                  </span>
-                )}
-              </div>
-              <div className="w-full bg-gray-200 rounded-full h-1.5">
-                <div 
-                  className="bg-green-600 h-1.5 rounded-full" 
-                  style={{ width: `${player.metrics.passing}%` }}
-                ></div>
-              </div>
-              {editMode && (
-                <input
-                  type="range"
-                  min="0"
-                  max="99"
-                  value={editing === 'passing' ? editValue : player.metrics.passing}
-                  onChange={(e) => {
-                    if (editing === 'passing') {
-                      setEditValue(e.target.value);
-                    } else {
-                      startEditing('passing', e.target.value);
-                    }
-                  }}
-                  className="w-full mt-1 accent-green-600"
-                />
-              )}
-            </div>
-            
-            <div>
-              <div className="flex justify-between mb-1">
-                <span className="text-gray-600">シュート</span>
-                <span className="text-green-600 font-medium">{player.metrics.shooting}</span>
-              </div>
-              <div className="w-full bg-gray-200 rounded-full h-1.5">
-                <div 
-                  className="bg-green-600 h-1.5 rounded-full" 
-                  style={{ width: `${player.metrics.shooting}%` }}
-                ></div>
-              </div>
-              {editMode && (
-                <input
-                  type="range"
-                  min="0"
-                  max="99"
-                  value={player.metrics.shooting}
-                  className="w-full mt-1 accent-green-600"
-                />
-              )}
-            </div>
-            
-            <div>
-              <div className="flex justify-between mb-1">
-                <span className="text-gray-600">ドリブル</span>
-                <span className="text-green-600 font-medium">{player.metrics.dribbling}</span>
-              </div>
-              <div className="w-full bg-gray-200 rounded-full h-1.5">
-                <div 
-                  className="bg-green-600 h-1.5 rounded-full" 
-                  style={{ width: `${player.metrics.dribbling}%` }}
-                ></div>
-              </div>
-              {editMode && (
-                <input
-                  type="range"
-                  min="0"
-                  max="99"
-                  value={player.metrics.dribbling}
-                  className="w-full mt-1 accent-green-600"
-                />
-              )}
-            </div>
-            
-            <div>
-              <div className="flex justify-between mb-1">
-                <span className="text-gray-600">守備</span>
-                <span className="text-green-600 font-medium">{player.metrics.defense}</span>
-              </div>
-              <div className="w-full bg-gray-200 rounded-full h-1.5">
-                <div 
-                  className="bg-green-600 h-1.5 rounded-full" 
-                  style={{ width: `${player.metrics.defense}%` }}
-                ></div>
-              </div>
-              {editMode && (
-                <input
-                  type="range"
-                  min="0"
-                  max="99"
-                  value={player.metrics.defense}
-                  className="w-full mt-1 accent-green-600"
-                />
-              )}
-            </div>
-            
-            <div>
-              <div className="flex justify-between mb-1">
-                <span className="text-gray-600">フィジカル</span>
-                <span className="text-green-600 font-medium">{player.metrics.physical}</span>
-              </div>
-              <div className="w-full bg-gray-200 rounded-full h-1.5">
-                <div 
-                  className="bg-green-600 h-1.5 rounded-full" 
-                  style={{ width: `${player.metrics.physical}%` }}
-                ></div>
-              </div>
-              {editMode && (
-                <input
-                  type="range"
-                  min="0"
-                  max="99"
-                  value={player.metrics.physical}
-                  className="w-full mt-1 accent-green-600"
-                />
-              )}
-            </div>
-            
-            <div>
-              <div className="flex justify-between mb-1">
-                <span className="text-gray-600">スピード</span>
-                <span className="text-green-600 font-medium">{player.metrics.speed}</span>
-              </div>
-              <div className="w-full bg-gray-200 rounded-full h-1.5">
-                <div 
-                  className="bg-green-600 h-1.5 rounded-full" 
-                  style={{ width: `${player.metrics.speed}%` }}
-                ></div>
-              </div>
-              {editMode && (
-                <input
-                  type="range"
-                  min="0"
-                  max="99"
-                  value={player.metrics.speed}
-                  className="w-full mt-1 accent-green-600"
-                />
-              )}
-            </div>
-            
-            <div>
-              <div className="flex justify-between mb-1">
-                <span className="text-gray-600">ビジョン</span>
-                <span className="text-green-600 font-medium">{player.metrics.vision}</span>
-              </div>
-              <div className="w-full bg-gray-200 rounded-full h-1.5">
-                <div 
-                  className="bg-green-600 h-1.5 rounded-full" 
-                  style={{ width: `${player.metrics.vision}%` }}
-                ></div>
-              </div>
-              {editMode && (
-                <input
-                  type="range"
-                  min="0"
-                  max="99"
-                  value={player.metrics.vision}
-                  className="w-full mt-1 accent-green-600"
-                />
-              )}
             </div>
           </div>
         </div>
@@ -869,7 +493,7 @@ const PlayerCardTab = ({ player, editMode }) => {
         <p className="text-gray-600 leading-relaxed">{player.personalInfo.appeal}</p>
       </div>
       
-      {/* 活動実績 - 一番下に追加 */}
+      {/* 活動実績 */}
       <div className="bg-white p-5 rounded-lg shadow-sm border border-gray-200">
         <div className="flex justify-between items-center mb-4">
           <h3 className="text-lg font-medium text-gray-800 flex items-center">
@@ -894,10 +518,6 @@ const PlayerCardTab = ({ player, editMode }) => {
                 ) : activity.type === 'message' ? (
                   <div className="bg-green-100 p-1.5 rounded-full">
                     <MessageSquare size={16} className="text-green-600" />
-                  </div>
-                ) : activity.type === 'video' ? (
-                  <div className="bg-green-100 p-1.5 rounded-full">
-                    <Video size={16} className="text-green-600" />
                   </div>
                 ) : (
                   <div className="bg-green-100 p-1.5 rounded-full">
@@ -1016,19 +636,15 @@ const ShareModal = ({ onClose, player }) => {
             {shareOption === 'card' ? (
               <div className="bg-white p-4 rounded border border-gray-200 inline-block shadow-sm mx-auto">
                 <div className="flex items-center mb-2">
-                  <div className="bg-green-600 text-white font-bold text-xl w-8 h-8 rounded-full flex items-center justify-center mr-2">
-                    {player.metrics.overall}
+                  <div className="border border-green-600 text-green-600 font-medium rounded px-2 py-1 text-xs mr-2">
+                    {player.personalInfo.position}
                   </div>
-                    <span className="text-gray-800">
-                        {player.personalInfo.name} | {player.personalInfo.position}
-                    </span>
+                  <span className="text-gray-800 text-sm">
+                    {player.personalInfo.name}
+                  </span>
                 </div>
-                <div className="flex justify-center space-x-1 mt-1">
-                  {player.metrics.specialAbilities.slice(0, 2).map((ability, index) => (
-                    <div key={index} className="bg-green-50 text-green-600 text-xs px-1.5 py-0.5 rounded text-center">
-                      {ability}
-                    </div>
-                  ))}
+                <div className="text-xs text-gray-600">
+                  {player.personalInfo.playStyle}
                 </div>
               </div>
             ) : (
