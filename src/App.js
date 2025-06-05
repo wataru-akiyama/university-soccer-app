@@ -1,10 +1,9 @@
 // App.js（修正版 - 不要なコードを削除）
 import React, { useState, useEffect } from 'react';
-import universities from './data/universities';
 import ViewManager from './components/ViewManager';
 import ResponsiveHeader from './components/ResponsiveHeader';
 import useUniversitySearch from './hooks/useUniversitySearch';
-import userProfile from './data/userProfile';
+import { universities, userProfile } from './data';
 
 const App = () => {
   // カスタムフックを使用して検索ロジックを実装

@@ -16,7 +16,6 @@ import {
   X,
   Plus,
 } from 'lucide-react';
-import universityExtendedData from '../data/universityExtendedData';
 
 const EnhancedUniversityDetails = ({ 
   university, 
@@ -27,15 +26,9 @@ const EnhancedUniversityDetails = ({
   isInFavorites 
 }) => {
   const [activeTab, setActiveTab] = useState('overview');
-  const [extendedData, setExtendedData] = useState(null);
   
-  // 拡張データをロード
-  useEffect(() => {
-    if (university && university.id) {
-      const extData = universityExtendedData[university.id] || {};
-      setExtendedData(extData);
-    }
-  }, [university]);
+  // 変更: 拡張データは大学オブジェクトから直接取得
+  const extendedData = university?.extended_data || {};
   
   // 年度別のJリーグ内定者の合計
   const totalJLeagueNominees = 
@@ -123,17 +116,17 @@ const EnhancedUniversityDetails = ({
       </div>
       
       {/* PLAYMAKERコメント - ヘッダー直下に配置 */}
-      {(extendedData?.playmakerComment || university.playmakerComment) && (
+      {extendedData?.playmaker_comment && (
         <div className="bg-blue-50 p-4 border-b border-blue-200">
           <div className="flex items-start max-w-4xl mx-auto">
             <MessageSquare size={20} className="text-blue-600 mr-3 flex-shrink-0 mt-1" />
             <div>
               <p className="text-sm font-medium text-blue-800 mb-1">PLAYMAKERからのコメント</p>
               <p className="text-sm text-blue-700">
-                {(extendedData?.playmakerComment || university.playmakerComment).length > 150 
-                  ? `${(extendedData?.playmakerComment || university.playmakerComment).substring(0, 150)}...` 
-                  : (extendedData?.playmakerComment || university.playmakerComment)}
-                {(extendedData?.playmakerComment || university.playmakerComment).length > 150 && (
+                {extendedData.playmaker_comment.length > 150 
+                  ? `${extendedData.playmaker_comment.substring(0, 150)}...` 
+                  : extendedData.playmaker_comment}
+                {extendedData.playmaker_comment.length > 150 && (
                   <button 
                     className="ml-1 text-blue-600 font-medium hover:underline"
                     onClick={() => setActiveTab('playmaker')}
@@ -233,8 +226,8 @@ const EnhancedUniversityDetails = ({
           </div>
         </button>
         
-        {/* 完全版PLAYMAKERコメントタブ - 隠しタブとして実装 */}
-        {(extendedData?.playmakerComment || university.playmakerComment) && (
+        {/* 完全版PLAYMAKERコメントタブ */}
+        {extendedData?.playmaker_comment && (
           <button 
             className={`px-4 py-3 text-center whitespace-nowrap font-medium transition-colors rounded-t-lg ${
               activeTab === 'playmaker' 
@@ -281,7 +274,7 @@ const EnhancedUniversityDetails = ({
                     </tr>
                     <tr className="border-b">
                       <th className="py-3 text-left text-gray-600">所在地</th>
-                      <td className="py-3">{extendedData?.location || "情報なし"}</td>
+                      <td className="py-3">{university.location || "情報なし"}</td>
                     </tr>
                     <tr className="border-b">
                       <th className="py-3 text-left text-gray-600">練習場所</th>
@@ -591,21 +584,6 @@ const EnhancedUniversityDetails = ({
                       <h4 className="font-medium text-purple-800 mb-2">特記事項</h4>
                       <p className="text-sm text-gray-700">{university.soccer_club.facility_note || "特記事項はありません"}</p>
                     </div>
-                    
-                    {extendedData?.field_images && (
-                      <div className="flex overflow-x-auto space-x-2 py-2">
-                        {/* フィールド画像があれば表示 */}
-                        {extendedData.field_images.map((image, index) => (
-                          <div key={index} className="flex-shrink-0 w-32 h-24 rounded-md overflow-hidden">
-                            <img 
-                              src={image} 
-                              alt={`フィールド ${index+1}`} 
-                              className="w-full h-full object-cover"
-                            />
-                          </div>
-                        ))}
-                      </div>
-                    )}
                   </div>
                 </div>
               </div>
@@ -652,21 +630,6 @@ const EnhancedUniversityDetails = ({
                     <span className="font-medium">寮なし</span>
                   </div>
                 )}
-              </div>
-            </div>
-            
-            {/* トレーニング環境 */}
-            <div className="bg-white rounded-xl shadow-md overflow-hidden">
-              <div className="bg-gradient-to-r from-green-50 to-green-100 py-3 px-5 border-b">
-                <h3 className="text-lg font-semibold text-green-800">トレーニング環境</h3>
-              </div>
-              <div className="p-5">
-                <div className="bg-gray-50 p-3 rounded-lg">
-                  <h4 className="text-sm text-gray-600 mb-1">トレーニング施設</h4>
-                  <p className="text-gray-700">
-                    {extendedData?.training_facilities || "詳細情報はありません"}
-                  </p>
-                </div>
               </div>
             </div>
           </div>
@@ -895,7 +858,7 @@ const EnhancedUniversityDetails = ({
         )}
         
         {/* PLAYMAKER詳細解説タブ */}
-        {activeTab === 'playmaker' && (extendedData?.playmakerComment || university.playmakerComment) && (
+        {activeTab === 'playmaker' && extendedData?.playmaker_comment && (
           <div className="bg-white rounded-lg shadow-md p-6">
             <h3 className="text-xl font-semibold mb-4 text-green-700 flex items-center">
               <MessageSquare size={24} className="mr-2" />
@@ -903,7 +866,7 @@ const EnhancedUniversityDetails = ({
             </h3>
             <div className="bg-blue-50 p-5 rounded-lg border border-blue-200">
               <div className="text-gray-700 prose max-w-none">
-                {extendedData?.playmakerComment || university.playmakerComment}
+                {extendedData.playmaker_comment}
               </div>
             </div>
           </div>
