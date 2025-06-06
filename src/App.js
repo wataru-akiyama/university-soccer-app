@@ -30,8 +30,8 @@ const App = () => {
         onChangeView={actions.changeView}
       />
 
-      {/* メインコンテンツ（ボトムナビ分の余白を追加） */}
-      <main className="container mx-auto p-4 pb-20">
+      {/* メインコンテンツ（コンパクトヘッダー分の上部余白とボトムナビ分の下部余白を追加） */}
+      <main className="container mx-auto p-4 pt-16 pb-20">
         <ViewManager 
           currentView={currentView}
           data={data}
