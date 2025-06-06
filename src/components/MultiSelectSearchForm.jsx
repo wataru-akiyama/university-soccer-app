@@ -1,6 +1,6 @@
-// src/components/MultiSelectSearchForm.jsx (修正版)
+// src/components/MultiSelectSearchForm.jsx (保存機能削除版)
 import React, { useState, useEffect, useRef } from 'react';
-import { Search, ChevronDown, X, Filter, Trophy, BookOpen, Save, Bookmark, Trash, School, ArrowDown, ArrowUp } from 'lucide-react';
+import { Search, ChevronDown, X, Filter, Trophy, BookOpen, School, ArrowDown, ArrowUp } from 'lucide-react';
 import MultiSelectDropdown from './MultiSelectDropdown';
 import { regions, leagues, availableQualifications } from '../data';
 
@@ -30,48 +30,6 @@ const MultiSelectSearchForm = ({
   sortDirection,
   setSortDirection
 }) => {
-  // 保存済み検索条件の表示状態
-  const [savedSearches, setSavedSearches] = useState([]);
-  const [showSavedSearchesDropdown, setShowSavedSearchesDropdown] = useState(false);
-  
-  // 検索条件保存モーダル
-  const [showSaveModal, setShowSaveModal] = useState(false);
-  const [newSearchName, setNewSearchName] = useState('');
-  
-  // ドロップダウンの外側クリックを検知するためのref
-  const savedSearchesRef = useRef(null);
-  const saveModalRef = useRef(null);
-  
-  // ローカルストレージから保存済み検索条件を読み込む
-  useEffect(() => {
-    const savedSearchesData = localStorage.getItem('soccerUniversitySavedSearches');
-    if (savedSearchesData) {
-      try {
-        setSavedSearches(JSON.parse(savedSearchesData));
-      } catch (e) {
-        console.error('保存済み検索条件の読み込みに失敗しました', e);
-        setSavedSearches([]);
-      }
-    }
-  }, []);
-  
-  // 保存済み検索ドロップダウン外のクリックを検知して閉じる
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (savedSearchesRef.current && !savedSearchesRef.current.contains(event.target)) {
-        setShowSavedSearchesDropdown(false);
-      }
-      
-      if (saveModalRef.current && !saveModalRef.current.contains(event.target)) {
-        setShowSaveModal(false);
-      }
-    };
-    
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, []);
   
   // 全条件クリアハンドラー
   const clearAllFilters = () => {
@@ -87,87 +45,6 @@ const MultiSelectSearchForm = ({
     setPrivateUniversity(false);
     setSortOption('');
     setSortDirection('desc');
-  };
-  
-  // 現在の検索条件を取得
-  const getCurrentSearchConditions = () => {
-    return {
-      searchQuery,
-      selectedRegions,
-      selectedLeagues,
-      selectedQualifications,
-      sportsRecommend,
-      selectionAvailable,
-      dormAvailable,
-      generalAdmissionAvailable,
-      publicUniversity,
-      privateUniversity,
-      sortOption,
-      sortDirection
-    };
-  };
-  
-  // 検索条件を保存するハンドラー
-  const handleSaveSearch = () => {
-    if (!newSearchName.trim()) {
-      alert('検索条件の名前を入力してください');
-      return;
-    }
-    
-    const currentConditions = getCurrentSearchConditions();
-    const newSavedSearch = {
-      id: Date.now().toString(),
-      name: newSearchName.trim(),
-      conditions: currentConditions
-    };
-    
-    const updatedSavedSearches = [...savedSearches, newSavedSearch];
-    setSavedSearches(updatedSavedSearches);
-    
-    // ローカルストレージに保存
-    localStorage.setItem('soccerUniversitySavedSearches', JSON.stringify(updatedSavedSearches));
-    
-    // モーダルを閉じて入力をクリア
-    setShowSaveModal(false);
-    setNewSearchName('');
-    
-    // 成功メッセージ
-    alert(`「${newSearchName.trim()}」として検索条件を保存しました`);
-  };
-  
-  // 保存済み検索条件を適用するハンドラー
-  const applySavedSearch = (savedSearch) => {
-    const conditions = savedSearch.conditions;
-    
-    // 各条件を適用
-    setSearchQuery(conditions.searchQuery || '');
-    setSelectedRegions(conditions.selectedRegions || []);
-    setSelectedLeagues(conditions.selectedLeagues || []);
-    setSelectedQualifications(conditions.selectedQualifications || []);
-    setSportsRecommend(conditions.sportsRecommend || false);
-    setSelectionAvailable(conditions.selectionAvailable || false);
-    setDormAvailable(conditions.dormAvailable || false);
-    setGeneralAdmissionAvailable(conditions.generalAdmissionAvailable || false);
-    setPublicUniversity(conditions.publicUniversity || false);
-    setPrivateUniversity(conditions.privateUniversity || false);
-    setSortOption(conditions.sortOption || '');
-    setSortDirection(conditions.sortDirection || 'desc');
-    
-    // ドロップダウンを閉じる
-    setShowSavedSearchesDropdown(false);
-  };
-  
-  // 保存済み検索条件を削除するハンドラー
-  const deleteSavedSearch = (e, id) => {
-    e.stopPropagation();
-    
-    if (window.confirm('この保存済み検索条件を削除しますか？')) {
-      const updatedSavedSearches = savedSearches.filter(search => search.id !== id);
-      setSavedSearches(updatedSavedSearches);
-      
-      // ローカルストレージを更新
-      localStorage.setItem('soccerUniversitySavedSearches', JSON.stringify(updatedSavedSearches));
-    }
   };
   
   // 選択中のフィルター数を計算
@@ -318,58 +195,6 @@ const MultiSelectSearchForm = ({
     <div className="bg-white p-6 rounded-lg shadow-md mb-6">
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-xl font-semibold">大学サッカー部を探す</h2>
-        
-        {/* 保存済み検索条件ドロップダウン */}
-        <div className="relative" ref={savedSearchesRef}>
-          <button 
-            className="flex items-center text-blue-600 hover:text-blue-700 transition-colors"
-            onClick={() => setShowSavedSearchesDropdown(!showSavedSearchesDropdown)}
-          >
-            <Bookmark size={18} className="mr-1" />
-            <span>保存した検索条件</span>
-            <ChevronDown size={16} className="ml-1" />
-          </button>
-          
-          {showSavedSearchesDropdown && (
-            <div className="absolute right-0 mt-2 w-64 bg-white shadow-lg rounded-md p-2 z-30">
-              <div className="max-h-60 overflow-y-auto">
-                {savedSearches.length > 0 ? (
-                  <ul className="space-y-1">
-                    {savedSearches.map(search => (
-                      <li 
-                        key={search.id} 
-                        className="hover:bg-blue-50 rounded p-2 cursor-pointer flex items-center justify-between"
-                        onClick={() => applySavedSearch(search)}
-                      >
-                        <span className="truncate flex-1">{search.name}</span>
-                        <button 
-                          className="text-gray-500 hover:text-red-500 p-1"
-                          onClick={(e) => deleteSavedSearch(e, search.id)}
-                        >
-                          <Trash size={14} />
-                        </button>
-                      </li>
-                    ))}
-                  </ul>
-                ) : (
-                  <p className="text-sm text-gray-500 p-2">保存された検索条件はありません</p>
-                )}
-              </div>
-              <div className="border-t pt-1 mt-1">
-                <button 
-                  className="text-green-600 hover:text-green-700 text-sm w-full text-left p-2 flex items-center"
-                  onClick={() => {
-                    setShowSaveModal(true);
-                    setShowSavedSearchesDropdown(false);
-                  }}
-                >
-                  <Save size={14} className="mr-2" />
-                  現在の検索条件を保存
-                </button>
-              </div>
-            </div>
-          )}
-        </div>
       </div>
       
       {/* キーワード検索ボックス */}
@@ -530,13 +355,6 @@ const MultiSelectSearchForm = ({
           
           <div className="flex ml-auto space-x-2">
             <button 
-              className="text-blue-600 text-xs hover:underline flex items-center"
-              onClick={() => setShowSaveModal(true)}
-            >
-              <Save size={14} className="mr-1" />
-              保存
-            </button>
-            <button 
               className="text-red-500 text-xs hover:underline"
               onClick={clearAllFilters}
             >
@@ -603,48 +421,6 @@ const MultiSelectSearchForm = ({
           検索する {activeFiltersCount > 0 && `(${activeFiltersCount}件の条件)`}
         </button>
       </div>
-      
-      {/* 検索条件保存モーダル */}
-      {showSaveModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div 
-            ref={saveModalRef}
-            className="bg-white rounded-lg p-5 max-w-md w-full shadow-xl"
-          >
-            <h3 className="text-lg font-semibold text-gray-800 mb-4">検索条件を保存</h3>
-            <p className="text-gray-600 mb-4">
-              この検索条件に名前をつけて保存すると、後で簡単に呼び出すことができます。
-            </p>
-            <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                検索条件の名前
-              </label>
-              <input
-                type="text"
-                className="w-full p-2 border rounded-md"
-                value={newSearchName}
-                onChange={(e) => setNewSearchName(e.target.value)}
-                placeholder="例：Jリーグ内定者多数の関東圏大学"
-                autoFocus
-              />
-            </div>
-            <div className="flex space-x-2 justify-end">
-              <button
-                className="px-4 py-2 border rounded-md text-gray-700 hover:bg-gray-100"
-                onClick={() => setShowSaveModal(false)}
-              >
-                キャンセル
-              </button>
-              <button
-                className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700"
-                onClick={handleSaveSearch}
-              >
-                保存
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 };
