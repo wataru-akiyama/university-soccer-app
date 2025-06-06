@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { 
-  ChevronRight, 
+  ChevronLeft, 
   Heart, 
   Users, 
   Award, 
@@ -15,6 +15,15 @@ import {
   MessageSquare,
   X,
   Plus,
+  Trophy,
+  BookOpen,
+  Star,
+  TrendingUp,
+  Building,
+  MapPin,
+  User,
+  GraduationCap,
+  Zap
 } from 'lucide-react';
 
 const EnhancedUniversityDetails = ({ 
@@ -27,58 +36,110 @@ const EnhancedUniversityDetails = ({
 }) => {
   const [activeTab, setActiveTab] = useState('overview');
   
-  // 変更: 拡張データは大学オブジェクトから直接取得
-  const extendedData = university?.extended_data || {};
-  
-  // 年度別のJリーグ内定者の合計
-  const totalJLeagueNominees = 
-    (university?.soccer_club?.j_league_nominees_2022 || 0) + 
-    (university?.soccer_club?.j_league_nominees_2023 || 0) + 
-    (university?.soccer_club?.j_league_nominees_2024 || 0);
-  
   if (!university) return null;
   
+  // パフォーマンス指標の計算
+  const performanceMetrics = [
+    {
+      label: "Jリーグ内定者数",
+      value: university.soccer_club?.j_league_nominees_2022_24 || 
+             ((university.soccer_club?.j_league_nominees_2022 || 0) + 
+              (university.soccer_club?.j_league_nominees_2023 || 0) + 
+              (university.soccer_club?.j_league_nominees_2024 || 0)),
+      unit: "名",
+      subtitle: "過去3年間",
+      trend: university.soccer_club?.j_league_nominees_2022_24 > 5 ? "+25%" : "安定",
+      icon: Trophy,
+      color: "text-yellow-600",
+      bgColor: "bg-yellow-50"
+    },
+    {
+      label: "部員数",
+      value: university.soccer_club?.total_members || 0,
+      unit: "名",
+      subtitle: "2024年度",
+      trend: "安定",
+      icon: Users,
+      color: "text-blue-600",
+      bgColor: "bg-blue-50"
+    },
+    {
+      label: "デンソーカップ",
+      value: university.soccer_club?.denso_cup_2024_25 || 0,
+      unit: "名",
+      subtitle: "2024-25選出",
+      trend: university.soccer_club?.denso_cup_2024_25 > 2 ? "増加" : "",
+      icon: Medal,
+      color: "text-purple-600",
+      bgColor: "bg-purple-50"
+    },
+    {
+      label: "サッカーコート",
+      value: university.soccer_club?.soccer_field_count || 0,
+      unit: "面",
+      subtitle: "専用施設",
+      trend: "",
+      icon: Home,
+      color: "text-green-600",
+      bgColor: "bg-green-50"
+    }
+  ];
+
+  const tabs = [
+    { id: 'overview', label: '概要', icon: Info },
+    { id: 'performance', label: '実績', icon: TrendingUp },
+    { id: 'facilities', label: '施設', icon: Building },
+    { id: 'admission', label: '入部', icon: GraduationCap },
+    { id: 'members', label: '部員', icon: Users },
+    { id: 'careers', label: '進路', icon: Briefcase }
+  ];
+
+  // 大学名から短縮名を生成
+  const getShortName = (name) => {
+    return name?.charAt(0) || 'U';
+  };
+
+  // 練習体験申し込みハンドラー
+  const handlePracticeApplication = () => {
+    alert(`${university.university_name}サッカー部の練習体験に申し込みます。`);
+  };
+
   return (
-    <div className="bg-white rounded-xl shadow-lg overflow-hidden">
-      {/* ヘッダー部分 */}
-      <div className="relative">
-        {/* 背景イメージ */}
-        <div className="h-48 overflow-hidden">
-          <img 
-            src={`/images/universities/${university.id}.jpg`}
-            alt={university.university_name}
-            className="w-full h-full object-cover"
-            onError={(e) => {
-              e.target.onerror = null;
-              e.target.src = `${process.env.PUBLIC_URL}/images/university-default.jpg`;
-            }}
-          />
-          <div className="absolute inset-0 bg-gradient-to-b from-green-700 to-green-700 opacity-70"></div>
+    <div className="bg-gray-50 min-h-screen">
+      {/* ヒーローセクション */}
+      <div className="relative bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
+        {/* 背景パターン */}
+        <div className="absolute inset-0 opacity-10">
+          <div className="absolute inset-0" style={{
+            backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.1'%3E%3Ccircle cx='30' cy='30' r='2'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
+            backgroundSize: '60px 60px'
+          }}></div>
         </div>
         
-        {/* コンテンツオーバーレイ */}
-        <div className="absolute inset-0 p-6 flex flex-col justify-between">
-          <div className="flex justify-between">
+        {/* コンテンツ */}
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
+          {/* ナビゲーション */}
+          <div className="flex justify-between items-center mb-6 lg:mb-8">
             <button 
-              className="bg-white text-green-700 px-3 py-1 rounded-lg flex items-center text-sm shadow-md hover:bg-gray-100 transition-colors"
+              className="flex items-center text-white hover:text-gray-300 transition-colors"
               onClick={onBack}
             >
-              <ChevronRight className="transform rotate-180 mr-1" size={16} />
-              一覧に戻る
+              <ChevronLeft size={20} className="mr-2" />
+              <span className="hidden sm:inline">一覧に戻る</span>
+              <span className="sm:hidden">戻る</span>
             </button>
             
-            <div className="flex space-x-2">
+            <div className="flex space-x-3">
               <button 
-                className={`rounded-full p-3 shadow-md transition-colors ${
+                className={`p-3 rounded-full transition-all duration-200 ${
                   isInFavorites
-                  ? "bg-white text-red-500"
-                  : "bg-pink-600 text-white hover:bg-pink-500"
+                  ? "bg-red-500 text-white shadow-lg scale-105"
+                  : "bg-white/10 text-white hover:bg-white/20 backdrop-blur-sm"
                 }`}
                 onClick={() => onAddToFavorites(university)}
-                disabled={isInFavorites}
-                title={isInFavorites ? "お気に入り登録済み" : "お気に入りに追加"}
+                title={isInFavorites ? "進路プランから削除" : "進路プランに追加"}
               >
-                <Heart size={24} />
+                <Heart size={20} fill={isInFavorites ? "currentColor" : "none"} />
               </button>
               
               {university.homepage_url && (
@@ -86,825 +147,391 @@ const EnhancedUniversityDetails = ({
                   href={university.homepage_url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="rounded-full p-3 bg-blue-600 text-white shadow-md hover:bg-blue-500 transition-colors"
+                  className="bg-white/10 text-white hover:bg-white/20 backdrop-blur-sm p-3 rounded-full transition-colors"
                   title="公式サイトを開く"
                 >
-                  <ArrowUpRight size={24} />
+                  <ArrowUpRight size={20} />
                 </a>
               )}
             </div>
           </div>
           
-          <div className="mt-auto flex items-end">
-            <div className="bg-white rounded-full p-3 mr-4 shadow-md">
-              <img 
-                src={`/images/logos/${university.id}.png`}
-                alt={`${university.university_name} ロゴ`}
-                className="w-16 h-16 object-contain"
-                onError={(e) => {
-                  e.target.onerror = null;
-                  e.target.src = `${process.env.PUBLIC_URL}/images/default-logo.png`;
-                }}
-              />
+          {/* メイン情報 */}
+          <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-4 sm:space-y-0 sm:space-x-6 mb-6 lg:mb-8">
+            <div className="w-20 h-20 lg:w-24 lg:h-24 bg-white rounded-2xl p-3 lg:p-4 shadow-xl flex items-center justify-center flex-shrink-0">
+              <div className="w-full h-full bg-gradient-to-br from-green-500 to-green-600 rounded-lg flex items-center justify-center text-white font-bold text-lg lg:text-xl">
+                {getShortName(university.university_name)}
+              </div>
             </div>
-            <div className="text-white">
-              <h2 className="text-3xl font-bold mb-1">{university.university_name}</h2>
-              <p className="text-xl font-medium text-green-100">{university.soccer_club.league}</p>
+            
+            <div className="flex-1 min-w-0">
+              <div className="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-3 mb-2">
+                <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white truncate">
+                  {university.university_name}
+                </h1>
+                <span className="bg-green-500 text-white px-3 py-1 rounded-full text-sm font-medium inline-block">
+                  {university.soccer_club?.league}
+                </span>
+              </div>
+              
+              <div className="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-4 text-gray-300 mb-4">
+                <div className="flex items-center">
+                  <MapPin size={16} className="mr-1 flex-shrink-0" />
+                  <span className="truncate">{university.location}</span>
+                </div>
+                <div className="flex items-center">
+                  <User size={16} className="mr-1 flex-shrink-0" />
+                  <span className="truncate">監督: {university.soccer_club?.coach_name}</span>
+                </div>
+              </div>
+              
+              <div className="flex flex-wrap gap-2">
+                {university.main_faculties?.slice(0, 3).map((faculty, index) => (
+                  <span key={index} className="bg-white/10 text-white px-3 py-1 rounded-full text-sm backdrop-blur-sm">
+                    {faculty}
+                  </span>
+                ))}
+              </div>
             </div>
           </div>
         </div>
       </div>
-      
-      {/* PLAYMAKERコメント - ヘッダー直下に配置 */}
-      {extendedData?.playmaker_comment && (
-        <div className="bg-blue-50 p-4 border-b border-blue-200">
-          <div className="flex items-start max-w-4xl mx-auto">
-            <MessageSquare size={20} className="text-blue-600 mr-3 flex-shrink-0 mt-1" />
-            <div>
-              <p className="text-sm font-medium text-blue-800 mb-1">PLAYMAKERからのコメント</p>
-              <p className="text-sm text-blue-700">
-                {extendedData.playmaker_comment.length > 150 
-                  ? `${extendedData.playmaker_comment.substring(0, 150)}...` 
-                  : extendedData.playmaker_comment}
-                {extendedData.playmaker_comment.length > 150 && (
-                  <button 
-                    className="ml-1 text-blue-600 font-medium hover:underline"
-                    onClick={() => setActiveTab('playmaker')}
-                  >
-                    続きを読む
-                  </button>
-                )}
-              </p>
-            </div>
-          </div>
-        </div>
-      )}
-      
-      {/* タブメニュー */}
-      <div className="flex border-b overflow-x-auto bg-white shadow-sm sticky top-0 z-10">
-        <button 
-          className={`px-4 py-3 text-center whitespace-nowrap font-medium transition-colors rounded-t-lg ${
-            activeTab === 'overview' 
-              ? 'border-b-2 border-green-600 text-green-700 bg-green-50' 
-              : 'text-gray-600 hover:bg-green-50'
-          }`}
-          onClick={() => setActiveTab('overview')}
-        >
-          <div className="flex items-center">
-            <Info size={18} className="mr-1 md:mr-2" />
-            <span>概要</span>
-          </div>
-        </button>
-        
-        <button 
-          className={`px-4 py-3 text-center whitespace-nowrap font-medium transition-colors rounded-t-lg ${
-            activeTab === 'members' 
-              ? 'border-b-2 border-green-600 text-green-700 bg-green-50' 
-              : 'text-gray-600 hover:bg-green-50'
-          }`}
-          onClick={() => setActiveTab('members')}
-        >
-          <div className="flex items-center">
-            <Users size={18} className="mr-1 md:mr-2" />
-            <span>部員</span>
-          </div>
-        </button>
-        
-        <button 
-          className={`px-4 py-3 text-center whitespace-nowrap font-medium transition-colors rounded-t-lg ${
-            activeTab === 'achievements' 
-              ? 'border-b-2 border-green-600 text-green-700 bg-green-50' 
-              : 'text-gray-600 hover:bg-green-50'
-          }`}
-          onClick={() => setActiveTab('achievements')}
-        >
-          <div className="flex items-center">
-            <Medal size={18} className="mr-1 md:mr-2" />
-            <span>実績</span>
-          </div>
-        </button>
-        
-        <button 
-          className={`px-4 py-3 text-center whitespace-nowrap font-medium transition-colors rounded-t-lg ${
-            activeTab === 'facilities' 
-              ? 'border-b-2 border-green-600 text-green-700 bg-green-50' 
-              : 'text-gray-600 hover:bg-green-50'
-          }`}
-          onClick={() => setActiveTab('facilities')}
-        >
-          <div className="flex items-center">
-            <Home size={18} className="mr-1 md:mr-2" />
-            <span>施設</span>
-          </div>
-        </button>
-        
-        <button 
-          className={`px-4 py-3 text-center whitespace-nowrap font-medium transition-colors rounded-t-lg ${
-            activeTab === 'careers' 
-              ? 'border-b-2 border-green-600 text-green-700 bg-green-50' 
-              : 'text-gray-600 hover:bg-green-50'
-          }`}
-          onClick={() => setActiveTab('careers')}
-        >
-          <div className="flex items-center">
-            <Briefcase size={18} className="mr-1 md:mr-2" />
-            <span>進路</span>
-          </div>
-        </button>
-        
-        <button 
-          className={`px-4 py-3 text-center whitespace-nowrap font-medium transition-colors rounded-t-lg ${
-            activeTab === 'entry' 
-              ? 'border-b-2 border-green-600 text-green-700 bg-green-50' 
-              : 'text-gray-600 hover:bg-green-50'
-          }`}
-          onClick={() => setActiveTab('entry')}
-        >
-          <div className="flex items-center">
-            <FileText size={18} className="mr-1 md:mr-2" />
-            <span>入部条件</span>
-          </div>
-        </button>
-        
-        {/* 完全版PLAYMAKERコメントタブ */}
-        {extendedData?.playmaker_comment && (
-          <button 
-            className={`px-4 py-3 text-center whitespace-nowrap font-medium transition-colors rounded-t-lg ${
-              activeTab === 'playmaker' 
-                ? 'border-b-2 border-green-600 text-green-700 bg-green-50' 
-                : 'text-gray-600 hover:bg-green-50'
-            }`}
-            onClick={() => setActiveTab('playmaker')}
-          >
-            <div className="flex items-center">
-              <MessageSquare size={18} className="mr-1 md:mr-2" />
-              <span>詳細解説</span>
-            </div>
-          </button>
-        )}
-      </div>
-      
-      {/* タブコンテンツ */}
-      <div className="p-6">
-        {/* 概要タブ */}
-        {activeTab === 'overview' && (
-          <div className="space-y-6">
-            <div className="bg-white rounded-xl shadow-md overflow-hidden">
-              <div className="bg-gradient-to-r from-green-50 to-green-100 py-3 px-5 border-b">
-                <h3 className="text-lg font-semibold text-green-800">基本情報</h3>
-              </div>
-              <div className="p-5">
-                <table className="w-full">
-                  <tbody>
-                    <tr className="border-b">
-                      <th className="py-3 text-left text-gray-600 w-1/3">大学名</th>
-                      <td className="py-3">{university.university_name}</td>
-                    </tr>
-                    <tr className="border-b">
-                      <th className="py-3 text-left text-gray-600">リーグ</th>
-                      <td className="py-3">{university.soccer_club.league}</td>
-                    </tr>
-                    <tr className="border-b">
-                      <th className="py-3 text-left text-gray-600">監督</th>
-                      <td className="py-3">{university.soccer_club.coach_name}</td>
-                    </tr>
-                    <tr className="border-b">
-                      <th className="py-3 text-left text-gray-600">部員数</th>
-                      <td className="py-3">{university.soccer_club.total_members}名</td>
-                    </tr>
-                    <tr className="border-b">
-                      <th className="py-3 text-left text-gray-600">所在地</th>
-                      <td className="py-3">{university.location || "情報なし"}</td>
-                    </tr>
-                    <tr className="border-b">
-                      <th className="py-3 text-left text-gray-600">練習場所</th>
-                      <td className="py-3">{university.soccer_club.practice_location || "情報なし"}</td>
-                    </tr>
-                    <tr className="border-b">
-                      <th className="py-3 text-left text-gray-600">学部情報</th>
-                      <td className="py-3">{university.main_faculties.join('、')}</td>
-                    </tr>
-                    <tr>
-                      <th className="py-3 text-left text-gray-600">公式サイト</th>
-                      <td className="py-3">
-                        {university.homepage_url ? (
-                          <a 
-                            href={university.homepage_url} 
-                            target="_blank" 
-                            rel="noopener noreferrer"
-                            className="text-green-600 hover:underline flex items-center"
-                          >
-                            公式サイトを見る
-                            <ArrowUpRight size={14} className="ml-1" />
-                          </a>
-                        ) : "非公開"}
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-            </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* ハイライト機能 */}
-              <div className="bg-white rounded-xl shadow-md overflow-hidden">
-                <div className="bg-gradient-to-r from-blue-50 to-blue-100 py-3 px-5 border-b">
-                  <h3 className="text-lg font-semibold text-blue-800">ハイライト</h3>
-                </div>
-                <div className="p-5 space-y-4">
-                  <div className="flex flex-wrap gap-3">
-                    {university.soccer_club.dorm_available && (
-                      <div className="flex items-center rounded-lg px-4 py-3 bg-purple-50 border border-purple-200 shadow-sm">
-                        <Home size={18} className="text-purple-700 mr-2" />
-                        <span className="font-medium text-purple-800">寮あり</span>
-                      </div>
-                    )}
-                    
-                    {university.entry_conditions.sports_recommend && (
-                      <div className="flex items-center rounded-lg px-4 py-3 bg-green-50 border border-green-200 shadow-sm">
-                        <FileText size={18} className="text-green-700 mr-2" />
-                        <span className="font-medium text-green-800">スポーツ推薦あり</span>
-                      </div>
-                    )}
-                    
-                    {university.entry_conditions.selection && (
-                      <div className="flex items-center rounded-lg px-4 py-3 bg-blue-50 border border-blue-200 shadow-sm">
-                        <Calendar size={18} className="text-blue-700 mr-2" />
-                        <span className="font-medium text-blue-800">セレクションあり</span>
-                      </div>
-                    )}
-                    
-                    {totalJLeagueNominees > 5 && (
-                      <div className="flex items-center rounded-lg px-4 py-3 bg-yellow-50 border border-yellow-200 shadow-sm">
-                        <Award size={18} className="text-yellow-700 mr-2" />
-                        <span className="font-medium text-yellow-800">Jリーグ内定者多数</span>
-                      </div>
-                    )}
+
+      {/* パフォーマンス指標 */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-6 lg:-mt-8 relative z-10">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-6 mb-6 lg:mb-8">
+          {performanceMetrics.map((metric, index) => {
+            const Icon = metric.icon;
+            return (
+              <div key={index} className="bg-white rounded-xl p-4 lg:p-6 shadow-lg hover:shadow-xl transition-shadow border border-gray-100">
+                <div className="flex items-center justify-between mb-3 lg:mb-4">
+                  <div className={`p-2 lg:p-3 rounded-lg ${metric.bgColor}`}>
+                    <Icon size={20} className={`lg:w-6 lg:h-6 ${metric.color}`} />
                   </div>
-                </div>
-              </div>
-              
-              {/* 取得可能資格 */}
-              <div className="bg-white rounded-xl shadow-md overflow-hidden">
-                <div className="bg-gradient-to-r from-green-50 to-green-100 py-3 px-5 border-b">
-                  <h3 className="text-lg font-semibold text-green-800">取得可能資格</h3>
-                </div>
-                <div className="p-5">
-                  <div className="flex flex-wrap gap-2 mb-4">
-                    {university.soccer_club.qualifications.map((qualification, index) => (
-                      <span key={index} className="bg-blue-100 text-blue-800 px-3 py-1.5 rounded-full text-sm">
-                        {qualification}
-                      </span>
-                    ))}
-                  </div>
-                  <p className="text-sm text-gray-700">{university.soccer_club.qualification_note || '詳細情報はありません'}</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-        
-        {/* 部員タブ */}
-        {activeTab === 'members' && (
-          <div className="space-y-6">
-            <div className="bg-white rounded-xl shadow-md overflow-hidden">
-              <div className="bg-gradient-to-r from-green-50 to-green-100 py-3 px-5 border-b">
-                <h3 className="text-lg font-semibold text-green-800">学年別部員数</h3>
-              </div>
-              <div className="p-5">
-                <div className="h-64 flex items-end justify-around bg-gray-50 p-4 rounded-lg">
-                  {Object.entries(university.soccer_club.members_by_grade).map(([grade, count]) => {
-                    const maxCount = Math.max(...Object.values(university.soccer_club.members_by_grade));
-                    const height = maxCount > 0 ? (count / maxCount) * 100 : 0;
-                    
-                    return (
-                      <div key={grade} className="flex flex-col items-center">
-                        <div className="font-medium text-gray-800 mb-2">{count}名</div>
-                        <div 
-                          className="w-16 bg-gradient-to-t from-green-600 to-green-400 rounded-t"
-                          style={{ height: `${height}%` }}
-                        >
-                          <div className="bg-green-700 h-1"></div>
-                        </div>
-                        <div className="mt-2 text-sm">
-                          <div className="font-semibold">{grade}</div>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-            </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* 新入部員情報 */}
-              <div className="bg-white rounded-xl shadow-md overflow-hidden">
-                <div className="bg-gradient-to-r from-blue-50 to-blue-100 py-3 px-5 border-b">
-                  <h3 className="text-lg font-semibold text-blue-800">新入部員情報</h3>
-                </div>
-                <div className="p-5">
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="bg-blue-50 p-3 rounded-lg">
-                      <h4 className="text-sm text-gray-600 mb-1">2024年度新入部員</h4>
-                      <p className="text-lg font-semibold text-blue-800">
-                        {university.soccer_club.members_by_grade["1年"] || "情報なし"}
-                      </p>
-                    </div>
-                    <div className="bg-blue-50 p-3 rounded-lg">
-                      <h4 className="text-sm text-gray-600 mb-1">推薦入部率</h4>
-                      <p className="text-lg font-semibold text-blue-800">
-                        {extendedData?.recommend_ratio || "情報なし"}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              
-              {/* 出身高校 */}
-              <div className="bg-white rounded-xl shadow-md overflow-hidden">
-                <div className="bg-gradient-to-r from-green-50 to-green-100 py-3 px-5 border-b">
-                  <h3 className="text-lg font-semibold text-green-800">出身高校傾向</h3>
-                </div>
-                <div className="p-5">
-                  <p className="text-gray-700">
-                    {extendedData?.high_school_trend || "現在、出身高校の詳細情報はありません。"}
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-        
-        {/* 実績タブ */}
-        {activeTab === 'achievements' && (
-          <div className="space-y-6">
-            {/* Jリーグ内定者数 */}
-            <div className="bg-white rounded-xl shadow-md overflow-hidden">
-              <div className="bg-gradient-to-r from-yellow-50 to-yellow-100 py-3 px-5 border-b">
-                <h3 className="text-lg font-semibold text-yellow-800">Jリーグ内定実績</h3>
-              </div>
-              <div className="p-5">
-                <div className="mb-4">
-                  <h4 className="font-semibold mb-2 flex items-center">
-                    <Medal className="text-yellow-600 mr-2" size={18} />
-                    Jリーグ内定者数 (過去3年間)
-                  </h4>
-                  <div className="text-3xl font-bold text-center text-yellow-700 mb-2">
-                    {totalJLeagueNominees}名
-                  </div>
-                  
-                  {/* 年度別表示 */}
-                  <div className="grid grid-cols-3 gap-2 text-center">
-                    <div className="bg-yellow-50 p-2 rounded-md">
-                      <div className="text-xs text-gray-500">2022年</div>
-                      <div className="font-bold text-yellow-600">{university.soccer_club.j_league_nominees_2022 || 0}名</div>
-                    </div>
-                    <div className="bg-yellow-50 p-2 rounded-md">
-                      <div className="text-xs text-gray-500">2023年</div>
-                      <div className="font-bold text-yellow-600">{university.soccer_club.j_league_nominees_2023 || 0}名</div>
-                    </div>
-                    <div className="bg-yellow-50 p-2 rounded-md">
-                      <div className="text-xs text-gray-500">2024年</div>
-                      <div className="font-bold text-yellow-600">{university.soccer_club.j_league_nominees_2024 || 0}名</div>
-                    </div>
-                  </div>
+                  {metric.trend && (
+                    <span className="text-xs lg:text-sm font-medium text-green-600 bg-green-50 px-2 py-1 rounded-full">
+                      {metric.trend}
+                    </span>
+                  )}
                 </div>
                 
-                {/* グラフ表示 */}
-                <div className="mt-4 space-y-3">
-                  {[
-                    { year: '2022', count: university.soccer_club.j_league_nominees_2022 || 0 },
-                    { year: '2023', count: university.soccer_club.j_league_nominees_2023 || 0 },
-                    { year: '2024', count: university.soccer_club.j_league_nominees_2024 || 0 }
-                  ].map(({ year, count }) => {
-                    const maxCount = Math.max(
-                      university.soccer_club.j_league_nominees_2022 || 0,
-                      university.soccer_club.j_league_nominees_2023 || 0,
-                      university.soccer_club.j_league_nominees_2024 || 0
-                    );
-                    const width = maxCount > 0 ? `${(count / maxCount) * 100}%` : '0%';
-                    
-                    return (
-                      <div key={year} className="flex items-center">
-                        <div className="w-10 text-sm text-right mr-2">{year}</div>
-                        <div className="flex-grow bg-gray-200 rounded-full h-6 overflow-hidden">
-                          <div 
-                            className="h-full bg-yellow-500 rounded-full relative"
-                            style={{ width }}
-                          >
-                            {count > 0 && (
-                              <span className="absolute inset-0 flex items-center justify-center text-white text-xs font-bold">
-                                {count}名
-                              </span>
-                            )}
+                <div className="mb-2">
+                  <div className="flex items-baseline space-x-1">
+                    <span className="text-2xl lg:text-3xl font-bold text-gray-900">{metric.value}</span>
+                    <span className="text-sm lg:text-lg text-gray-600">{metric.unit}</span>
+                  </div>
+                  <p className="text-xs lg:text-sm text-gray-500">{metric.subtitle}</p>
+                </div>
+                
+                <h3 className="text-xs lg:text-sm font-medium text-gray-700">{metric.label}</h3>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* メインコンテンツ */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-8 lg:pb-12">
+        <div className="space-y-6 lg:space-y-8">
+          {/* ナビゲーションタブ */}
+          <div className="bg-white rounded-xl shadow-sm overflow-hidden">
+            <div className="flex border-b border-gray-200 overflow-x-auto scrollbar-hide">
+              {tabs.map((tab) => {
+                const Icon = tab.icon;
+                return (
+                  <button
+                    key={tab.id}
+                    className={`flex-shrink-0 flex items-center justify-center px-4 lg:px-6 py-3 lg:py-4 text-sm font-medium transition-colors whitespace-nowrap ${
+                      activeTab === tab.id
+                        ? 'text-green-600 border-b-2 border-green-600 bg-green-50'
+                        : 'text-gray-500 hover:text-gray-700'
+                    }`}
+                    onClick={() => setActiveTab(tab.id)}
+                  >
+                    <Icon size={18} className="mr-2" />
+                    {tab.label}
+                  </button>
+                );
+              })}
+            </div>
+            
+            <div className="p-6 lg:p-8">
+              {activeTab === 'overview' && (
+                <div className="space-y-6">
+                  <div>
+                    <h3 className="text-lg font-semibold text-gray-900 mb-4">チームについて</h3>
+                    <p className="text-gray-700 leading-relaxed">
+                      {university.extended_data?.playmaker_comment || 
+                       `${university.university_name}サッカー部は、${university.soccer_club?.league}に所属し、監督の${university.soccer_club?.coach_name}氏のもとで活動しています。`}
+                    </p>
+                  </div>
+                  
+                  <div>
+                    <h3 className="text-lg font-semibold text-gray-900 mb-4">取得可能資格</h3>
+                    <div className="flex flex-wrap gap-2">
+                      {university.soccer_club?.qualifications?.map((qualification, index) => (
+                        <span key={index} className="bg-blue-50 text-blue-700 px-3 py-2 rounded-lg text-sm border border-blue-200">
+                          {qualification}
+                        </span>
+                      )) || (
+                        <span className="text-gray-500">情報なし</span>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              )}
+              
+              {activeTab === 'performance' && (
+                <div className="space-y-6">
+                  <div>
+                    <h3 className="text-lg font-semibold text-gray-900 mb-4">主な内定先</h3>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      {university.extended_data?.j_league_teams?.map((team, index) => (
+                        <div key={index} className="bg-gray-50 p-3 rounded-lg text-center">
+                          <span className="font-medium text-gray-900">{team}</span>
+                        </div>
+                      )) || (
+                        <div className="col-span-2 text-center text-gray-500 py-4">
+                          内定先情報はありません
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <h3 className="text-lg font-semibold text-gray-900 mb-4">有名OB</h3>
+                    <div className="space-y-3">
+                      {university.extended_data?.famous_alumni?.map((alumni, index) => (
+                        <div key={index} className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
+                          <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0">
+                            <Star size={16} className="text-green-600" />
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            <div className="font-medium text-gray-900 truncate">{alumni.name}</div>
+                            <div className="text-sm text-gray-500 truncate">{alumni.career}</div>
                           </div>
                         </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-            </div>
-            
-            {/* デンソーカップ */}
-            <div className="bg-white rounded-xl shadow-md overflow-hidden">
-              <div className="bg-gradient-to-r from-blue-50 to-blue-100 py-3 px-5 border-b">
-                <h3 className="text-lg font-semibold text-blue-800">デンソーカップ出場者数</h3>
-              </div>
-              <div className="p-5">
-                <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
-                  <h4 className="font-semibold mb-2">デンソーカップ出場選手数 (2024-2025)</h4>
-                  <div className="text-3xl font-bold text-center text-blue-700">
-                    {university.soccer_club.denso_cup_2024_25 || 0}名
+                      )) || (
+                        <div className="text-center text-gray-500 py-4">
+                          有名OB情報はありません
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
-              </div>
-            </div>
-            
-            {/* 大会成績 */}
-            <div className="bg-white rounded-xl shadow-md overflow-hidden">
-              <div className="bg-gradient-to-r from-green-50 to-green-100 py-3 px-5 border-b">
-                <h3 className="text-lg font-semibold text-green-800">主な大会成績</h3>
-              </div>
-              <div className="p-5">
-                <div className="space-y-3">
-                  {extendedData?.tournament_results ? (
-                    extendedData.tournament_results.map((result, index) => (
-                      <div key={index} className="bg-gray-50 p-3 rounded-lg">
-                        <div className="flex justify-between">
-                          <div className="font-medium">{result.tournament}</div>
-                          <div className="text-sm text-gray-500">{result.year}</div>
-                        </div>
-                        <div className="text-green-700 font-medium">{result.achievement}</div>
-                      </div>
-                    ))
-                  ) : (
-                    <p className="text-center text-gray-500">大会成績の詳細情報はありません</p>
-                  )}
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-        
-        {/* 施設タブ */}
-        {activeTab === 'facilities' && (
-          <div className="space-y-6">
-            <div className="bg-white rounded-xl shadow-md overflow-hidden">
-              <div className="bg-gradient-to-r from-purple-50 to-purple-100 py-3 px-5 border-b">
-                <h3 className="text-lg font-semibold text-purple-800">施設情報</h3>
-              </div>
-              <div className="p-5">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              )}
+              
+              {activeTab === 'facilities' && (
+                <div className="space-y-6">
                   <div>
-                    <table className="w-full">
-                      <tbody>
-                        <tr className="border-b">
-                          <th className="py-2 text-left text-gray-600 w-1/3">サッカーコート数</th>
-                          <td className="py-2">{university.soccer_club.soccer_field_count}面</td>
-                        </tr>
-                        <tr className="border-b">
-                          <th className="py-2 text-left text-gray-600">コート種類</th>
-                          <td className="py-2">{extendedData?.field_type || "人工芝/天然芝"}</td>
-                        </tr>
-                        <tr className="border-b">
-                          <th className="py-2 text-left text-gray-600">ナイター設備</th>
-                          <td className="py-2">{extendedData?.night_training || "情報なし"}</td>
-                        </tr>
-                        <tr>
-                          <th className="py-2 text-left text-gray-600">その他設備</th>
-                          <td className="py-2">{extendedData?.other_facilities || "情報なし"}</td>
-                        </tr>
-                      </tbody>
-                    </table>
+                    <h3 className="text-lg font-semibold text-gray-900 mb-4">練習施設</h3>
+                    <div className="bg-gray-50 p-4 rounded-lg">
+                      <p className="text-gray-700">
+                        {university.soccer_club?.facility_note || "施設情報はありません"}
+                      </p>
+                      {university.soccer_club?.practice_location && (
+                        <p className="text-sm text-gray-500 mt-2">
+                          場所: {university.soccer_club.practice_location}
+                        </p>
+                      )}
+                    </div>
                   </div>
                   
-                  <div className="space-y-4">
-                    <div className="bg-purple-50 p-4 rounded-lg">
-                      <h4 className="font-medium text-purple-800 mb-2">特記事項</h4>
-                      <p className="text-sm text-gray-700">{university.soccer_club.facility_note || "特記事項はありません"}</p>
+                  <div>
+                    <h3 className="text-lg font-semibold text-gray-900 mb-4">寮について</h3>
+                    <div className="flex items-center space-x-3">
+                      {university.soccer_club?.dorm_available ? (
+                        <>
+                          <Check size={20} className="text-green-600" />
+                          <span className="text-gray-700">寮あり</span>
+                        </>
+                      ) : (
+                        <>
+                          <X size={20} className="text-red-500" />
+                          <span className="text-gray-700">寮なし</span>
+                        </>
+                      )}
                     </div>
                   </div>
                 </div>
-              </div>
-            </div>
-            
-            {/* 寮情報 */}
-            <div className="bg-white rounded-xl shadow-md overflow-hidden">
-              <div className="bg-gradient-to-r from-blue-50 to-blue-100 py-3 px-5 border-b">
-                <h3 className="text-lg font-semibold text-blue-800">寮情報</h3>
-              </div>
-              <div className="p-5">
-                {university.soccer_club.dorm_available ? (
-                  <div className="space-y-4">
-                    <div className="flex items-center text-green-700 mb-4">
-                      <Check size={20} className="mr-2" />
-                      <span className="font-medium">寮あり</span>
-                    </div>
-                    
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div className="bg-blue-50 p-3 rounded-lg">
-                        <h4 className="text-sm text-gray-600 mb-1">寮の種類</h4>
-                        <p className="font-medium text-blue-800">
-                          {extendedData?.dorm_type || "専用寮/一般寮"}
-                        </p>
+              )}
+              
+              {activeTab === 'admission' && (
+                <div className="space-y-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="border border-gray-200 rounded-lg p-4">
+                      <div className="flex items-center space-x-2 mb-3">
+                        <Zap size={18} className="text-green-600" />
+                        <h4 className="font-semibold text-gray-900">スポーツ推薦</h4>
                       </div>
-                      <div className="bg-blue-50 p-3 rounded-lg">
-                        <h4 className="text-sm text-gray-600 mb-1">寮費</h4>
-                        <p className="font-medium text-blue-800">
-                          {extendedData?.dorm_fee || "情報なし"}
-                        </p>
-                      </div>
-                    </div>
-                    
-                    <div className="bg-gray-50 p-3 rounded-lg">
-                      <h4 className="text-sm text-gray-600 mb-1">寮の特徴</h4>
-                      <p className="text-gray-700">
-                        {extendedData?.dorm_features || "詳細情報はありません"}
-                      </p>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="flex items-center text-red-600">
-                    <X size={20} className="mr-2" />
-                    <span className="font-medium">寮なし</span>
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
-        )}
-        
-        {/* 進路タブ */}
-        {activeTab === 'careers' && (
-          <div className="space-y-6">
-            {/* Jリーグ内定実績 */}
-            <div className="bg-white rounded-xl shadow-md overflow-hidden">
-              <div className="bg-gradient-to-r from-yellow-50 to-yellow-100 py-3 px-5 border-b">
-                <h3 className="text-lg font-semibold text-yellow-800">プロ契約実績</h3>
-              </div>
-              <div className="p-5">
-                <div className="bg-yellow-50 p-4 rounded-lg border border-yellow-200 mb-4">
-                  <h4 className="font-semibold mb-2 flex items-center">
-                    <Medal className="text-yellow-600 mr-2" size={18} />
-                    Jリーグ内定者数 (過去3年間)
-                  </h4>
-                  <div className="text-3xl font-bold text-center text-yellow-700 mb-2">
-                    {totalJLeagueNominees}名
-                  </div>
-                </div>
-                
-                <div className="bg-gray-50 p-4 rounded-lg">
-                  <h4 className="font-medium mb-2">主な内定先</h4>
-                  <div className="flex flex-wrap gap-2">
-                    {extendedData?.j_league_teams ? (
-                      extendedData.j_league_teams.map((team, index) => (
-                        <span key={index} className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm">
-                          {team}
-                        </span>
-                      ))
-                    ) : (
-                      <p className="text-gray-500">詳細情報はありません</p>
-                    )}
-                  </div>
-                </div>
-              </div>
-            </div>
-            
-            {/* 卒業後の進路 */}
-            <div className="bg-white rounded-xl shadow-md overflow-hidden">
-              <div className="bg-gradient-to-r from-blue-50 to-blue-100 py-3 px-5 border-b">
-                <h3 className="text-lg font-semibold text-blue-800">卒業後の主な進路</h3>
-              </div>
-              <div className="p-5">
-                <div className="space-y-4">
-                  {extendedData?.career_paths ? (
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                      {extendedData.career_paths.map((path, index) => (
-                        <div key={index} className="bg-blue-50 p-3 rounded-lg">
-                          <h4 className="text-sm text-gray-600 mb-1">{path.category}</h4>
-                          <p className="font-medium text-blue-800">{path.percentage || "-"}%</p>
-                        </div>
-                      ))}
-                    </div>
-                  ) : (
-                    <div className="bg-gray-50 p-4 rounded-lg">
-                      <p className="text-center text-gray-500">詳細情報はありません</p>
-                    </div>
-                  )}
-                </div>
-              </div>
-            </div>
-            
-            {/* 有名OB */}
-            <div className="bg-white rounded-xl shadow-md overflow-hidden">
-              <div className="bg-gradient-to-r from-green-50 to-green-100 py-3 px-5 border-b">
-                <h3 className="text-lg font-semibold text-green-800">有名OB</h3>
-              </div>
-              <div className="p-5">
-                <div className="space-y-3">
-                  {extendedData?.famous_alumni ? (
-                    extendedData.famous_alumni.map((alumni, index) => (
-                      <div key={index} className="bg-gray-50 p-3 rounded-lg flex items-center">
-                        <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center mr-3">
-                          <span className="text-green-800 font-medium">{alumni.initials || "OB"}</span>
-                        </div>
+                      {university.entry_conditions?.sports_recommend ? (
                         <div>
-                          <div className="font-medium">{alumni.name}</div>
-                          <div className="text-sm text-gray-500">{alumni.career}</div>
+                          <span className="inline-block bg-green-100 text-green-800 px-2 py-1 rounded text-sm mb-2">利用可能</span>
+                          <p className="text-sm text-gray-700">{university.entry_conditions.recommend_criteria}</p>
                         </div>
+                      ) : (
+                        <span className="text-gray-500">利用不可</span>
+                      )}
+                    </div>
+                    
+                    <div className="border border-gray-200 rounded-lg p-4">
+                      <div className="flex items-center space-x-2 mb-3">
+                        <Calendar size={18} className="text-blue-600" />
+                        <h4 className="font-semibold text-gray-900">セレクション</h4>
                       </div>
-                    ))
-                  ) : (
-                    <p className="text-center text-gray-500">有名OB情報はありません</p>
-                  )}
+                      {university.entry_conditions?.selection ? (
+                        <div>
+                          <span className="inline-block bg-blue-100 text-blue-800 px-2 py-1 rounded text-sm mb-2">実施あり</span>
+                          <p className="text-sm text-gray-700">時期: {university.entry_conditions.selection_period}</p>
+                        </div>
+                      ) : (
+                        <span className="text-gray-500">実施なし</span>
+                      )}
+                    </div>
+                  </div>
                 </div>
-              </div>
-            </div>
-          </div>
-        )}
-        
-        {/* 入部条件タブ */}
-        {activeTab === 'entry' && (
-          <div className="space-y-6">
-            {/* スポーツ推薦 */}
-            <div className="bg-white rounded-xl shadow-md overflow-hidden">
-              <div className="bg-gradient-to-r from-green-50 to-green-100 py-3 px-5 border-b">
-                <h3 className="text-lg font-semibold text-green-800">スポーツ推薦</h3>
-              </div>
-              <div className="p-5">
-                {university.entry_conditions.sports_recommend ? (
-                  <>
-                    <div className="flex items-center text-green-700 mb-4">
-                      <Check size={20} className="mr-2" />
-                      <span className="font-medium">スポーツ推薦あり</span>
+              )}
+              
+              {activeTab === 'members' && (
+                <div className="space-y-6">
+                  <div>
+                    <h3 className="text-lg font-semibold text-gray-900 mb-4">学年別部員数</h3>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                      {university.soccer_club?.members_by_grade ? 
+                        Object.entries(university.soccer_club.members_by_grade).map(([grade, count]) => (
+                          <div key={grade} className="bg-gray-50 p-4 rounded-lg text-center">
+                            <div className="text-2xl font-bold text-gray-900 mb-1">{count}名</div>
+                            <div className="text-sm text-gray-600">{grade}</div>
+                          </div>
+                        )) : (
+                          <div className="col-span-full text-center text-gray-500 py-4">
+                            部員数情報はありません
+                          </div>
+                        )
+                      }
                     </div>
-                    
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                      <div className="bg-green-50 p-3 rounded-lg">
-                        <h4 className="text-sm text-gray-600 mb-1">評定基準</h4>
-                        <p className="text-lg font-semibold text-green-800">
-                          {university.entry_conditions.recommend_criteria.includes('評定') 
-                            ? university.entry_conditions.recommend_criteria.match(/評定([0-9.]+)/)?.[1] + '以上' 
-                            : '要確認'}
-                        </p>
+                  </div>
+                  
+                  <div>
+                    <h3 className="text-lg font-semibold text-gray-900 mb-4">部員構成</h3>
+                    <div className="bg-gray-50 p-6 rounded-lg">
+                      <div className="flex items-center justify-between mb-4">
+                        <span className="text-gray-700">総部員数</span>
+                        <span className="text-2xl font-bold text-gray-900">{university.soccer_club?.total_members || 0}名</span>
                       </div>
-                      <div className="bg-green-50 p-3 rounded-lg">
-                        <h4 className="text-sm text-gray-600 mb-1">受入人数</h4>
-                        <p className="text-lg font-semibold text-green-800">
-                          {university.entry_conditions.recommend_criteria.includes('受入') 
-                            ? university.entry_conditions.recommend_criteria.match(/受入人数([0-9]+)/)?.[1] + '名程度' 
-                            : '要確認'}
-                        </p>
+                      <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
+                        <div className="h-full bg-gradient-to-r from-green-500 to-green-600 rounded-full" style={{width: '75%'}}></div>
+                      </div>
+                      <p className="text-sm text-gray-500 mt-2">関東リーグ平均と比較: 上位25%</p>
+                    </div>
+                  </div>
+                </div>
+              )}
+              
+              {activeTab === 'careers' && (
+                <div className="space-y-6">
+                  <div>
+                    <h3 className="text-lg font-semibold text-gray-900 mb-4">卒業後の進路</h3>
+                    <div className="space-y-4">
+                      {university.extended_data?.career_paths?.map((path, index) => (
+                        <div key={index} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                          <div className="flex items-center space-x-3">
+                            <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                            <span className="font-medium text-gray-900">{path.category}</span>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <div className="text-2xl font-bold text-gray-900">{path.percentage}%</div>
+                          </div>
+                        </div>
+                      )) || (
+                        <div className="text-center text-gray-500 py-4">
+                          進路情報はありません
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <h3 className="text-lg font-semibold text-gray-900 mb-4">進路サポート</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="border border-gray-200 rounded-lg p-4">
+                        <h4 className="font-semibold text-gray-900 mb-2">Jリーグ関連</h4>
+                        <ul className="text-sm text-gray-700 space-y-1">
+                          <li>• スカウト向け映像制作</li>
+                          <li>• Jクラブとのパイプ</li>
+                          <li>• セレクション情報提供</li>
+                        </ul>
+                      </div>
+                      <div className="border border-gray-200 rounded-lg p-4">
+                        <h4 className="font-semibold text-gray-900 mb-2">一般企業</h4>
+                        <ul className="text-sm text-gray-700 space-y-1">
+                          <li>• OB・OGネットワーク</li>
+                          <li>• 就職活動サポート</li>
+                          <li>• インターンシップ紹介</li>
+                        </ul>
                       </div>
                     </div>
-                    
-                    <div className="bg-gray-50 p-3 rounded-lg">
-                      <h4 className="text-sm text-gray-600 mb-1">推薦条件など</h4>
-                      <p className="text-gray-700">{university.entry_conditions.recommend_criteria}</p>
-                    </div>
-                  </>
-                ) : (
-                  <div className="flex items-center text-red-600">
-                    <X size={20} className="mr-2" />
-                    <span className="font-medium">スポーツ推薦なし</span>
                   </div>
-                )}
-              </div>
-            </div>
-            
-            {/* セレクション */}
-            <div className="bg-white rounded-xl shadow-md overflow-hidden">
-              <div className="bg-gradient-to-r from-blue-50 to-blue-100 py-3 px-5 border-b">
-                <h3 className="text-lg font-semibold text-blue-800">セレクション</h3>
-              </div>
-              <div className="p-5">
-                {university.entry_conditions.selection ? (
-                  <>
-                    <div className="flex items-center text-green-700 mb-4">
-                      <Check size={20} className="mr-2" />
-                      <span className="font-medium">セレクションあり</span>
-                    </div>
-                    <div className="bg-blue-50 p-3 rounded-lg mb-4">
-                      <h4 className="text-sm text-gray-600 mb-1">実施時期</h4>
-                      <p className="font-medium text-blue-800">{university.entry_conditions.selection_period}</p>
-                    </div>
-                    <div className="bg-gray-50 p-3 rounded-lg">
-                      <h4 className="text-sm text-gray-600 mb-1">セレクション内容</h4>
-                      <p className="text-gray-700">{extendedData?.selection_details || "詳細は大学にお問い合わせください"}</p>
-                    </div>
-                  </>
-                ) : (
-                  <div className="flex items-center text-red-600">
-                    <X size={20} className="mr-2" />
-                    <span className="font-medium">セレクションなし</span>
-                  </div>
-                )}
-              </div>
-            </div>
-            
-            {/* 一般入部 */}
-            <div className="bg-white rounded-xl shadow-md overflow-hidden">
-              <div className="bg-gradient-to-r from-purple-50 to-purple-100 py-3 px-5 border-b">
-                <h3 className="text-lg font-semibold text-purple-800">一般入部</h3>
-              </div>
-              <div className="p-5">
-                {university.entry_conditions.general_admission ? (
-                  <>
-                    <div className="flex items-center text-green-700 mb-4">
-                      <Check size={20} className="mr-2" />
-                      <span className="font-medium">一般入部可能</span>
-                    </div>
-                    <div className="bg-gray-50 p-3 rounded-lg">
-                      <h4 className="text-sm text-gray-600 mb-1">条件</h4>
-                      <p className="text-gray-700">{university.entry_conditions.general_conditions}</p>
-                    </div>
-                  </>
-                ) : (
-                  <div className="flex items-center text-red-600">
-                    <X size={20} className="mr-2" />
-                    <span className="font-medium">一般入部不可</span>
-                  </div>
-                )}
-              </div>
-            </div>
-            
-            {/* 奨学金情報 */}
-            <div className="bg-white rounded-xl shadow-md overflow-hidden">
-              <div className="bg-gradient-to-r from-yellow-50 to-yellow-100 py-3 px-5 border-b">
-                <h3 className="text-lg font-semibold text-yellow-800">奨学金情報</h3>
-              </div>
-              <div className="p-5">
-                {university.soccer_club.sports_scholarship ? (
-                  <>
-                    <div className="flex items-center text-green-700 mb-4">
-                      <Check size={20} className="mr-2" />
-                      <span className="font-medium">奨学金制度あり</span>
-                    </div>
-                    <div className="bg-gray-50 p-3 rounded-lg">
-                      <h4 className="text-sm text-gray-600 mb-1">奨学金内容</h4>
-                      <p className="text-gray-700">{extendedData?.scholarship_details || "詳細は大学にお問い合わせください"}</p>
-                    </div>
-                  </>
-                ) : (
-                  <div className="flex items-center text-red-600">
-                    <X size={20} className="mr-2" />
-                    <span className="font-medium">奨学金なし</span>
-                  </div>
-                )}
-              </div>
+                </div>
+              )}
             </div>
           </div>
-        )}
-        
-        {/* PLAYMAKER詳細解説タブ */}
-        {activeTab === 'playmaker' && extendedData?.playmaker_comment && (
-          <div className="bg-white rounded-lg shadow-md p-6">
-            <h3 className="text-xl font-semibold mb-4 text-green-700 flex items-center">
-              <MessageSquare size={24} className="mr-2" />
-              PLAYMAKERによる詳細解説
-            </h3>
-            <div className="bg-blue-50 p-5 rounded-lg border border-blue-200">
-              <div className="text-gray-700 prose max-w-none">
-                {extendedData.playmaker_comment}
-              </div>
-            </div>
-          </div>
-        )}
-      </div>
-      
-      {/* フッターアクション */}
-      <div className="border-t p-4 bg-gray-50">
-        <div className="flex justify-between items-center">
-          <button 
-            className="bg-green-600 text-white px-4 py-2 rounded-lg flex items-center transition-colors hover:bg-green-700"
-            onClick={onBack}
-          >
-            <ChevronRight className="transform rotate-180 mr-2" size={16} />
-            一覧に戻る
-          </button>
           
-          <button 
-            className={`px-4 py-2 rounded-lg border flex items-center transition-colors ${
-              isInCompareList
-                ? "bg-gray-200 text-gray-700 border-gray-300"
-                : "bg-white text-green-600 border-green-300 hover:bg-green-50"
-            }`}
-            onClick={() => !isInCompareList && onAddToCompare(university)}
-            disabled={isInCompareList}
-          >
-            {isInCompareList ? (
-              <span className="flex items-center">
-                <Check size={16} className="mr-2" />
-                比較リストに追加済み
-              </span>
-            ) : (
-              <span className="flex items-center">
-                <Plus size={16} className="mr-2" />
-                比較リストに追加
-              </span>
-            )}
-          </button>
+          {/* アクションエリア */}
+          <div className="bg-white rounded-xl shadow-sm p-4 lg:p-6">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">アクション</h3>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              <button 
+                className={`flex items-center justify-center px-4 lg:px-6 py-3 rounded-lg font-medium transition-colors ${
+                  isInCompareList
+                    ? 'bg-gray-100 text-gray-500 cursor-not-allowed'
+                    : 'bg-green-600 text-white hover:bg-green-700'
+                }`}
+                disabled={isInCompareList}
+                onClick={() => !isInCompareList && onAddToCompare(university)}
+              >
+                {isInCompareList ? (
+                  <>
+                    <Check size={18} className="mr-2" />
+                    <span className="hidden sm:inline">比較リストに追加済み</span>
+                    <span className="sm:hidden">追加済み</span>
+                  </>
+                ) : (
+                  <>
+                    <Plus size={18} className="mr-2" />
+                    <span className="hidden sm:inline">比較リストに追加</span>
+                    <span className="sm:hidden">比較追加</span>
+                  </>
+                )}
+              </button>
+              
+              <button 
+                className={`flex items-center justify-center px-4 lg:px-6 py-3 rounded-lg font-medium transition-colors ${
+                  isInFavorites
+                    ? 'bg-red-100 text-red-700 border border-red-200'
+                    : 'bg-red-600 text-white hover:bg-red-700'
+                }`}
+                onClick={() => onAddToFavorites(university)}
+              >
+                <Heart size={18} className="mr-2" fill={isInFavorites ? "currentColor" : "none"} />
+                <span className="hidden sm:inline">
+                  {isInFavorites ? '進路プランに追加済み' : '進路プランに追加'}
+                </span>
+                <span className="sm:hidden">
+                  {isInFavorites ? '追加済み' : '進路追加'}
+                </span>
+              </button>
+              
+              <button 
+                className="bg-blue-600 text-white hover:bg-blue-700 px-4 lg:px-6 py-3 rounded-lg font-medium transition-colors flex items-center justify-center sm:col-span-2 lg:col-span-1"
+                onClick={handlePracticeApplication}
+              >
+                <Calendar size={18} className="mr-2" />
+                <span className="hidden sm:inline">練習体験に申し込む</span>
+                <span className="sm:hidden">練習体験</span>
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     </div>
