@@ -1,7 +1,8 @@
-// src/App.js（状態管理統合後）
+// src/App.js（ボトムナビ対応版）
 import React from 'react';
 import ViewManager from './components/ViewManager';
 import ResponsiveHeader from './components/ResponsiveHeader';
+import BottomNavigation from './components/BottomNavigation';
 import { useAppState } from './hooks/useAppState';
 
 const App = () => {
@@ -23,16 +24,14 @@ const App = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* ヘッダー */}
+      {/* ヘッダー（シンプル版） */}
       <ResponsiveHeader 
         currentView={currentView}
         onChangeView={actions.changeView}
-        favoriteUniversities={favoriteUniversities}
-        compareList={compareList}
       />
 
-      {/* メインコンテンツ */}
-      <main className="container mx-auto p-4">
+      {/* メインコンテンツ（ボトムナビ分の余白を追加） */}
+      <main className="container mx-auto p-4 pb-20">
         <ViewManager 
           currentView={currentView}
           data={data}
@@ -40,8 +39,16 @@ const App = () => {
         />
       </main>
       
+      {/* ボトムナビゲーション */}
+      <BottomNavigation 
+        currentView={currentView}
+        onChangeView={actions.changeView}
+        favoriteUniversities={favoriteUniversities}
+        compareList={compareList}
+      />
+      
       {/* フッター */}
-      <footer className="bg-gray-800 text-white p-6 mt-8">
+      <footer className="bg-gray-800 text-white p-6 mt-8 mb-16">
         <div className="container mx-auto text-center">
           <p>© 2025 大学サッカー部お品書き</p>
           <p className="text-sm mt-2">このサイトは大学進学を検討する高校生やサッカー部関係者向けの情報提供を目的としています。</p>

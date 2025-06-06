@@ -28,6 +28,21 @@
   color: #61dafb;
 }
 
+/* ボトムナビゲーション用のセーフエリア対応 */
+.h-safe-area-inset-bottom {
+  height: env(safe-area-inset-bottom);
+}
+
+/* 追加でiOS等でのスクロールを滑らかにする */
+html {
+  scroll-behavior: smooth;
+}
+
+/* ボトムナビゲーション領域のスクロール調整 */
+body {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
 @keyframes App-logo-spin {
   from {
     transform: rotate(0deg);
