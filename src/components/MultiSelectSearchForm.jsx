@@ -1,4 +1,4 @@
-// src/components/MultiSelectSearchForm.jsx (簡潔版)
+// src/components/MultiSelectSearchForm.jsx (修正版)
 import React, { useState, useEffect, useRef } from 'react';
 import { Search, ChevronDown, X, Filter, Trophy, BookOpen, Save, Bookmark, Trash, School, ArrowDown, ArrowUp } from 'lucide-react';
 import MultiSelectDropdown from './MultiSelectDropdown';
@@ -212,7 +212,7 @@ const MultiSelectSearchForm = ({
       });
     });
     
-    // 資格タグ
+    // 学部タグ
     selectedQualifications.forEach(qual => {
       tags.push({
         id: `qual-${qual}`,
@@ -397,16 +397,16 @@ const MultiSelectSearchForm = ({
         
         {/* リーグ選択 */}
         <MultiSelectDropdown
-          label="カテゴリを選択"
+          label="リーグを選択"
           icon={<Trophy className="text-green-600" size={16} />}
           options={leagues}
           selectedValues={selectedLeagues}
           onChange={setSelectedLeagues}
         />
         
-        {/* 資格・学部選択 */}
+        {/* 学部選択 */}
         <MultiSelectDropdown
-          label="学部で選択"
+          label="学部を選択"
           icon={<BookOpen className="text-green-600" size={16} />}
           options={availableQualifications}
           selectedValues={selectedQualifications}

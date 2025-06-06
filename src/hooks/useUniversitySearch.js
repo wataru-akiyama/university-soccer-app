@@ -46,12 +46,30 @@ const useUniversitySearch = (universities) => {
           if (!matchesRegion) return false;
         }
         
+        // リーグフィルター（追加）
+        if (selectedLeagues.length > 0) {
+          const matchesLeague = selectedLeagues.some(league => 
+            university.soccer_club?.league === league
+          );
+          if (!matchesLeague) return false;
+        }
+        
+        // 学部フィルター（追加）
+        if (selectedQualifications.length > 0) {
+          const matchesFaculty = selectedQualifications.some(faculty => 
+            university.main_faculties?.some(uniFaculty => 
+              uniFaculty.includes(faculty) || faculty.includes(uniFaculty)
+            )
+          );
+          if (!matchesFaculty) return false;
+        }
+        
         // 国公立・私立フィルター（統合ヘルパー使用）
         const isPublic = searchHelpers.isPublicUniversity(university);
         if (publicUniversity && !isPublic) return false;
         if (privateUniversity && isPublic) return false;
         
-        // その他のフィルターは同じ...
+        // その他のフィルター
         if (sportsRecommend && !university.entry_conditions.sports_recommend) return false;
         if (selectionAvailable && !university.entry_conditions.selection) return false;
         if (dormAvailable && !university.soccer_club.dorm_available) return false;
@@ -60,7 +78,7 @@ const useUniversitySearch = (universities) => {
         return true;
       });
       
-      // ソート処理は同じ...
+      // ソート処理
       if (sortOption) {
         const multiplier = sortDirection === 'asc' ? 1 : -1;
         
