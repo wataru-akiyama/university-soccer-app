@@ -479,8 +479,24 @@ const EnhancedUniversityDetails = ({
           
           {/* アクションエリア */}
           <div className="bg-white rounded-xl shadow-sm p-4 lg:p-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">アクション</h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              <button 
+                className={`flex items-center justify-center px-4 lg:px-6 py-3 rounded-lg font-medium transition-colors ${
+                  isInFavorites
+                    ? 'bg-red-100 text-red-700 border border-red-200'
+                    : 'bg-red-600 text-white hover:bg-red-700'
+                }`}
+                onClick={() => onAddToFavorites(university)}
+              >
+                <Heart size={18} className="mr-2" fill={isInFavorites ? "currentColor" : "none"} />
+                <span className="hidden sm:inline">
+                  {isInFavorites ? '進路プランに追加済み' : '進路プランに追加'}
+                </span>
+                <span className="sm:hidden">
+                  {isInFavorites ? '追加済み' : '進路追加'}
+                </span>
+              </button>
+              
               <button 
                 className={`flex items-center justify-center px-4 lg:px-6 py-3 rounded-lg font-medium transition-colors ${
                   isInCompareList
@@ -503,23 +519,6 @@ const EnhancedUniversityDetails = ({
                     <span className="sm:hidden">比較追加</span>
                   </>
                 )}
-              </button>
-              
-              <button 
-                className={`flex items-center justify-center px-4 lg:px-6 py-3 rounded-lg font-medium transition-colors ${
-                  isInFavorites
-                    ? 'bg-red-100 text-red-700 border border-red-200'
-                    : 'bg-red-600 text-white hover:bg-red-700'
-                }`}
-                onClick={() => onAddToFavorites(university)}
-              >
-                <Heart size={18} className="mr-2" fill={isInFavorites ? "currentColor" : "none"} />
-                <span className="hidden sm:inline">
-                  {isInFavorites ? '進路プランに追加済み' : '進路プランに追加'}
-                </span>
-                <span className="sm:hidden">
-                  {isInFavorites ? '追加済み' : '進路追加'}
-                </span>
               </button>
               
               <button 
