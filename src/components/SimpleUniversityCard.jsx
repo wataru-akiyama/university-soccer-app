@@ -1,4 +1,4 @@
-// src/components/SimpleUniversityCard.jsx - レスポンシブ改善版
+// src/components/SimpleUniversityCard.jsx - チェックマーク重複修正版
 import React from 'react';
 import { Heart, Plus, Check, MapPin } from 'lucide-react';
 
@@ -150,7 +150,7 @@ const SimpleUniversityCard = ({
           )}
         </div>
         
-        {/* 比較リストに追加ボタン */}
+        {/* 比較リストに追加ボタン - チェックマーク重複修正 */}
         <div className="flex justify-end">
           <button 
             className={`${isInCompareList 
@@ -163,7 +163,7 @@ const SimpleUniversityCard = ({
               <>
                 <Check size={16} className="mr-1" />
                 <span className="hidden xs:inline">比較中</span>
-                <span className="xs:hidden">✓</span>
+                <span className="xs:hidden">比較中</span>
               </>
             ) : (
               <>
