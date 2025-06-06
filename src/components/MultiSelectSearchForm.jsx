@@ -1,6 +1,6 @@
 // src/components/MultiSelectSearchForm.jsx (簡潔版)
 import React, { useState, useEffect, useRef } from 'react';
-import { Search, ChevronDown, X, Filter, Trophy, Home, BookOpen, Save, Bookmark, Trash, School, ArrowDown, ArrowUp } from 'lucide-react';
+import { Search, ChevronDown, X, Filter, Trophy, BookOpen, Save, Bookmark, Trash, School, ArrowDown, ArrowUp } from 'lucide-react';
 import MultiSelectDropdown from './MultiSelectDropdown';
 import { regions, leagues, availableQualifications } from '../data';
 

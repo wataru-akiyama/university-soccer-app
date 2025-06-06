@@ -1,6 +1,6 @@
 // src/components/ResponsiveHeader.jsx（簡素化・統合版）
 import React, { useState } from 'react';
-import { Menu, X, UserCircle, Heart, Search, BarChart2 } from 'lucide-react';
+import { Menu, X, UserCircle, Search, BarChart2 } from 'lucide-react';
 import soccerLogo from '../assets/soccer-logo.svg';
 
 const ResponsiveHeader = ({ 

@@ -1,7 +1,7 @@
+// src/components/UniversityList.jsx (統合版)
 import React, { useState, useMemo } from 'react';
 import SimpleUniversityCard from './SimpleUniversityCard';
-import FilterOptions from './FilterOptions';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Filter, Save } from 'lucide-react';
 
 const UniversityList = ({
   filteredUniversities,
@@ -26,7 +26,7 @@ const UniversityList = ({
 }) => {
   // ページング状態管理
   const [currentPage, setCurrentPage] = useState(1);
-  const universitiesPerPage = 10; // 1ページあたり10件表示
+  const universitiesPerPage = 10;
   
   // 現在のフィルター条件を文字列配列として生成
   const activeFilters = useMemo(() => {
@@ -46,14 +46,11 @@ const UniversityList = ({
   const currentUniversities = filteredUniversities.slice(indexOfFirstUniversity, indexOfLastUniversity);
   const totalPages = Math.ceil(filteredUniversities.length / universitiesPerPage);
   
-  // ページ変更ハンドラー
   const handlePageChange = (pageNumber) => {
     setCurrentPage(pageNumber);
-    // ページトップへスクロール
     window.scrollTo(0, 0);
   };
   
-  // ページ番号の表示範囲を計算
   const getPageNumbers = () => {
     const maxPagesToShow = 5;
     let startPage = Math.max(1, currentPage - Math.floor(maxPagesToShow / 2));
@@ -68,30 +65,48 @@ const UniversityList = ({
 
   return (
     <div className="bg-white p-6 rounded-lg shadow-md">
-      <FilterOptions 
-        filteredCount={filteredUniversities.length}
-        totalCount={allUniversities ? allUniversities.length : null}
-        sortOption={sortOption}
-        setSortOption={setSortOption}
-        sortDirection={sortDirection}
-        setSortDirection={setSortDirection}
-        activeFilters={activeFilters}
-      />
+      {/* ===== 統合された FilterOptions 部分 ===== */}
+      <div className="mb-6">
+        <div className="flex justify-between items-center mb-4">
+          <div className="flex items-center">
+            <h2 className="text-xl font-semibold">検索結果</h2>
+            <span className="bg-green-100 text-green-800 text-sm px-3 py-1 rounded-full ml-3">
+              {allUniversities ? `${allUniversities.length}件中${filteredUniversities.length}件表示` : `${filteredUniversities.length}件`}
+            </span>
+          </div>
+          
+          <div className="flex items-center gap-3">
+            {activeFilters.length > 0 && (
+              <div className="flex items-center text-sm text-gray-600">
+                <Filter size={16} className="mr-1" />
+                <span>絞り込み条件: </span>
+                <span className="font-medium ml-1">{activeFilters.join(' / ')}</span>
+              </div>
+            )}
+            
+            <button className="text-blue-600 flex items-center text-sm">
+              <Save size={16} className="mr-1" />
+              <span>保存</span>
+            </button>
+          </div>
+        </div>
+      </div>
+      {/* ===== FilterOptions 統合終了 ===== */}
       
       {/* 大学リスト - レスポンシブ2列表示 */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
         {currentUniversities.map(university => (
           <SimpleUniversityCard
-          key={university.id}
-          university={university}
-          onViewDetails={onViewDetails}
-          onAddToCompare={onAddToCompare}
-          onRemoveFromCompare={onRemoveFromCompare}
-          isInCompareList={compareList.some(uni => uni.id === university.id)}
-          onAddToFavorites={onAddToFavorites}
-          onRemoveFromFavorites={onRemoveFromFavorites}
-          isInFavorites={favoriteUniversities.some(uni => uni.id === university.id)}
-        />
+            key={university.id}
+            university={university}
+            onViewDetails={onViewDetails}
+            onAddToCompare={onAddToCompare}
+            onRemoveFromCompare={onRemoveFromCompare}
+            isInCompareList={compareList.some(uni => uni.id === university.id)}
+            onAddToFavorites={onAddToFavorites}
+            onRemoveFromFavorites={onRemoveFromFavorites}
+            isInFavorites={favoriteUniversities.some(uni => uni.id === university.id)}
+          />
         ))}
       </div>
       

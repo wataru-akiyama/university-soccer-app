@@ -22,7 +22,7 @@ import {
     Linkedin, 
     Link,
     Heart,
-    Upload,
+    //Upload,
     ChevronUp,
     ChevronDown,
     Info
