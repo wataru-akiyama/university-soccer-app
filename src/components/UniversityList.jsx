@@ -1,4 +1,4 @@
-// src/components/UniversityList.jsx (並べ替えを検索結果エリア右上に配置)
+// src/components/UniversityList.jsx (レスポンシブ修正版)
 import React, { useState, useMemo } from 'react';
 import SimpleUniversityCard from './SimpleUniversityCard';
 import { ChevronLeft, ChevronRight, ArrowDown, ArrowUp } from 'lucide-react';
@@ -47,9 +47,10 @@ const UniversityList = ({
 
   return (
     <div className="bg-white p-6 rounded-lg shadow-md">
-      {/* ヘッダー部分 - 並べ替え機能付き */}
+      {/* ヘッダー部分 - レスポンシブ対応 */}
       <div className="mb-6">
-        <div className="flex justify-between items-center mb-4">
+        {/* デスクトップ版 - 横並び */}
+        <div className="hidden md:flex justify-between items-center mb-4">
           <div className="flex items-center">
             <h2 className="text-xl font-semibold">検索結果</h2>
             <span className="bg-green-100 text-green-800 text-sm px-3 py-1 rounded-full ml-3">
@@ -75,6 +76,46 @@ const UniversityList = ({
             {sortOption && (
               <button 
                 className="bg-gray-100 hover:bg-gray-200 p-2 rounded border text-gray-700 transition-colors"
+                onClick={() => setSortDirection(sortDirection === 'desc' ? 'asc' : 'desc')}
+                title={sortDirection === 'desc' ? '降順（大→小）' : '昇順（小→大）'}
+              >
+                {sortDirection === 'desc' ? <ArrowDown size={16} /> : <ArrowUp size={16} />}
+              </button>
+            )}
+          </div>
+        </div>
+
+        {/* モバイル版 - 縦並び */}
+        <div className="md:hidden space-y-3 mb-4">
+          {/* タイトルと件数 */}
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+            <h2 className="text-lg font-semibold mb-2 sm:mb-0">検索結果</h2>
+            <span className="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full inline-block w-fit">
+              {/* スマホでは短縮表示 */}
+              <span className="sm:hidden">{filteredUniversities.length}件</span>
+              <span className="hidden sm:inline">
+                {allUniversities ? `${allUniversities.length}件中${filteredUniversities.length}件` : `${filteredUniversities.length}件`}
+              </span>
+            </span>
+          </div>
+          
+          {/* 並べ替えセクション */}
+          <div className="flex items-center gap-2">
+            <select 
+              className="flex-1 p-2 border rounded-md text-sm bg-white focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500"
+              value={sortOption}
+              onChange={(e) => setSortOption(e.target.value)}
+            >
+              <option value="">並び替え: デフォルト</option>
+              <option value="j_league">Jリーグ内定者数順</option>
+              <option value="members">部員数順</option>
+              <option value="name">大学名順</option>
+            </select>
+            
+            {/* 並び替え順序ボタン */}
+            {sortOption && (
+              <button 
+                className="bg-gray-100 hover:bg-gray-200 p-2 rounded border text-gray-700 transition-colors flex-shrink-0"
                 onClick={() => setSortDirection(sortDirection === 'desc' ? 'asc' : 'desc')}
                 title={sortDirection === 'desc' ? '降順（大→小）' : '昇順（小→大）'}
               >
