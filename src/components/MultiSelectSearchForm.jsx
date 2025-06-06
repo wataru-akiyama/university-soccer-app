@@ -1,6 +1,6 @@
-// src/components/MultiSelectSearchForm.jsx (保存機能削除版)
+// src/components/MultiSelectSearchForm.jsx (並べ替え機能削除版)
 import React, { useState, useEffect, useRef } from 'react';
-import { Search, ChevronDown, X, Filter, Trophy, BookOpen, School, ArrowDown, ArrowUp } from 'lucide-react';
+import { Search, ChevronDown, X, Filter, Trophy, BookOpen, School } from 'lucide-react';
 import MultiSelectDropdown from './MultiSelectDropdown';
 import { regions, leagues, availableQualifications } from '../data';
 
@@ -24,11 +24,7 @@ const MultiSelectSearchForm = ({
   publicUniversity,
   setPublicUniversity,
   privateUniversity,
-  setPrivateUniversity,
-  sortOption,
-  setSortOption,
-  sortDirection,
-  setSortDirection
+  setPrivateUniversity
 }) => {
   
   // 全条件クリアハンドラー
@@ -43,8 +39,6 @@ const MultiSelectSearchForm = ({
     setGeneralAdmissionAvailable(false);
     setPublicUniversity(false);
     setPrivateUniversity(false);
-    setSortOption('');
-    setSortDirection('desc');
   };
   
   // 選択中のフィルター数を計算
@@ -305,34 +299,6 @@ const MultiSelectSearchForm = ({
         </label>
       </div>
       
-      {/* 簡単なソートオプション */}
-      <div className="bg-gray-50 p-3 rounded-lg mb-4">
-        <div className="flex justify-between items-center">
-          <div className="flex items-center gap-3">
-            <span className="text-sm text-gray-700 font-medium">並べ替え:</span>
-            <select 
-              className="p-2 border rounded-md text-sm"
-              value={sortOption}
-              onChange={(e) => setSortOption(e.target.value)}
-            >
-              <option value="">並び替えなし</option>
-              <option value="j_league">Jリーグ内定者数順</option>
-              <option value="members">部員数順</option>
-              <option value="name">大学名順</option>
-            </select>
-          </div>
-          
-          {/* 並び替え順序ボタン */}
-          <button 
-            className="bg-gray-200 p-1 rounded text-gray-700 hover:bg-gray-300"
-            onClick={() => setSortDirection(sortDirection === 'desc' ? 'asc' : 'desc')}
-            title={sortDirection === 'desc' ? '降順' : '昇順'}
-          >
-            {sortDirection === 'desc' ? <ArrowDown size={16} /> : <ArrowUp size={16} />}
-          </button>
-        </div>
-      </div>
-      
       {/* 選択中のタグ表示 */}
       {tags.length > 0 && (
         <div className="flex flex-wrap gap-2 mb-4 bg-gray-50 p-3 rounded-lg">
@@ -364,56 +330,7 @@ const MultiSelectSearchForm = ({
         </div>
       )}
       
-      {/* 人気の検索条件ボタン（簡潔版） */}
-      <div className="flex flex-wrap gap-2 mb-6">
-        <button 
-          type="button"
-          className="bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm hover:bg-green-200"
-          onClick={() => {
-            setSportsRecommend(true);
-          }}
-        >
-          スポーツ推薦がある大学
-        </button>
-        <button 
-          type="button"
-          className="bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm hover:bg-green-200"
-          onClick={() => {
-            setSortOption("j_league");
-          }}
-        >
-          Jリーグ内定者数が多い大学
-        </button>
-        <button 
-          type="button"
-          className="bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm hover:bg-green-200"
-          onClick={() => {
-            setDormAvailable(true);
-          }}
-        >
-          寮がある大学
-        </button>
-        <button 
-          type="button"
-          className="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-sm hover:bg-blue-200"
-          onClick={() => {
-            setPublicUniversity(true);
-            setPrivateUniversity(false);
-          }}
-        >
-          国公立大学のみ
-        </button>
-        <button 
-          type="button"
-          className="bg-red-100 text-red-700 px-3 py-1 rounded-full text-sm hover:bg-red-200"
-          onClick={() => {
-            setPrivateUniversity(true);
-            setPublicUniversity(false);
-          }}
-        >
-          私立大学のみ
-        </button>
-      </div>
+
       
       {/* 検索ボタン */}
       <div className="flex justify-center mt-4">

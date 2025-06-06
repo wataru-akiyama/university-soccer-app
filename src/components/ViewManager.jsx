@@ -1,4 +1,4 @@
-// src/components/ViewManager.jsx（統合版・更新）
+// src/components/ViewManager.jsx（統合版・props調整済み）
 import React from 'react';
 import EnhancedPlayerPortfolio from './EnhancedPlayerPortfolio';
 import EnhancedUniversityDetails from './EnhancedUniversityDetails';
@@ -18,7 +18,7 @@ const ViewManager = ({
   const renderHomeView = () => {
     return (
       <>
-        {/* 検索フォーム */}
+        {/* 検索フォーム - 並べ替え関連propsを削除 */}
         <MultiSelectSearchForm
           searchQuery={data.searchState.searchQuery}
           setSearchQuery={data.searchState.setSearchQuery}
@@ -40,13 +40,9 @@ const ViewManager = ({
           setPublicUniversity={data.searchState.setPublicUniversity}
           privateUniversity={data.searchState.privateUniversity}
           setPrivateUniversity={data.searchState.setPrivateUniversity}
-          sortOption={data.searchState.sortOption}
-          setSortOption={data.searchState.setSortOption}
-          sortDirection={data.searchState.sortDirection}
-          setSortDirection={data.searchState.setSortDirection}
         />
         
-        {/* 大学リスト */}
+        {/* 大学リスト - 並べ替え関連propsを含む */}
         <UniversityList
           filteredUniversities={data.filteredUniversities}
           allUniversities={data.universities}
