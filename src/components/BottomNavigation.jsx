@@ -42,7 +42,7 @@ const BottomNavigation = ({
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-lg z-50">
-      <div className="flex justify-around items-center py-2 px-4 max-w-md mx-auto">
+      <div className="flex justify-around items-center py-1 px-2 max-w-md mx-auto">
         {tabs.map((tab) => {
           const Icon = tab.icon;
           const isActive = tab.activeViews.includes(currentView);
@@ -51,33 +51,28 @@ const BottomNavigation = ({
             <button
               key={tab.id}
               onClick={() => handleNavClick(tab.id)}
-              className={`flex flex-col items-center justify-center py-2 px-3 rounded-lg transition-colors relative min-w-0 flex-1 ${
+              className={`flex flex-col items-center justify-center py-1 px-2 rounded-lg transition-colors relative min-w-0 flex-1 ${
                 isActive 
-                  ? 'text-green-600 bg-green-50' 
-                  : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'
+                  ? 'text-green-600' 
+                  : 'text-gray-500 hover:text-gray-700'
               }`}
             >
               {/* アイコンとバッジ */}
               <div className="relative">
-                <Icon size={24} strokeWidth={isActive ? 2.5 : 2} />
+                <Icon size={20} strokeWidth={isActive ? 2.5 : 2} />
                 {tab.badge && (
-                  <div className={`absolute -top-2 -right-2 ${tab.badgeColor} text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-medium`}>
-                    {tab.badge > 99 ? '99+' : tab.badge}
+                  <div className={`absolute -top-1 -right-1 ${tab.badgeColor} text-white text-xs rounded-full w-4 h-4 flex items-center justify-center font-medium`}>
+                    {tab.badge > 9 ? '9+' : tab.badge}
                   </div>
                 )}
               </div>
               
               {/* ラベル */}
-              <span className={`text-xs mt-1 font-medium truncate w-full text-center ${
+              <span className={`text-xs mt-0.5 font-medium truncate w-full text-center leading-tight ${
                 isActive ? 'text-green-600' : 'text-gray-500'
               }`}>
                 {tab.label}
               </span>
-              
-              {/* アクティブインジケーター */}
-              {isActive && (
-                <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-8 h-1 bg-green-600 rounded-full"></div>
-              )}
             </button>
           );
         })}
