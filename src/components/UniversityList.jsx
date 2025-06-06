@@ -1,7 +1,7 @@
-// src/components/UniversityList.jsx (統合版)
+// src/components/UniversityList.jsx (絞り込み条件・保存ボタン削除版)
 import React, { useState, useMemo } from 'react';
 import SimpleUniversityCard from './SimpleUniversityCard';
-import { ChevronLeft, ChevronRight, Filter, Save } from 'lucide-react';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 const UniversityList = ({
   filteredUniversities,
@@ -16,29 +16,11 @@ const UniversityList = ({
   onRemoveFromCompare,
   favoriteUniversities,
   onAddToFavorites,
-  onRemoveFromFavorites,
-  selectedRegion,
-  sportsRecommend,
-  dormAvailable,
-  selectionAvailable,
-  selectedLeague,
-  selectedQualification
+  onRemoveFromFavorites
 }) => {
   // ページング状態管理
   const [currentPage, setCurrentPage] = useState(1);
   const universitiesPerPage = 10;
-  
-  // 現在のフィルター条件を文字列配列として生成
-  const activeFilters = useMemo(() => {
-    const filters = [];
-    if (selectedRegion) filters.push(selectedRegion);
-    if (sportsRecommend) filters.push('スポーツ推薦あり');
-    if (dormAvailable) filters.push('寮あり');
-    if (selectionAvailable) filters.push('セレクションあり');
-    if (selectedLeague) filters.push(selectedLeague);
-    if (selectedQualification) filters.push(selectedQualification);
-    return filters;
-  }, [selectedRegion, sportsRecommend, dormAvailable, selectionAvailable, selectedLeague, selectedQualification]);
 
   // ページネーション用の計算
   const indexOfLastUniversity = currentPage * universitiesPerPage;
@@ -65,33 +47,15 @@ const UniversityList = ({
 
   return (
     <div className="bg-white p-6 rounded-lg shadow-md">
-      {/* ===== 統合された FilterOptions 部分 ===== */}
+      {/* ヘッダー部分 - シンプル版 */}
       <div className="mb-6">
-        <div className="flex justify-between items-center mb-4">
-          <div className="flex items-center">
-            <h2 className="text-xl font-semibold">検索結果</h2>
-            <span className="bg-green-100 text-green-800 text-sm px-3 py-1 rounded-full ml-3">
-              {allUniversities ? `${allUniversities.length}件中${filteredUniversities.length}件表示` : `${filteredUniversities.length}件`}
-            </span>
-          </div>
-          
-          <div className="flex items-center gap-3">
-            {activeFilters.length > 0 && (
-              <div className="flex items-center text-sm text-gray-600">
-                <Filter size={16} className="mr-1" />
-                <span>絞り込み条件: </span>
-                <span className="font-medium ml-1">{activeFilters.join(' / ')}</span>
-              </div>
-            )}
-            
-            <button className="text-blue-600 flex items-center text-sm">
-              <Save size={16} className="mr-1" />
-              <span>保存</span>
-            </button>
-          </div>
+        <div className="flex items-center mb-4">
+          <h2 className="text-xl font-semibold">検索結果</h2>
+          <span className="bg-green-100 text-green-800 text-sm px-3 py-1 rounded-full ml-3">
+            {allUniversities ? `${allUniversities.length}件中${filteredUniversities.length}件表示` : `${filteredUniversities.length}件`}
+          </span>
         </div>
       </div>
-      {/* ===== FilterOptions 統合終了 ===== */}
       
       {/* 大学リスト - レスポンシブ2列表示 */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">

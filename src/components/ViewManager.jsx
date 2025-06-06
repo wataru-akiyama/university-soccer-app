@@ -1,4 +1,4 @@
-// src/components/ViewManager.jsx（統合版）
+// src/components/ViewManager.jsx（統合版・更新）
 import React from 'react';
 import EnhancedPlayerPortfolio from './EnhancedPlayerPortfolio';
 import EnhancedUniversityDetails from './EnhancedUniversityDetails';
@@ -61,12 +61,6 @@ const ViewManager = ({
           favoriteUniversities={data.favoriteUniversities}
           onAddToFavorites={handlers.addToFavorites}
           onRemoveFromFavorites={handlers.removeFromFavorites}
-          selectedRegion={data.searchState.selectedRegions}
-          sportsRecommend={data.searchState.sportsRecommend}
-          dormAvailable={data.searchState.dormAvailable}
-          selectionAvailable={data.searchState.selectionAvailable}
-          selectedLeague={data.searchState.selectedLeagues}
-          selectedQualification={data.searchState.selectedQualifications}
         />
       </>
     );
