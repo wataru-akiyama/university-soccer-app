@@ -110,146 +110,151 @@ export const userProfile = {
 // 6. 大学データ（元 universities.js + universityExtendedData.js を統合）
 export const universities = [
   {
-      id: 1,
-      university_name: "早稲田大学",
-      homepage_url: "https://www.waseda.jp/",
-      main_faculties: ["スポーツ科学部", "商学部", "政治経済学部"],
-      location: "東京都新宿区",
-      soccer_club: {
-        league: "関東大学サッカーリーグ1部",
-        coach_name: "李忠成",
-        total_members: 95,
-        members_by_grade: { "1年": 30, "2年": 25, "3年": 20, "4年": 20 },
-        j_league_nominees_2022_24: 12,
-        j_league_nominees_2022: 3,
-        j_league_nominees_2023: 4,
-        j_league_nominees_2024: 5,
-        denso_cup_2024_25: 5,
-        soccer_field_count: 3,
-        dorm_available: true,
-        facility_note: "人工芝2面、天然芝1面、ナイター設備あり",
-        practice_location: "東伏見キャンパスグラウンド",
-        sports_scholarship: true,
-        qualifications: ["JFA公認コーチングライセンス", "スポーツトレーナー資格", "審判資格"],
-        qualification_note: "JFA公認コーチングライセンス取得サポート、学内トレーニング施設での実習あり",
-        highlight: "Jリーグ内定者多数"
+    id: 1,
+    university_name: "早稲田大学",
+    homepage_url: "https://www.waseda.jp/",
+    main_faculties: ["スポーツ科学部", "商学部", "政治経済学部"],
+    location: "東京都新宿区",
+    
+    // ✅ サッカー部基本情報（整理済み）
+    soccer_club: {
+      league: "関東大学サッカーリーグ1部",
+      coach_name: "李忠成",
+      total_members: 95,
+      j_league_nominees_2022_24: 12,
+      denso_cup_2024_25: 5,
+      soccer_field_count: 3,
+      dorm_available: true,
+      facility_note: "人工芝2面、天然芝1面、ナイター設備あり",
+      practice_location: "東伏見キャンパスグラウンド",
+      sports_scholarship: true,
+      qualifications: ["JFA公認コーチングライセンス", "スポーツトレーナー資格", "審判資格"]
+    },
+    
+    // ✅ 入部条件（そのまま）
+    entry_conditions: {
+      sports_recommend: true,
+      recommend_criteria: "評定3.5以上、受入人数20名程度",
+      selection: true,
+      selection_period: "12月上旬・2月下旬",
+      general_admission: true,
+      general_conditions: "オープン練習参加後、部内テスト実施"
+    },
+    
+    // ✅ 概要タブ用データ
+    key_features: [
+      "Jリーグ内定者12名（過去3年）",
+      "専用寮あり・充実設備", 
+      "スポーツ推薦20名募集",
+      "年間費用約250万円"
+    ],
+    
+    team_philosophy: "技術と戦術理解を重視したポゼッション型サッカー。李忠成監督のもと、個人の技術向上とチーム戦術の両立を図る。",
+    
+    suitable_players: [
+      "プロサッカー選手を目指している選手",
+      "戦術理解を深めたい技術系選手", 
+      "チームプレーを重視する選手",
+      "学業とサッカーを高いレベルで両立したい選手"
+    ],
+  
+    // ✅ 費用情報
+    costs: {
+      university_costs: {
+        annual_tuition: 1200000,
+        entrance_fee: 300000,
+        facility_fee: 150000
       },
-      entry_conditions: {
-        sports_recommend: true,
-        recommend_criteria: "評定3.5以上、受入人数20名程度",
-        selection: true,
-        selection_period: "12月上旬・2月下旬",
-        general_admission: true,
-        general_conditions: "オープン練習参加後、部内テスト実施"
+      soccer_club_costs: {
+        monthly_club_fee: 15000,
+        equipment_cost: 80000,
+        camp_cost: 200000,
+        travel_cost: 100000
       },
-      extended_data: {
-        high_school_trend: "全国の強豪校出身者が多く、特に関東圏の強豪校からの入部者が目立ちます。高校サッカー選手権出場校の出身者も多数在籍しています。",
-        tournament_results: [
-          { tournament: "総理大臣杯全日本大学サッカートーナメント", year: "2023", achievement: "準優勝" },
-          { tournament: "関東大学サッカーリーグ戦", year: "2023", achievement: "3位" },
-          { tournament: "全日本大学サッカー選手権", year: "2022", achievement: "ベスト8" }
-        ],
-        j_league_teams: ["FC東京", "川崎フロンターレ", "浦和レッズ", "柏レイソル", "横浜F・マリノス"],
-        career_paths: [
-          { category: "Jリーグ関連", percentage: 15 },
-          { category: "指導者・教員", percentage: 30 },
-          { category: "一般企業", percentage: 55 }
-        ],
-        famous_alumni: [
-          { name: "中村憲剛", initials: "NK", career: "元日本代表、川崎フロンターレ" },
-          { name: "長友佑都", initials: "YN", career: "元日本代表、インテル" },
-          { name: "高原直泰", initials: "NT", career: "元日本代表、ハンブルガーSV" }
-        ],
-        playmaker_comment: "早稲田大学サッカー部は、首都圏でトップクラスの実績を持ち、多くのJリーガーを輩出している名門です。特に技術的な面での評価が高く、ボールポゼッションを重視したスタイルが特徴です。李忠成監督のもと、戦術理解度の高い選手の育成に力を入れており、プロ志向の選手にとって理想的な環境が整っています。スポーツ推薦制度も充実しており、高校時代の実績があれば進学のチャンスがあります。また、学業面でも商学部や政治経済学部といった文系学部と、スポーツ科学部のような専門的な学びの場があり、進路の選択肢が広いのが魅力です。施設面では複数のグラウンドを有し、トレーニング環境も整備されています。キャンパスライフとサッカーを両立させたい学生にも、プロを目指す学生にも対応できる体制が魅力です。"
+      living_costs: {
+        dorm_fee: 45000,
+        meal_cost: 25000,
+        commute_cost: 8000
       },
-      // 概要タブ用データ
-      key_features: [
-        "Jリーグ内定者12名（過去3年）",
-        "専用寮あり・充実設備", 
-        "スポーツ推薦20名募集",
-        "年間費用約250万円"
+      total_annual_cost: 2500000
+    },
+  
+    // ✅ 口コミ・評判
+    reviews: {
+      student_reviews: [
+        {
+          grade: "3年生",
+          position: "MF", 
+          review: "李監督の指導は本当に的確で、戦術理解が深まりました。寮生活でチームメイトとの絆も深まり、人間的にも成長できています。練習は厳しいですが、その分上達を実感できます。",
+          rating: 4.5
+        },
+        {
+          grade: "2年生",
+          position: "DF",
+          review: "設備が本当に充実していて、プロと同じような環境で練習できます。勉強との両立は大変ですが、サポート体制がしっかりしているので安心です。",
+          rating: 4.0
+        },
+        {
+          grade: "4年生", 
+          position: "FW",
+          review: "高校時代とは比べ物にならないレベルの高い環境です。毎日が刺激的で、技術面だけでなく精神面でも大きく成長できました。就職活動でもサッカー部での経験が評価されました。",
+          rating: 4.8
+        }
       ],
-      team_philosophy: "技術と戦術理解を重視したポゼッション型サッカー。李忠成監督のもと、個人の技術向上とチーム戦術の両立を図る。",
-      suitable_players: [
-        "プロサッカー選手を目指している選手",
-        "戦術理解を深めたい技術系選手", 
-        "チームプレーを重視する選手",
-        "学業とサッカーを高いレベルで両立したい選手"
+      parent_reviews: [
+        {
+          review: "費用は決して安くありませんが、子供の成長を見ていると納得できます。監督やコーチの方々も親身に相談に乗ってくれて、とても信頼しています。親としても安心して任せられる環境です。",
+          rating: 4.2
+        },
+        {
+          review: "寮生活を通じて自立心が育ち、人間的に大きく成長しました。サッカーだけでなく、将来に向けた人格形成もしっかりしていただいています。費用対効果を考えると満足しています。",
+          rating: 4.5
+        },
+        {
+          review: "最初は費用面で悩みましたが、奨学金制度もあり、何より子供が生き生きとサッカーに取り組んでいる姿を見ると、この選択は正しかったと思います。",
+          rating: 4.0
+        }
       ],
-      // 費用情報
-      costs: {
-        university_costs: {
-          annual_tuition: 1200000,    // 年間授業料: 120万円
-          entrance_fee: 300000,       // 入学金: 30万円  
-          facility_fee: 150000        // 施設費: 15万円
+      graduate_reviews: [
+        {
+          graduation_year: 2023,
+          current_status: "Jリーガー",
+          review: "4年間で技術面、精神面ともに大きく成長できました。プロになった今でも、早稲田で学んだ戦術理解やチームワークが役立っています。後輩たちにも自信を持って勧められる環境です。"
         },
-        soccer_club_costs: {
-          monthly_club_fee: 15000,    // 月額部費: 1.5万円
-          equipment_cost: 80000,      // 用具代: 8万円（年間）
-          camp_cost: 200000,          // 合宿費: 20万円（年間）
-          travel_cost: 100000         // 遠征費: 10万円（年間）
+        {
+          graduation_year: 2022,
+          current_status: "商社勤務",
+          review: "サッカーでプロにはなれませんでしたが、4年間で得た経験は就職活動でも社会人になってからも大いに役立っています。チームワーク、リーダーシップ、目標達成への執念など、すべてが財産です。"
         },
-        living_costs: {
-          dorm_fee: 45000,           // 寮費: 4.5万円（月額）
-          meal_cost: 25000,          // 食費: 2.5万円（月額）
-          commute_cost: 8000         // 通学費: 0.8万円（月額）
-        },
-        total_annual_cost: 2500000   // 約250万円
-      },
-      // 口コミ・評判
-      reviews: {
-        student_reviews: [
-          {
-            grade: "3年生",
-            position: "MF", 
-            review: "李監督の指導は本当に的確で、戦術理解が深まりました。寮生活でチームメイトとの絆も深まり、人間的にも成長できています。練習は厳しいですが、その分上達を実感できます。",
-            rating: 4.5
-          },
-          {
-            grade: "2年生",
-            position: "DF",
-            review: "設備が本当に充実していて、プロと同じような環境で練習できます。勉強との両立は大変ですが、サポート体制がしっかりしているので安心です。",
-            rating: 4.0
-          },
-          {
-            grade: "4年生", 
-            position: "FW",
-            review: "高校時代とは比べ物にならないレベルの高い環境です。毎日が刺激的で、技術面だけでなく精神面でも大きく成長できました。就職活動でもサッカー部での経験が評価されました。",
-            rating: 4.8
-          }
-        ],
-        parent_reviews: [
-          {
-            review: "費用は決して安くありませんが、子供の成長を見ていると納得できます。監督やコーチの方々も親身に相談に乗ってくれて、とても信頼しています。親としても安心して任せられる環境です。",
-            rating: 4.2
-          },
-          {
-            review: "寮生活を通じて自立心が育ち、人間的に大きく成長しました。サッカーだけでなく、将来に向けた人格形成もしっかりしていただいています。費用対効果を考えると満足しています。",
-            rating: 4.5
-          },
-          {
-            review: "最初は費用面で悩みましたが、奨学金制度もあり、何より子供が生き生きとサッカーに取り組んでいる姿を見ると、この選択は正しかったと思います。",
-            rating: 4.0
-          }
-        ],
-        graduate_reviews: [
-          {
-            graduation_year: 2023,
-            current_status: "Jリーガー",
-            review: "4年間で技術面、精神面ともに大きく成長できました。プロになった今でも、早稲田で学んだ戦術理解やチームワークが役立っています。後輩たちにも自信を持って勧められる環境です。"
-          },
-          {
-            graduation_year: 2022,
-            current_status: "商社勤務",
-            review: "サッカーでプロにはなれませんでしたが、4年間で得た経験は就職活動でも社会人になってからも大いに役立っています。チームワーク、リーダーシップ、目標達成への執念など、すべてが財産です。"
-          },
-          {
-            graduation_year: 2024,
-            current_status: "指導者",
-            review: "現在は高校でサッカーの指導をしています。早稲田で学んだ指導法や戦術知識、そして何より教育者としてのマインドが今の仕事に直結しています。素晴らしい4年間でした。"
-          }
-        ]
-      }
+        {
+          graduation_year: 2024,
+          current_status: "指導者",
+          review: "現在は高校でサッカーの指導をしています。早稲田で学んだ指導法や戦術知識、そして何より教育者としてのマインドが今の仕事に直結しています。素晴らしい4年間でした。"
+        }
+      ]
+    },
+  
+    // ✅ 必要最小限のextended_data（大幅整理）
+    extended_data: {
+      // 入部タブで使用
+      recommend_ratio: "約70%",
+      selection_details: "12月と2月に実施。約50名の参加者から15名程度を選抜。実戦形式のゲームとポジション別のスキルテストを実施。",
+      scholarship_details: "成績優秀者には授業料の全額または一部免除の制度あり。J内定者には特別奨励金制度も。",
+      
+      // 施設タブで使用
+      dorm_features: "キャンパスから徒歩10分の場所に位置。全室個室で、食堂完備。管理人常駐で生活指導も行う。",
+      training_facilities: "最新設備を備えたトレーニングジム、室内練習場あり。スポーツ栄養士による食事指導も実施。",
+      
+      // 進路タブで使用
+      career_paths: [
+        { category: "Jリーグ関連", percentage: 15 },
+        { category: "指導者・教員", percentage: 30 },
+        { category: "一般企業", percentage: 55 }
+      ],
+      
+      // 概要タブで使用（最重要）
+      playmaker_comment: "早稲田大学サッカー部は、首都圏でトップクラスの実績を持ち、多くのJリーガーを輩出している名門です。特に技術的な面での評価が高く、ボールポゼッションを重視したスタイルが特徴です。李忠成監督のもと、戦術理解度の高い選手の育成に力を入れており、プロ志向の選手にとって理想的な環境が整っています。スポーツ推薦制度も充実しており、高校時代の実績があれば進学のチャンスがあります。また、学業面でも商学部や政治経済学部といった文系学部と、スポーツ科学部のような専門的な学びの場があり、進路の選択肢が広いのが魅力です。施設面では複数のグラウンドを有し、トレーニング環境も整備されています。キャンパスライフとサッカーを両立させたい学生にも、プロを目指す学生にも対応できる体制が魅力です。"
+    }
     },
     {
       id: 2,

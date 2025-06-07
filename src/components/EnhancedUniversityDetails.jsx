@@ -310,13 +310,6 @@ const EnhancedUniversityDetails = ({
               )}
             </div>
             
-            {/* スクロールヒントテキスト（小画面のみ） */}
-            {showScrollHint && (
-              <div className="sm:hidden bg-gray-50 px-4 py-2 text-center">
-                <p className="text-xs text-gray-500">← 左右にスワイプしてタブを切り替え →</p>
-              </div>
-            )}
-            
             <div className="p-6 lg:p-8">
               {activeTab === 'overview' && <OverviewTab university={university} />}
               {activeTab === 'admission' && <AdmissionTab university={university} />}
