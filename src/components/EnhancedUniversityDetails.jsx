@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { 
   ChevronLeft, 
   Heart, 
@@ -36,6 +36,34 @@ const EnhancedUniversityDetails = ({
   isInFavorites 
 }) => {
   const [activeTab, setActiveTab] = useState('overview'); // デフォルトを概要に変更
+  const [showScrollHint, setShowScrollHint] = useState(false);
+  const tabContainerRef = useRef(null);
+  
+  // スクロール状態を監視
+  useEffect(() => {
+    const container = tabContainerRef.current;
+    if (!container) return;
+
+    const checkScrollable = () => {
+      const isScrollable = container.scrollWidth > container.clientWidth;
+      const isAtEnd = container.scrollLeft >= container.scrollWidth - container.clientWidth - 5;
+      setShowScrollHint(isScrollable && !isAtEnd);
+    };
+
+    // 初期チェック
+    checkScrollable();
+
+    // スクロールイベントリスナー
+    container.addEventListener('scroll', checkScrollable);
+    
+    // リサイズイベントリスナー
+    window.addEventListener('resize', checkScrollable);
+
+    return () => {
+      container.removeEventListener('scroll', checkScrollable);
+      window.removeEventListener('resize', checkScrollable);
+    };
+  }, []);
   
   if (!university) return null;
   
@@ -235,29 +263,59 @@ const EnhancedUniversityDetails = ({
       {/* メインコンテンツ */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-8 lg:pb-12">
         <div className="space-y-6 lg:space-y-8">
-          {/* ナビゲーションタブ（スマホ対応） */}
+          {/* ナビゲーションタブ（スマホ対応 + スクロールヒント） */}
           <div className="bg-white rounded-xl shadow-sm overflow-hidden">
-            <div className="flex border-b border-gray-200 overflow-x-auto scrollbar-hide">
-              {tabs.map((tab) => {
-                const Icon = tab.icon;
-                return (
-                  <button
-                    key={tab.id}
-                    className={`flex-shrink-0 flex items-center justify-center px-4 lg:px-6 py-3 lg:py-4 text-sm font-medium transition-colors whitespace-nowrap ${
-                      activeTab === tab.id
-                        ? 'text-green-600 border-b-2 border-green-600 bg-green-50'
-                        : 'text-gray-500 hover:text-gray-700'
-                    }`}
-                    onClick={() => setActiveTab(tab.id)}
-                  >
-                    <Icon size={18} className="mr-2" />
-                    {/* レスポンシブ表示 */}
-                    <span className="hidden sm:inline">{tab.label}</span>
-                    <span className="sm:hidden">{tab.shortLabel}</span>
-                  </button>
-                );
-              })}
+            <div className="relative">
+              <div 
+                ref={tabContainerRef}
+                className="flex border-b border-gray-200 overflow-x-auto scrollbar-hide"
+                style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+              >
+                {tabs.map((tab) => {
+                  const Icon = tab.icon;
+                  return (
+                    <button
+                      key={tab.id}
+                      className={`flex-shrink-0 flex items-center justify-center px-4 lg:px-6 py-3 lg:py-4 text-sm font-medium transition-colors whitespace-nowrap ${
+                        activeTab === tab.id
+                          ? 'text-green-600 border-b-2 border-green-600 bg-green-50'
+                          : 'text-gray-500 hover:text-gray-700'
+                      }`}
+                      onClick={() => setActiveTab(tab.id)}
+                    >
+                      <Icon size={18} className="mr-2" />
+                      {/* レスポンシブ表示 */}
+                      <span className="hidden sm:inline">{tab.label}</span>
+                      <span className="sm:hidden">{tab.shortLabel}</span>
+                    </button>
+                  );
+                })}
+              </div>
+              
+              {/* 右端グラデーション + スクロールヒント */}
+              {showScrollHint && (
+                <>
+                  {/* グラデーションオーバーレイ */}
+                  <div 
+                    className="absolute top-0 right-0 h-full w-8 bg-gradient-to-l from-white via-white/80 to-transparent pointer-events-none z-10"
+                  />
+                  
+                  {/* スクロールヒント */}
+                  <div className="absolute top-1/2 right-2 transform -translate-y-1/2 pointer-events-none z-20">
+                    <div className="flex items-center text-xs text-gray-400">
+                      <span className="mr-1">→</span>
+                    </div>
+                  </div>
+                </>
+              )}
             </div>
+            
+            {/* スクロールヒントテキスト（小画面のみ） */}
+            {showScrollHint && (
+              <div className="sm:hidden bg-gray-50 px-4 py-2 text-center">
+                <p className="text-xs text-gray-500">← 左右にスワイプしてタブを切り替え →</p>
+              </div>
+            )}
             
             <div className="p-6 lg:p-8">
               {activeTab === 'overview' && <OverviewTab university={university} />}
