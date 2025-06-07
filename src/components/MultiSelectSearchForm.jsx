@@ -200,7 +200,7 @@ const MultiSelectSearchForm = ({
       <div className="relative mb-4 sm:mb-6">
         <input
           type="text"
-          placeholder="大学名・キーワードで検索"
+          placeholder="大学名で検索"
           className="w-full p-3 pl-10 border rounded-md text-sm sm:text-base"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
