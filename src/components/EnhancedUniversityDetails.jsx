@@ -598,7 +598,7 @@ const CostsTab = ({ university }) => {
           <div className="bg-white border rounded-lg p-4">
             <div className="text-sm text-gray-600 mb-1">部費</div>
             <div className="text-xl font-bold text-gray-900">
-              月額{((costs.soccer_club_costs?.monthly_club_fee || 15000) / 1000).toFixed(0)}千円
+              月額{((costs.soccer_club_costs?.monthly_club_fee || 15000) / 10000).toFixed(1)}万円
             </div>
           </div>
           <div className="bg-white border rounded-lg p-4">
@@ -630,7 +630,10 @@ const CostsTab = ({ university }) => {
             <div className="bg-white border rounded-lg p-4">
               <div className="text-sm text-gray-600 mb-1">寮費</div>
               <div className="text-xl font-bold text-gray-900">
-                {((costs.living_costs?.dorm_fee || 45000) / 1000).toFixed(0)}千円
+                {(costs.living_costs?.dorm_fee || 45000) >= 10000 
+                  ? `${((costs.living_costs?.dorm_fee || 45000) / 10000).toFixed(1)}万円`
+                  : `${((costs.living_costs?.dorm_fee || 45000) / 1000).toFixed(0)}千円`
+                }
               </div>
             </div>
           ) : (
@@ -643,13 +646,19 @@ const CostsTab = ({ university }) => {
           <div className="bg-white border rounded-lg p-4">
             <div className="text-sm text-gray-600 mb-1">食費</div>
             <div className="text-xl font-bold text-gray-900">
-              {((costs.living_costs?.meal_cost || 25000) / 1000).toFixed(0)}千円
+              {(costs.living_costs?.meal_cost || 25000) >= 10000 
+                ? `${((costs.living_costs?.meal_cost || 25000) / 10000).toFixed(1)}万円`
+                : `${((costs.living_costs?.meal_cost || 25000) / 1000).toFixed(0)}千円`
+              }
             </div>
           </div>
           <div className="bg-white border rounded-lg p-4">
             <div className="text-sm text-gray-600 mb-1">交通費</div>
             <div className="text-xl font-bold text-gray-900">
-              {((costs.living_costs?.commute_cost || 8000) / 1000).toFixed(0)}千円
+              {(costs.living_costs?.commute_cost || 8000) >= 10000 
+                ? `${((costs.living_costs?.commute_cost || 8000) / 10000).toFixed(1)}万円`
+                : `${((costs.living_costs?.commute_cost || 8000) / 1000).toFixed(0)}千円`
+              }
             </div>
           </div>
         </div>
