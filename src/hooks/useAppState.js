@@ -1,11 +1,11 @@
-// src/hooks/useAppState.js
+// src/hooks/useAppState.js - URLパラメータ対応版
+
 import { useState, useEffect } from 'react';
 import useUniversitySearch from './useUniversitySearch';
 import { universities, userProfile } from '../data';
 
 /**
- * アプリケーション全体の状態管理フック
- * App.jsに散らばっていた状態とロジックを一箇所に集約
+ * アプリケーション全体の状態管理フック（URLパラメータ対応版）
  */
 export const useAppState = () => {
   // 検索関連の状態（既存のカスタムフック使用）
@@ -17,6 +17,39 @@ export const useAppState = () => {
   const [compareList, setCompareList] = useState([]);
   const [favoriteUniversities, setFavoriteUniversities] = useState([]);
   const [playerProfileData, setPlayerProfileData] = useState(userProfile);
+
+  // ===== URLパラメータ監視（新規追加）=====
+  useEffect(() => {
+    const handleUrlParams = () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const universityId = urlParams.get('id');
+      
+      if (universityId) {
+        // URLパラメータで大学IDが指定された場合
+        const university = universities.find(uni => uni.id === parseInt(universityId));
+        if (university) {
+          setSelectedUniversity(university);
+          setCurrentView('details');
+          
+          // URLを綺麗にする（オプション）
+          // window.history.replaceState({}, '', window.location.pathname);
+        } else {
+          // 指定されたIDの大学が見つからない場合はリストページに戻る
+          setCurrentView('list');
+        }
+      }
+    };
+
+    // 初回実行
+    handleUrlParams();
+    
+    // ブラウザの戻る/進むボタン対応
+    window.addEventListener('popstate', handleUrlParams);
+    
+    return () => {
+      window.removeEventListener('popstate', handleUrlParams);
+    };
+  }, []);
 
   // ローカルストレージからお気に入りを読み込む
   useEffect(() => {
@@ -71,6 +104,16 @@ export const useAppState = () => {
   };
 
   /**
+   * 大学詳細表示（ID指定版 - 新規追加）
+   */
+  const viewUniversityDetailsById = (universityId) => {
+    const university = universities.find(uni => uni.id === parseInt(universityId));
+    if (university) {
+      viewUniversityDetails(university);
+    }
+  };
+
+  /**
    * 比較リストに追加
    */
   const addToCompare = (university) => {
@@ -122,6 +165,7 @@ export const useAppState = () => {
   const actions = {
     changeView,
     viewUniversityDetails,
+    viewUniversityDetailsById, // 新規追加
     addToCompare,
     removeFromCompare,
     addToFavorites,
