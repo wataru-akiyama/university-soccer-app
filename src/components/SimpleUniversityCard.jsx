@@ -1,6 +1,6 @@
-// src/components/SimpleUniversityCard.jsx - チェックマーク重複修正版
+// src/components/SimpleUniversityCard.jsx - 進路プラン対応版
 import React from 'react';
-import { Heart, Plus, Check, MapPin } from 'lucide-react';
+import { Heart, Plus, Check, MapPin, ChevronUp, ChevronDown, X, Info } from 'lucide-react';
 
 const SimpleUniversityCard = ({ 
   university, 
@@ -10,7 +10,15 @@ const SimpleUniversityCard = ({
   isInCompareList,
   onAddToFavorites,
   onRemoveFromFavorites,
-  isInFavorites
+  isInFavorites,
+  // 進路プラン用の新しいprops
+  isPortfolioMode = false,
+  portfolioRank = null,
+  onMoveUp = null,
+  onMoveDown = null,
+  canMoveUp = true,
+  canMoveDown = true,
+  onRemoveFromPortfolio = null
 }) => {
   const getLeagueColor = (league) => {
     if (league.includes('1部')) return 'bg-green-100 text-green-800';
@@ -35,24 +43,81 @@ const SimpleUniversityCard = ({
       onAddToCompare(university);
     }
   };
+
+  const handleMoveUp = (e) => {
+    e.stopPropagation();
+    onMoveUp && onMoveUp();
+  };
+
+  const handleMoveDown = (e) => {
+    e.stopPropagation();
+    onMoveDown && onMoveDown();
+  };
+
+  const handleRemoveFromPortfolio = (e) => {
+    e.stopPropagation();
+    onRemoveFromPortfolio && onRemoveFromPortfolio(university.id);
+  };
   
   return (
     <div 
       className="bg-white rounded-xl shadow-sm hover:shadow-lg transition-all border border-gray-200 cursor-pointer overflow-hidden relative"
       onClick={() => onViewDetails(university)}
     >
-      {/* お気に入りボタン - 右上に固定 */}
-      <button
-        className={`absolute top-3 right-3 p-2 rounded-full z-10 ${
-          isInFavorites 
-            ? 'bg-white bg-opacity-90 text-red-500' 
-            : 'bg-white bg-opacity-90 text-gray-400 hover:text-red-500'
-        } shadow-sm transition-colors`}
-        onClick={handleFavoriteClick}
-        title={isInFavorites ? "私の進路プランから削除" : "私の進路プランに追加"}
-      >
-        <Heart size={18} fill={isInFavorites ? "currentColor" : "none"} />
-      </button>
+      {/* 進路プラン用の志望順位バッジ */}
+      {isPortfolioMode && portfolioRank && (
+        <div className="absolute top-3 left-3 bg-green-600 text-white rounded-full w-8 h-8 flex items-center justify-center shadow-md font-bold text-sm z-10">
+          {portfolioRank}
+        </div>
+      )}
+
+      {/* 右上のボタンエリア */}
+      <div className="absolute top-3 right-3 flex space-x-1 z-10">
+        {/* 進路プラン用の順序変更ボタン */}
+        {isPortfolioMode && (
+          <div className="flex flex-col">
+            <button
+              onClick={handleMoveUp}
+              disabled={!canMoveUp}
+              className={`p-1 rounded-full ${!canMoveUp ? 'text-gray-300' : 'text-green-500 hover:bg-green-50'} bg-white bg-opacity-90 shadow-sm transition-colors`}
+              title="上に移動"
+            >
+              <ChevronUp size={14} />
+            </button>
+            <button
+              onClick={handleMoveDown}
+              disabled={!canMoveDown}
+              className={`p-1 rounded-full ${!canMoveDown ? 'text-gray-300' : 'text-green-500 hover:bg-green-50'} bg-white bg-opacity-90 shadow-sm transition-colors`}
+              title="下に移動"
+            >
+              <ChevronDown size={14} />
+            </button>
+          </div>
+        )}
+
+        {/* 進路プラン用の削除ボタン または お気に入りボタン */}
+        {isPortfolioMode ? (
+          <button
+            className="p-2 rounded-full bg-white bg-opacity-90 text-red-500 hover:text-red-700 shadow-sm transition-colors"
+            onClick={handleRemoveFromPortfolio}
+            title="進路プランから削除"
+          >
+            <X size={16} />
+          </button>
+        ) : (
+          <button
+            className={`p-2 rounded-full z-10 ${
+              isInFavorites 
+                ? 'bg-white bg-opacity-90 text-red-500' 
+                : 'bg-white bg-opacity-90 text-gray-400 hover:text-red-500'
+            } shadow-sm transition-colors`}
+            onClick={handleFavoriteClick}
+            title={isInFavorites ? "私の進路プランから削除" : "私の進路プランに追加"}
+          >
+            <Heart size={18} fill={isInFavorites ? "currentColor" : "none"} />
+          </button>
+        )}
+      </div>
       
       {/* カードヘッダー - 大学名とハイライト */}
       <div className="p-3 sm:p-4 border-b border-gray-100 bg-gradient-to-r from-gray-50 to-white">
@@ -70,7 +135,7 @@ const SimpleUniversityCard = ({
             />
           </div>
           
-          <div className="flex-1 min-w-0">
+          <div className="flex-1 min-w-0 pr-16"> {/* 右のボタンスペース確保 */}
             <h3 className="font-bold text-base sm:text-lg text-gray-800 mb-1 truncate">{university.university_name}</h3>
             
             {/* タグエリア - リーグと練習場所を表示 */}
@@ -150,29 +215,48 @@ const SimpleUniversityCard = ({
           )}
         </div>
         
-        {/* 比較リストに追加ボタン - チェックマーク重複修正 */}
-        <div className="flex justify-end">
-          <button 
-            className={`${isInCompareList 
-              ? 'bg-gray-100 text-gray-500' 
-              : 'text-green-600 border border-green-200 hover:bg-green-50'
-            } px-3 py-1.5 rounded-lg text-sm font-medium flex items-center transition-colors`}
-            onClick={handleCompareClick}
-          >
-            {isInCompareList ? (
-              <>
-                <Check size={16} className="mr-1" />
-                <span className="hidden xs:inline">比較中</span>
-                <span className="xs:hidden">比較中</span>
-              </>
-            ) : (
-              <>
-                <Plus size={16} className="mr-1" />
-                <span className="hidden xs:inline">比較リストに追加</span>
-                <span className="xs:hidden">比較追加</span>
-              </>
-            )}
-          </button>
+        {/* ボトムアクションエリア */}
+        <div className="flex justify-between items-center">
+          {/* 進路プラン用の詳細表示ボタン */}
+          {isPortfolioMode && (
+            <button 
+              className="text-green-600 font-medium text-sm flex items-center hover:text-green-700 transition-colors" 
+              onClick={(e) => {
+                e.stopPropagation();
+                onViewDetails(university);
+              }}
+            >
+              <Info size={14} className="mr-1" />
+              詳細を見る
+            </button>
+          )}
+
+          {/* 比較リストに追加ボタン */}
+          {!isPortfolioMode && (
+            <div className="flex justify-end w-full">
+              <button 
+                className={`${isInCompareList 
+                  ? 'bg-gray-100 text-gray-500' 
+                  : 'text-green-600 border border-green-200 hover:bg-green-50'
+                } px-3 py-1.5 rounded-lg text-sm font-medium flex items-center transition-colors`}
+                onClick={handleCompareClick}
+              >
+                {isInCompareList ? (
+                  <>
+                    <Check size={16} className="mr-1" />
+                    <span className="hidden xs:inline">比較中</span>
+                    <span className="xs:hidden">比較中</span>
+                  </>
+                ) : (
+                  <>
+                    <Plus size={16} className="mr-1" />
+                    <span className="hidden xs:inline">比較リストに追加</span>
+                    <span className="xs:hidden">比較追加</span>
+                  </>
+                )}
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </div>

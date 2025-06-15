@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
     UserCircle, 
     ChevronLeft, 
@@ -15,17 +15,14 @@ import {
     X, 
     Plus, 
     Download, 
-    Share2, 
-    Twitter,
-    Facebook, 
-    Instagram, 
-    Linkedin, 
-    Link,
     Heart,
     ChevronUp,
     ChevronDown,
-    Info
+    Info,
+    Send,
+    Users
 } from 'lucide-react';
+import SimpleUniversityCard from './SimpleUniversityCard';
 
 // メインコンポーネント - 統合版
 const EnhancedPlayerPortfolio = ({ 
@@ -91,9 +88,9 @@ const EnhancedPlayerPortfolio = ({
                 className="bg-green-500 hover:bg-green-400 text-white px-2 sm:px-3 py-1 sm:py-1.5 rounded-md flex items-center text-xs sm:text-sm transition-colors"
                 onClick={() => setShowShareModal(true)}
               >
-                <Share2 size={14} className="sm:w-4 sm:h-4 mr-1 sm:mr-1.5" />
-                <span className="hidden sm:inline">共有</span>
-                <span className="sm:hidden">共有</span>
+                <Send size={14} className="sm:w-4 sm:h-4 mr-1 sm:mr-1.5" />
+                <span className="hidden sm:inline">大学紹介依頼</span>
+                <span className="sm:hidden">紹介依頼</span>
               </button>
             </div>
           </div>
@@ -142,18 +139,19 @@ const EnhancedPlayerPortfolio = ({
         </div>
       </div>
       
-      {/* 共有モーダル */}
+      {/* 紹介依頼モーダル */}
       {showShareModal && (
         <ShareModal 
           onClose={() => setShowShareModal(false)} 
           player={playerData}
+          favoriteUniversities={favoriteUniversities}
         />
       )}
     </div>
   );
 };
 
-// 統合された志望大学タブコンポーネント（スマホ対応修正版）
+// 統合された志望大学タブコンポーネント（統一カード使用版）
 const IntegratedUniversitiesTab = ({ 
   universities = [], 
   editMode = false,
@@ -188,193 +186,28 @@ const IntegratedUniversitiesTab = ({
       </div>
       
       {universities.length > 0 ? (
-        <div className="space-y-3 sm:space-y-4">
+        <div className="space-y-4">
           {universities.map((university, index) => (
-            <div
+            <SimpleUniversityCard
               key={university.id}
-              className="border rounded-xl p-3 sm:p-5 bg-white shadow-md hover:shadow-lg transition-shadow"
-            >
-              {/* モバイル用レイアウト */}
-              <div className="block sm:hidden">
-                <div className="flex items-center justify-between mb-3">
-                  <div className="bg-green-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold">
-                    {index + 1}
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <button 
-                      onClick={() => moveUp(index)}
-                      disabled={index === 0}
-                      className={`p-2 rounded-full ${index === 0 ? 'text-gray-300' : 'text-green-500 hover:bg-green-50'}`}
-                      title="上に移動"
-                    >
-                      <ChevronUp size={16} />
-                    </button>
-                    <button 
-                      onClick={() => moveDown(index)}
-                      disabled={index === universities.length - 1}
-                      className={`p-2 rounded-full ${index === universities.length - 1 ? 'text-gray-300' : 'text-green-500 hover:bg-green-50'}`}
-                      title="下に移動"
-                    >
-                      <ChevronDown size={16} />
-                    </button>
-                    <button
-                      className="text-red-500 p-2 hover:bg-red-50 rounded-full transition-colors"
-                      onClick={() => onRemoveFromFavorites(university.id)}
-                    >
-                      <X size={16} />
-                    </button>
-                  </div>
-                </div>
-                
-                <div className="flex items-center space-x-3 mb-3">
-                  <div className="w-16 h-16 bg-gradient-to-r from-green-500 to-green-600 rounded-lg overflow-hidden shadow-md relative flex-shrink-0">
-                    <img 
-                      src={`/images/universities/${university.id}.jpg`}
-                      alt=""
-                      className="w-full h-full object-cover opacity-80"
-                      onError={(e) => {
-                        e.target.onerror = null;
-                        e.target.src = `${process.env.PUBLIC_URL}/images/university-default.jpg`;
-                      }}
-                    />
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      <div className="bg-white p-1 rounded-full shadow-sm">
-                        <img 
-                          src={`/images/logos/${university.id}.png`}
-                          alt={`${university.university_name} ロゴ`}
-                          className="w-6 h-6 object-contain"
-                          onError={(e) => {
-                            e.target.onerror = null;
-                            e.target.src = `${process.env.PUBLIC_URL}/images/default-logo.png`;
-                          }}
-                        />
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <div className="flex-1 min-w-0">
-                    <h3 className="text-base font-semibold text-gray-800 mb-1 truncate">{university.university_name}</h3>
-                    <p className="text-sm text-gray-600 mb-2">{university.soccer_club.league}</p>
-                  </div>
-                </div>
-                
-                <div className="flex flex-wrap gap-1 mb-3">
-                  {university.entry_conditions.sports_recommend && (
-                    <span className="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full">
-                      スポーツ推薦あり
-                    </span>
-                  )}
-                  {university.soccer_club.dorm_available && (
-                    <span className="bg-purple-100 text-purple-800 text-xs px-2 py-1 rounded-full">
-                      寮あり
-                    </span>
-                  )}
-                </div>
-                
-                <button 
-                  className="text-green-600 font-medium text-sm flex items-center hover:text-green-700 transition-colors" 
-                  onClick={() => onViewDetails(university)}
-                >
-                  <Info size={14} className="mr-1" />
-                  詳細を見る
-                </button>
-              </div>
-
-              {/* デスクトップ用レイアウト */}
-              <div className="hidden sm:flex justify-between">
-                <div className="flex">
-                  {/* 順序変更ボタン */}
-                  <div className="flex flex-col items-center justify-center mr-4">
-                    <button 
-                      onClick={() => moveUp(index)}
-                      disabled={index === 0}
-                      className={`p-2 rounded-full ${index === 0 ? 'text-gray-300' : 'text-green-500 hover:bg-green-50'}`}
-                      title="上に移動"
-                    >
-                      <ChevronUp size={16} />
-                    </button>
-                    <div className="h-4"></div>
-                    <button 
-                      onClick={() => moveDown(index)}
-                      disabled={index === universities.length - 1}
-                      className={`p-2 rounded-full ${index === universities.length - 1 ? 'text-gray-300' : 'text-green-500 hover:bg-green-50'}`}
-                      title="下に移動"
-                    >
-                      <ChevronDown size={16} />
-                    </button>
-                  </div>
-                  
-                  <div className="mr-4 relative">
-                    {/* 大学イメージ */}
-                    <div className="w-24 h-24 bg-gradient-to-r from-green-500 to-green-600 rounded-lg overflow-hidden shadow-md relative">
-                      <img 
-                        src={`/images/universities/${university.id}.jpg`}
-                        alt=""
-                        className="w-full h-full object-cover opacity-80"
-                        onError={(e) => {
-                          e.target.onerror = null;
-                          e.target.src = `${process.env.PUBLIC_URL}/images/university-default.jpg`;
-                        }}
-                      />
-                      {/* ロゴオーバーレイ */}
-                      <div className="absolute inset-0 flex items-center justify-center">
-                        <div className="bg-white p-2 rounded-full shadow-sm">
-                          <img 
-                            src={`/images/logos/${university.id}.png`}
-                            alt={`${university.university_name} ロゴ`}
-                            className="w-10 h-10 object-contain"
-                            onError={(e) => {
-                              e.target.onerror = null;
-                              e.target.src = `${process.env.PUBLIC_URL}/images/default-logo.png`;
-                            }}
-                          />
-                        </div>
-                      </div>
-                    </div>
-                    
-                    {/* 志望順位バッジ */}
-                    <div className="absolute -top-2 -left-2 bg-green-600 text-white rounded-full w-8 h-8 flex items-center justify-center shadow-md font-bold">
-                      {index + 1}
-                    </div>
-                  </div>
-                  
-                  <div>
-                    <h3 className="text-lg font-semibold text-gray-800 mb-1">{university.university_name}</h3>
-                    <p className="text-sm text-gray-600 mb-3">{university.soccer_club.league}</p>
-                    
-                    <div className="flex flex-wrap gap-2 mb-3">
-                      {university.entry_conditions.sports_recommend && (
-                        <span className="bg-green-100 text-green-800 text-xs px-3 py-1 rounded-full inline-block">
-                          スポーツ推薦あり
-                        </span>
-                      )}
-                      {university.soccer_club.dorm_available && (
-                        <span className="bg-purple-100 text-purple-800 text-xs px-3 py-1 rounded-full inline-block">
-                          寮あり
-                        </span>
-                      )}
-                    </div>
-                    
-                    <button 
-                      className="text-green-600 font-medium text-sm flex items-center hover:text-green-700 transition-colors" 
-                      onClick={() => onViewDetails(university)}
-                    >
-                      <Info size={14} className="mr-1" />
-                      詳細を見る
-                    </button>
-                  </div>
-                </div>
-                
-                <div>
-                  <button
-                    className="text-red-500 p-2 hover:bg-red-50 rounded-full transition-colors"
-                    onClick={() => onRemoveFromFavorites(university.id)}
-                  >
-                    <X size={18} />
-                  </button>
-                </div>
-              </div>
-            </div>
+              university={university}
+              onViewDetails={onViewDetails}
+              isInFavorites={true}
+              // 進路プラン用のprops
+              isPortfolioMode={true}
+              portfolioRank={index + 1}
+              onMoveUp={() => moveUp(index)}
+              onMoveDown={() => moveDown(index)}
+              canMoveUp={index > 0}
+              canMoveDown={index < universities.length - 1}
+              onRemoveFromPortfolio={onRemoveFromFavorites}
+              // 使用しないpropsは無効化
+              onAddToCompare={() => {}}
+              onRemoveFromCompare={() => {}}
+              isInCompareList={false}
+              onAddToFavorites={() => {}}
+              onRemoveFromFavorites={() => {}}
+            />
           ))}
         </div>
       ) : (
@@ -382,7 +215,7 @@ const IntegratedUniversitiesTab = ({
           <div className="bg-gray-50 rounded-xl p-6 sm:p-8 shadow-inner">
             <div className="w-24 h-24 sm:w-32 sm:h-32 mx-auto mb-4 bg-gray-200 rounded-full flex items-center justify-center opacity-50">
               <svg width="48" height="48" className="sm:w-16 sm:h-16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M12 21L10.55 19.7C5.4 15.1 2 12.1 2 8.5C2 5.5 4.42 3 7.5 3C9.24 3 10.91 3.81 12 5.09C13.09 3.81 14.76 3 16.5 3C19.58 3 22 5.5 22 8.5C22 12.1 18.6 15.1 13.45 19.7L12 21Z" fill="#6B7280"/>
+                <path d="M12 21L10.55 19.7C5.4 15.1 2 12.1 2 8.5C2 5.5 4.42 3 7.5 3C9.24 3 10.91 3.81 12 5.09C13.09 3.81 14.76 3 16.5 3C19.58 3 22 8.5 22 8.5C22 12.1 18.6 15.1 13.45 19.7L12 21Z" fill="#6B7280"/>
               </svg>
             </div>
             <p className="text-base sm:text-lg font-medium mb-2 text-gray-700">志望大学がまだ登録されていません</p>
@@ -645,117 +478,207 @@ const PlayerCardTab = ({ player, editMode }) => {
   );
 };
 
-// 共有モーダルコンポーネント（スマホ対応修正版）
-const ShareModal = ({ onClose, player }) => {
-  const [shareOption, setShareOption] = useState('card');
-  const [copySuccess, setCopySuccess] = useState(false);
-  
-  const handleCopyLink = () => {
-    // 実際にはポートフォリオへのURLをコピーする処理
-    navigator.clipboard.writeText(`https://university-soccer.example.com/portfolio/${player.personalInfo.name}`);
-    setCopySuccess(true);
-    setTimeout(() => setCopySuccess(false), 2000);
+// 紹介依頼モーダル（PLAYMAKER専用）
+const ShareModal = ({ onClose, player, favoriteUniversities = [] }) => {
+  const [referralData, setReferralData] = useState({
+    selectedUniversities: [],
+    message: '',
+    urgency: 'normal' // 'normal', 'urgent'
+  });
+  const [submitStatus, setSubmitStatus] = useState('idle'); // 'idle', 'sending', 'sent'
+
+  // モーダル表示時に背面のスクロールを無効化
+  useEffect(() => {
+    // モーダルが開いた時に背面のスクロールを無効化
+    document.body.style.overflow = 'hidden';
+    
+    // クリーンアップ関数でスクロールを復元
+    return () => {
+      document.body.style.overflow = 'auto';
+    };
+  }, []);
+
+  const handleReferralSubmit = async () => {
+    setSubmitStatus('sending');
+    
+    try {
+      // PLAYMAKERに紹介依頼を送信
+      await submitReferralRequest({
+        player: player,
+        universities: referralData.selectedUniversities,
+        message: referralData.message,
+        urgency: referralData.urgency
+      });
+      
+      setSubmitStatus('sent');
+      
+      // 3秒後にモーダルを閉じる
+      setTimeout(() => {
+        onClose();
+      }, 3000);
+      
+    } catch (error) {
+      setSubmitStatus('error');
+    }
   };
-  
+
+  const toggleUniversitySelection = (university) => {
+    setReferralData(prev => ({
+      ...prev,
+      selectedUniversities: prev.selectedUniversities.some(u => u.id === university.id)
+        ? prev.selectedUniversities.filter(u => u.id !== university.id)
+        : [...prev.selectedUniversities, university]
+    }));
+  };
+
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={onClose}>
-      <div className="bg-white rounded-lg p-4 sm:p-5 max-w-md w-full shadow-xl max-h-[90vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
-        <div className="flex justify-between items-center mb-4">
-          <h3 className="text-lg font-medium">ポートフォリオを共有</h3>
+      <div className="bg-white rounded-lg p-4 sm:p-6 max-w-lg w-full shadow-xl max-h-[90vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
+        
+        {/* ヘッダー */}
+        <div className="flex justify-between items-center mb-6">
+          <h3 className="text-lg font-semibold">大学紹介依頼</h3>
           <button className="text-gray-500 hover:text-gray-700" onClick={onClose}>
             <X size={20} />
           </button>
         </div>
-        
-        {/* 共有オプション選択 */}
-        <div className="flex border-b mb-4">
-          <button 
-            className={`px-4 py-2 font-medium text-sm ${shareOption === 'card' ? 'border-b-2 border-green-600 text-green-700' : 'text-gray-500'}`}
-            onClick={() => setShareOption('card')}
-          >
-            選手カード
-          </button>
-          <button 
-            className={`px-4 py-2 font-medium text-sm ${shareOption === 'full' ? 'border-b-2 border-green-600 text-green-700' : 'text-gray-500'}`}
-            onClick={() => setShareOption('full')}
-          >
-            全体
-          </button>
-        </div>
-        
-        {/* 共有先アイコン */}
-        <div className="grid grid-cols-4 gap-3 sm:gap-4 mb-5">
-          <div className="flex flex-col items-center">
-            <button className="w-10 h-10 sm:w-12 sm:h-12 bg-[#1DA1F2] text-white rounded-full flex items-center justify-center">
-              <Twitter size={20} className="sm:w-6 sm:h-6" />
-            </button>
-            <span className="text-xs mt-1 text-gray-600">Twitter</span>
+
+        {/* 送信完了状態 */}
+        {submitStatus === 'sent' && (
+          <div className="text-center py-6">
+            <CheckCircle size={48} className="text-green-600 mx-auto mb-4" />
+            <h4 className="text-lg font-semibold text-green-800 mb-2">紹介依頼を送信しました！</h4>
+            <p className="text-green-600 text-sm">
+              PLAYMAKERが内容を確認後、<br/>
+              選択された大学に紹介いたします。
+            </p>
+            <div className="mt-4 p-3 bg-green-50 rounded-lg text-xs text-green-700">
+              📧 確認メールをお送りしました<br/>
+              ⏰ 通常1-2営業日で大学に連絡します<br/>
+              📱 進捗や大学からの返事はPLAYMAKERからお知らせします
+            </div>
           </div>
-          <div className="flex flex-col items-center">
-            <button className="w-10 h-10 sm:w-12 sm:h-12 bg-[#4267B2] text-white rounded-full flex items-center justify-center">
-              <Facebook size={20} className="sm:w-6 sm:h-6" />
-            </button>
-            <span className="text-xs mt-1 text-gray-600">Facebook</span>
-          </div>
-          <div className="flex flex-col items-center">
-            <button className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-tr from-[#FEDA75] via-[#FA7E1E] to-[#D62976] text-white rounded-full flex items-center justify-center">
-              <Instagram size={20} className="sm:w-6 sm:h-6" />
-            </button>
-            <span className="text-xs mt-1 text-gray-600">Instagram</span>
-          </div>
-          <div className="flex flex-col items-center">
-            <button className="w-10 h-10 sm:w-12 sm:h-12 bg-[#0077B5] text-white rounded-full flex items-center justify-center">
-              <Linkedin size={20} className="sm:w-6 sm:h-6" />
-            </button>
-            <span className="text-xs mt-1 text-gray-600">LinkedIn</span>
-          </div>
-        </div>
-        
-        {/* リンク共有 */}
-        <div className="border rounded-md flex overflow-hidden">
-          <div className="bg-gray-50 p-2 sm:p-3 flex-grow text-gray-500 text-xs sm:text-sm truncate">
-            https://university-soccer.example.com/portfolio/{player.personalInfo.name}
-          </div>
-          <button 
-            className="bg-green-600 text-white px-3 flex items-center"
-            onClick={handleCopyLink}
-          >
-            {copySuccess ? <CheckCircle size={16} className="sm:w-5 sm:h-5" /> : <Link size={16} className="sm:w-5 sm:h-5" />}
-          </button>
-        </div>
-        
-        {/* プレビュー */}
-        <div className="mt-4 text-center">
-          <p className="text-xs sm:text-sm text-gray-500 mb-3">共有すると{shareOption === 'card' ? '選手カードのみ' : 'ポートフォリオ全体'}が表示されます</p>
-          <div className="bg-gray-100 p-3 rounded-md">
-            {shareOption === 'card' ? (
-              <div className="bg-white p-3 sm:p-4 rounded border border-gray-200 inline-block shadow-sm mx-auto">
-                <div className="flex items-center mb-2">
-                  <div className="border border-green-600 text-green-600 font-medium rounded px-2 py-1 text-xs mr-2">
-                    {player.personalInfo.position}
+        )}
+
+        {/* 入力フォーム */}
+        {submitStatus !== 'sent' && (
+          <div className="space-y-5">
+            {/* サービス説明 */}
+            <div className="bg-green-50 p-4 rounded-lg border border-green-200">
+              <div className="flex items-start">
+                <Users size={20} className="text-green-600 mr-3 mt-0.5 flex-shrink-0" />
+                <div>
+                  <h4 className="font-semibold text-green-800 mb-1">PLAYMAKERが大学に紹介します</h4>
+                  <p className="text-sm text-green-700">
+                    あなたのポートフォリオを確認後、選択された大学のサッカー部に紹介いたします。
+                    大学からの返事もPLAYMAKERを通じてお知らせします。
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* 希望大学選択 */}
+            <div>
+              <label className="block text-sm font-semibold mb-3">紹介希望大学（最大3校）</label>
+              
+              {/* お気に入り大学がある場合 */}
+              {favoriteUniversities.length > 0 && (
+                <div className="mb-4">
+                  <p className="text-xs text-gray-600 mb-2">あなたの進路プランから選択:</p>
+                  <div className="space-y-2 max-h-40 overflow-y-auto">
+                    {favoriteUniversities.map(university => (
+                      <label key={university.id} className="flex items-center p-2 border rounded-lg hover:bg-gray-50 cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={referralData.selectedUniversities.some(u => u.id === university.id)}
+                          onChange={() => toggleUniversitySelection(university)}
+                          disabled={!referralData.selectedUniversities.some(u => u.id === university.id) && referralData.selectedUniversities.length >= 3}
+                          className="mr-3"
+                        />
+                        <div className="flex-1 min-w-0">
+                          <div className="font-medium text-sm truncate">{university.university_name}</div>
+                          <div className="text-xs text-gray-500">{university.soccer_club.league}</div>
+                        </div>
+                      </label>
+                    ))}
                   </div>
-                  <span className="text-gray-800 text-xs sm:text-sm">
-                    {player.personalInfo.name}
-                  </span>
                 </div>
-                <div className="text-xs text-gray-600">
-                  {player.personalInfo.playStyle}
-                </div>
+              )}
+
+              {/* その他の大学 */}
+              <button 
+                className="w-full p-3 border-2 border-dashed border-gray-300 rounded-lg text-gray-600 hover:border-gray-400 hover:text-gray-700 transition-colors"
+                disabled={referralData.selectedUniversities.length >= 3}
+              >
+                + その他の大学を追加
+              </button>
+
+              <p className="text-xs text-gray-500 mt-2">
+                選択済み: {referralData.selectedUniversities.length}/3校
+              </p>
+            </div>
+
+            {/* メッセージ */}
+            <div>
+              <label className="block text-sm font-semibold mb-2">紹介時に伝えたいメッセージ</label>
+              <textarea
+                className="w-full p-3 border rounded-lg resize-none text-sm"
+                rows={4}
+                placeholder="志望動機、特に伝えたいポイント、質問などがあれば記入してください。（任意）"
+                value={referralData.message}
+                onChange={(e) => setReferralData(prev => ({...prev, message: e.target.value}))}
+                maxLength={500}
+              />
+              <div className="text-xs text-gray-500 mt-1 text-right">
+                {referralData.message.length}/500文字
               </div>
-            ) : (
-              <div className="flex items-center justify-center h-16 sm:h-20">
-                <User size={20} className="sm:w-6 sm:h-6 text-gray-400 mr-2" />
-                <div className="text-left">
-                  <p className="font-medium text-sm">{player.personalInfo.name}のポートフォリオ</p>
-                  <p className="text-xs text-gray-500">プロフィール・実績・志望大学などすべての情報</p>
-                </div>
-              </div>
-            )}
+            </div>
+
+            {/* 送信ボタン */}
+            <button
+              className={`w-full py-3 rounded-lg font-medium flex items-center justify-center ${
+                submitStatus === 'sending' || referralData.selectedUniversities.length === 0
+                  ? 'bg-gray-400 cursor-not-allowed' 
+                  : 'bg-green-600 hover:bg-green-700 text-white'
+              }`}
+              onClick={handleReferralSubmit}
+              disabled={submitStatus === 'sending' || referralData.selectedUniversities.length === 0}
+            >
+              {submitStatus === 'sending' ? (
+                <>
+                  <Clock size={16} className="mr-2 animate-spin" />
+                  送信中...
+                </>
+              ) : (
+                <>
+                  <Send size={16} className="mr-2" />
+                  PLAYMAKERに紹介を依頼する
+                </>
+              )}
+            </button>
+
+            {/* 注意事項 */}
+            <div className="bg-gray-50 p-3 rounded-lg text-xs text-gray-600">
+              ⚠️ 紹介依頼は無料ですが、PLAYMAKERでの内容確認後に送信されます。<br/>
+              📝 ポートフォリオの内容に不備がある場合は、修正をお願いすることがあります。<br/>
+              🕐 通常1-2営業日で大学に紹介いたします。<br/>
+              💬 大学からの返事はPLAYMAKERを通じてお知らせします。
+            </div>
           </div>
-        </div>
+        )}
       </div>
     </div>
   );
+};
+
+// API関数（模擬）
+const submitReferralRequest = async (data) => {
+  // 実際にはバックエンドAPIに送信
+  console.log('紹介依頼データ:', data);
+  
+  return new Promise((resolve) => {
+    setTimeout(resolve, 2000); // 2秒の送信シミュレーション
+  });
 };
 
 export default EnhancedPlayerPortfolio;
