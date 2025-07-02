@@ -1,26 +1,33 @@
-// src/services/apiService.js - Firebase API接続サービス
-import { universities as localUniversities } from '../data';
+// src/services/apiService.js - 大学データのみFirebase移行版
+
+// ❌ 大学データのローカルインポートを削除
+// import { universities as localUniversities } from '../data';
 
 /**
- * 大学データAPI接続クラス（フォールバック機能付き）
+ * 大学データAPI接続クラス（大学データFirebase移行版）
  */
 export class UniversityAPIService {
   static BASE_URL = process.env.REACT_APP_API_BASE_URL || 'https://your-project.cloudfunctions.net/api';
   static TIMEOUT = 10000; // 10秒タイムアウト
 
   /**
-   * 全大学データを取得（フォールバック対応）
+   * 全大学データを取得（Firebase必須、フォールバック削除）
    */
   static async fetchUniversities() {
     const USE_API = process.env.REACT_APP_USE_API === 'true';
     
     if (!USE_API) {
-      console.log('🔧 API無効化中 - ローカルデータを使用');
-      return { success: true, data: localUniversities, source: 'local' };
+      console.warn('🔧 API無効化中 - 大学データはFirebaseから取得が必須です');
+      return { 
+        success: false, 
+        data: [], 
+        source: 'disabled',
+        error: 'APIが無効化されています。大学データの取得にはFirebase APIが必要です。.envファイルでREACT_APP_USE_API=trueに設定してください。'
+      };
     }
 
     try {
-      console.log('🌐 Firebase APIからデータ取得中...');
+      console.log('🌐 Firebase APIから大学データ取得中...');
       
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), this.TIMEOUT);
@@ -44,40 +51,47 @@ export class UniversityAPIService {
       // APIレスポンス形式の正規化
       const universities = result.data || result;
       
-      console.log(`✅ API取得成功: ${universities.length}校のデータ`);
+      console.log(`✅ Firebase API取得成功: ${universities.length}校のデータ`);
       return { 
         success: true, 
         data: universities, 
-        source: 'api',
+        source: 'firebase_api',
         count: universities.length 
       };
 
     } catch (error) {
-      console.warn('⚠️ API取得失敗、ローカルデータにフォールバック:', error.message);
+      console.error('❌ Firebase API取得失敗:', error.message);
+      
+      // ❌ ローカルフォールバック削除 - 大学データはFirebase必須
+      console.warn('⚠️ 大学データはFirebaseからのみ取得します。ローカルデータのフォールバックはありません。');
       
       return { 
-        success: true, 
-        data: localUniversities, 
-        source: 'local_fallback',
-        error: error.message,
-        count: localUniversities.length 
+        success: false, 
+        data: [], 
+        source: 'firebase_error',
+        error: `Firebase APIエラー: ${error.message}`,
+        count: 0
       };
     }
   }
 
   /**
-   * 特定大学の詳細データを取得
+   * 特定大学の詳細データを取得（Firebase必須）
    */
   static async fetchUniversityById(id) {
     const USE_API = process.env.REACT_APP_USE_API === 'true';
     
     if (!USE_API) {
-      const university = localUniversities.find(u => u.id === parseInt(id));
-      return { success: true, data: university, source: 'local' };
+      return { 
+        success: false, 
+        data: null, 
+        source: 'disabled',
+        error: 'APIが無効化されています。大学データの取得にはFirebase APIが必要です。'
+      };
     }
 
     try {
-      console.log(`🔍 大学ID ${id} の詳細データを取得中...`);
+      console.log(`🔍 Firebase API: 大学ID ${id} の詳細データを取得中...`);
       
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), this.TIMEOUT);
@@ -99,39 +113,43 @@ export class UniversityAPIService {
       const result = await response.json();
       const university = result.data || result;
       
-      console.log(`✅ 大学詳細取得成功: ${university.university_name}`);
+      console.log(`✅ Firebase API: 大学詳細取得成功: ${university.university_name}`);
       return { 
         success: true, 
         data: university, 
-        source: 'api' 
+        source: 'firebase_api' 
       };
 
     } catch (error) {
-      console.warn(`⚠️ 大学ID ${id} の詳細取得失敗、ローカルデータにフォールバック:`, error.message);
+      console.error(`❌ Firebase API: 大学ID ${id} の詳細取得失敗:`, error.message);
       
-      const university = localUniversities.find(u => u.id === parseInt(id));
+      // ❌ ローカルフォールバック削除
       return { 
-        success: true, 
-        data: university, 
-        source: 'local_fallback',
-        error: error.message 
+        success: false, 
+        data: null, 
+        source: 'firebase_error',
+        error: `Firebase APIエラー: ${error.message}`
       };
     }
   }
 
   /**
-   * 大学検索（フィルタリング機能付き）
+   * 大学検索（Firebase API必須、ローカル検索削除）
    */
   static async searchUniversities(searchParams) {
     const USE_API = process.env.REACT_APP_USE_API === 'true';
     
     if (!USE_API) {
-      // ローカル検索ロジック（既存のuseUniversitySearchと同じ）
-      return { success: true, data: this.filterLocalUniversities(searchParams), source: 'local' };
+      return { 
+        success: false, 
+        data: [], 
+        source: 'disabled',
+        error: 'APIが無効化されています。大学検索にはFirebase APIが必要です。'
+      };
     }
 
     try {
-      console.log('🔍 API経由で大学検索中...', searchParams);
+      console.log('🔍 Firebase API経由で大学検索中...', searchParams);
       
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), this.TIMEOUT);
@@ -154,68 +172,27 @@ export class UniversityAPIService {
       const result = await response.json();
       const universities = result.data || result;
       
-      console.log(`✅ 検索成功: ${universities.length}校がヒット`);
+      console.log(`✅ Firebase API検索成功: ${universities.length}校がヒット`);
       return { 
         success: true, 
         data: universities, 
-        source: 'api',
+        source: 'firebase_api',
         count: universities.length,
         total_found: result.total_found
       };
 
     } catch (error) {
-      console.warn('⚠️ API検索失敗、ローカル検索にフォールバック:', error.message);
+      console.error('❌ Firebase API検索失敗:', error.message);
       
+      // ❌ ローカル検索フォールバック削除
       return { 
-        success: true, 
-        data: this.filterLocalUniversities(searchParams), 
-        source: 'local_fallback',
-        error: error.message 
+        success: false, 
+        data: [], 
+        source: 'firebase_error',
+        error: `Firebase API検索エラー: ${error.message}`,
+        count: 0
       };
     }
-  }
-
-  /**
-   * ローカルデータのフィルタリング（フォールバック用）
-   */
-  static filterLocalUniversities(searchParams) {
-    // 既存のuseUniversitySearchロジックを移植
-    // 簡略版として基本的なフィルタリングのみ実装
-    let filtered = localUniversities;
-
-    if (searchParams.searchQuery) {
-      const query = searchParams.searchQuery.toLowerCase();
-      filtered = filtered.filter(uni => 
-        uni.university_name.toLowerCase().includes(query) ||
-        uni.soccer_club.league.toLowerCase().includes(query)
-      );
-    }
-
-    if (searchParams.regions && searchParams.regions.length > 0) {
-      filtered = filtered.filter(uni => {
-        return searchParams.regions.some(region => {
-          if (region === '関東') {
-            return ['東京', '神奈川', '埼玉', '千葉', '茨城'].some(pref => 
-              uni.location.includes(pref)
-            );
-          }
-          if (region === '関西') {
-            return ['大阪', '京都', '兵庫', '奈良', '滋賀'].some(pref => 
-              uni.location.includes(pref)
-            );
-          }
-          if (region === '九州・沖縄') {
-            return uni.location.includes('福岡');
-          }
-          if (region === '中部') {
-            return uni.location.includes('愛知');
-          }
-          return false;
-        });
-      });
-    }
-
-    return filtered;
   }
 
   /**
@@ -223,7 +200,7 @@ export class UniversityAPIService {
    */
   static async testConnection() {
     try {
-      console.log('🔌 API接続テスト開始...');
+      console.log('🔌 Firebase API接続テスト開始...');
       
       const response = await fetch(`${this.BASE_URL}/health`, {
         method: 'GET',
@@ -237,19 +214,19 @@ export class UniversityAPIService {
       }
 
       const result = await response.json();
-      console.log('✅ API接続テスト成功:', result);
+      console.log('✅ Firebase API接続テスト成功:', result);
       
-      return { success: true, data: result };
+      return { success: true, data: result, source: 'firebase_api' };
 
     } catch (error) {
-      console.error('❌ API接続テスト失敗:', error);
+      console.error('❌ Firebase API接続テスト失敗:', error);
       return { success: false, error: error.message };
     }
   }
 }
 
 /**
- * React Hook形式のAPI利用（既存のuseUniversitySearchと互換性保持）
+ * React Hook形式のAPI利用（大学データFirebase移行版）
  */
 export const useUniversityAPI = () => {
   return {
@@ -261,3 +238,9 @@ export const useUniversityAPI = () => {
 };
 
 export default UniversityAPIService;
+
+// 📝 移行メモ:
+// ✅ ローカル大学データ（localUniversities）のインポートを削除
+// ✅ フォールバック処理で大学データを返さないように修正
+// ✅ エラー時は空配列を返し、Firebase必須であることを明示
+// ✅ 設定データや他の機能はローカル保持のまま
