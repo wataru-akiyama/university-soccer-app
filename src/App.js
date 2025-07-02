@@ -4,6 +4,7 @@ import ViewManager from './components/ViewManager';
 import ResponsiveHeader from './components/ResponsiveHeader';
 import BottomNavigation from './components/BottomNavigation';
 import { useAppState } from './hooks/useAppState';
+import APITestPanel from './components/APITestPanel';
 
 const App = () => {
   // 全ての状態とロジックをuseAppStateフックから取得
@@ -22,15 +23,25 @@ const App = () => {
     data
   } = appState;
 
+  // デバッグモード判定（新規追加）
+  const isDebugMode = process.env.REACT_APP_DEBUG_MODE === 'true';
+
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* ヘッダー（シンプル版） */}
+      {/* ヘッダー（既存） */}
       <ResponsiveHeader 
         currentView={currentView}
         onChangeView={actions.changeView}
       />
 
-      {/* メインコンテンツ（コンパクトヘッダー分の上部余白とボトムナビ分の下部余白を追加） */}
+      {/* 🔧 開発用APIテストパネル（新規追加・既存機能に影響なし） */}
+      {isDebugMode && (
+        <div className="container mx-auto p-4 pt-16">
+          <APITestPanel />
+        </div>
+      )}
+
+      {/* メインコンテンツ（既存・変更なし） */}
       <main className="container mx-auto p-4 pt-16 pb-20">
         <ViewManager 
           currentView={currentView}
@@ -39,7 +50,7 @@ const App = () => {
         />
       </main>
       
-      {/* ボトムナビゲーション */}
+      {/* ボトムナビゲーション（既存・変更なし） */}
       <BottomNavigation 
         currentView={currentView}
         onChangeView={actions.changeView}
@@ -47,7 +58,7 @@ const App = () => {
         compareList={compareList}
       />
       
-      {/* フッター */}
+      {/* フッター（既存・変更なし） */}
       <footer className="bg-gray-800 text-white p-6 mt-8 mb-16">
         <div className="container mx-auto text-center">
           <p>© 2025 大学サッカー部お品書き</p>
