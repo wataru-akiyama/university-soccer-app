@@ -1,5 +1,5 @@
-// src/components/MultiSelectSearchForm.jsx - レスポンシブ改善版
-import React, { useState } from 'react';
+// src/components/MultiSelectSearchForm.jsx - 完全修正版
+import React, { useState, useEffect } from 'react';
 import { Search, ChevronDown, X, Filter, Trophy, BookOpen, School, ChevronUp } from 'lucide-react';
 import MultiSelectDropdown from './MultiSelectDropdown';
 import { regions, leagues, availableQualifications } from '../data';
@@ -29,6 +29,12 @@ const MultiSelectSearchForm = ({
   
   const [showAllFilters, setShowAllFilters] = useState(false);
   const [showAllTags, setShowAllTags] = useState(false);
+  
+  // デバッグ用：regions の内容を確認
+  useEffect(() => {
+    console.log('🗾 地域選択肢:', regions);
+    console.log('🏟️ リーグ選択肢:', leagues);
+  }, []);
   
   // 全条件クリアハンドラー
   const clearAllFilters = () => {

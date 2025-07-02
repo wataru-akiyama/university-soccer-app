@@ -1,14 +1,23 @@
-// src/hooks/useAppState.js - URLパラメータ対応版
+// src/hooks/useAppState.js - Firebase対応版に修正
 
 import { useState, useEffect } from 'react';
 import useUniversitySearch from './useUniversitySearch';
-import { universities, userProfile } from '../data';
+import useFirebaseData from './useFirebaseData'; // 新しく追加
+import { userProfile } from '../data'; // userProfileのみローカルから取得
 
 /**
- * アプリケーション全体の状態管理フック（URLパラメータ対応版）
+ * アプリケーション全体の状態管理フック（Firebase対応版）
  */
 export const useAppState = () => {
-  // 検索関連の状態（既存のカスタムフック使用）
+  // Firebaseからデータを取得
+  const { 
+    universities, 
+    loading: universitiesLoading, 
+    error: universitiesError,
+    refetch: refetchUniversities 
+  } = useFirebaseData();
+  
+  // 検索関連の状態（Firebaseデータを使用）
   const searchState = useUniversitySearch(universities);
   
   // 主要な表示状態
@@ -18,21 +27,18 @@ export const useAppState = () => {
   const [favoriteUniversities, setFavoriteUniversities] = useState([]);
   const [playerProfileData, setPlayerProfileData] = useState(userProfile);
 
-  // ===== URLパラメータ監視（新規追加）=====
+  // ===== URLパラメータ監視 =====
   useEffect(() => {
     const handleUrlParams = () => {
       const urlParams = new URLSearchParams(window.location.search);
       const universityId = urlParams.get('id');
       
-      if (universityId) {
+      if (universityId && universities.length > 0) {
         // URLパラメータで大学IDが指定された場合
         const university = universities.find(uni => uni.id === parseInt(universityId));
         if (university) {
           setSelectedUniversity(university);
           setCurrentView('details');
-          
-          // URLを綺麗にする（オプション）
-          // window.history.replaceState({}, '', window.location.pathname);
         } else {
           // 指定されたIDの大学が見つからない場合はリストページに戻る
           setCurrentView('list');
@@ -40,8 +46,10 @@ export const useAppState = () => {
       }
     };
 
-    // 初回実行
-    handleUrlParams();
+    // 大学データが読み込まれてから実行
+    if (!universitiesLoading && universities.length > 0) {
+      handleUrlParams();
+    }
     
     // ブラウザの戻る/進むボタン対応
     window.addEventListener('popstate', handleUrlParams);
@@ -49,12 +57,12 @@ export const useAppState = () => {
     return () => {
       window.removeEventListener('popstate', handleUrlParams);
     };
-  }, []);
+  }, [universities, universitiesLoading]);
 
   // ローカルストレージからお気に入りを読み込む
   useEffect(() => {
     const savedFavorites = localStorage.getItem('favoriteUniversities');
-    if (savedFavorites) {
+    if (savedFavorites && universities.length > 0) {
       try {
         const favoriteIds = JSON.parse(savedFavorites);
         const favUniversities = favoriteIds.map(id => 
@@ -76,7 +84,7 @@ export const useAppState = () => {
         console.error('プロフィールデータの読み込みに失敗しました:', e);
       }
     }
-  }, []);
+  }, [universities]);
 
   // お気に入りをローカルストレージに保存
   useEffect(() => {
@@ -86,7 +94,7 @@ export const useAppState = () => {
     }
   }, [favoriteUniversities]);
 
-  // ===== アクション関数（全ハンドラーを統合） =====
+  // ===== アクション関数 =====
   
   /**
    * ビュー切り替え
@@ -104,7 +112,7 @@ export const useAppState = () => {
   };
 
   /**
-   * 大学詳細表示（ID指定版 - 新規追加）
+   * 大学詳細表示（ID指定版）
    */
   const viewUniversityDetailsById = (universityId) => {
     const university = universities.find(uni => uni.id === parseInt(universityId));
@@ -165,12 +173,13 @@ export const useAppState = () => {
   const actions = {
     changeView,
     viewUniversityDetails,
-    viewUniversityDetailsById, // 新規追加
+    viewUniversityDetailsById,
     addToCompare,
     removeFromCompare,
     addToFavorites,
     removeFromFavorites,
-    reorderFavorites
+    reorderFavorites,
+    refetchUniversities // Firebase再取得機能を追加
   };
 
   // 状態をまとめたオブジェクト（ViewManagerとの互換性を保つ）
@@ -181,7 +190,10 @@ export const useAppState = () => {
     favoriteUniversities,
     playerProfileData,
     searchState,
-    filteredUniversities: searchState.filteredUniversities
+    filteredUniversities: searchState.filteredUniversities,
+    // Firebase関連の状態を追加
+    universitiesLoading,
+    universitiesError
   };
 
   // データをまとめたオブジェクト（ViewManagerとの互換性を保つ）
@@ -191,8 +203,11 @@ export const useAppState = () => {
     compareList,
     favoriteUniversities,
     playerProfileData,
-    searchState,  // ← ViewManagerが期待する場所にsearchStateを配置
-    filteredUniversities: searchState.filteredUniversities
+    searchState,
+    filteredUniversities: searchState.filteredUniversities,
+    // Firebase関連の状態を追加
+    universitiesLoading,
+    universitiesError
   };
 
   return {
@@ -203,6 +218,10 @@ export const useAppState = () => {
     favoriteUniversities,
     playerProfileData,
     searchState,
+    
+    // Firebase関連の状態
+    universitiesLoading,
+    universitiesError,
     
     // 計算済み状態
     filteredUniversities: searchState.filteredUniversities,

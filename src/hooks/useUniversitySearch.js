@@ -1,5 +1,6 @@
+// src/hooks/useUniversitySearch.js - フィルター修正版
+
 import { useState, useMemo } from 'react';
-// 変更: 検索ヘルパーを統合データから取得
 import { searchHelpers } from '../data';
 
 const useUniversitySearch = (universities) => {
@@ -25,6 +26,12 @@ const useUniversitySearch = (universities) => {
           return false;
         }
         
+        // デバッグログ（開発環境のみ）
+        if (process.env.NODE_ENV === 'development') {
+          console.log(`🔍 フィルタリング中: ${university.university_name}`);
+          console.log(`📍 所在地: ${university.location}`);
+        }
+        
         // テキスト検索
         if (searchQuery && searchQuery.trim()) {
           const queryLower = searchQuery.toLowerCase().trim();
@@ -38,15 +45,28 @@ const useUniversitySearch = (universities) => {
           if (!matchesText) return false;
         }
         
-        // 地域フィルター（統合ヘルパー使用）
+        // 地域フィルター（詳細ログ付き）
         if (selectedRegions.length > 0) {
-          const matchesRegion = selectedRegions.some(region => 
-            searchHelpers.isUniversityInRegion(university, region)
-          );
-          if (!matchesRegion) return false;
+          const matchesRegion = selectedRegions.some(region => {
+            const isMatch = searchHelpers.isUniversityInRegion(university, region);
+            
+            // デバッグログ（開発環境のみ）
+            if (process.env.NODE_ENV === 'development') {
+              console.log(`🌏 地域チェック: ${university.university_name} - ${region} = ${isMatch}`);
+            }
+            
+            return isMatch;
+          });
+          
+          if (!matchesRegion) {
+            if (process.env.NODE_ENV === 'development') {
+              console.log(`❌ 地域フィルターで除外: ${university.university_name}`);
+            }
+            return false;
+          }
         }
         
-        // リーグフィルター（追加）
+        // リーグフィルター
         if (selectedLeagues.length > 0) {
           const matchesLeague = selectedLeagues.some(league => 
             university.soccer_club?.league === league
@@ -54,7 +74,7 @@ const useUniversitySearch = (universities) => {
           if (!matchesLeague) return false;
         }
         
-        // 学部フィルター（追加）
+        // 学部フィルター
         if (selectedQualifications.length > 0) {
           const matchesFaculty = selectedQualifications.some(faculty => 
             university.main_faculties?.some(uniFaculty => 
@@ -64,10 +84,27 @@ const useUniversitySearch = (universities) => {
           if (!matchesFaculty) return false;
         }
         
-        // 国公立・私立フィルター（統合ヘルパー使用）
+        // 国公立・私立フィルター（詳細ログ付き）
         const isPublic = searchHelpers.isPublicUniversity(university);
-        if (publicUniversity && !isPublic) return false;
-        if (privateUniversity && isPublic) return false;
+        
+        // デバッグログ（開発環境のみ）
+        if (process.env.NODE_ENV === 'development' && (publicUniversity || privateUniversity)) {
+          console.log(`🏛️ 大学種別チェック: ${university.university_name} - 国公立=${isPublic}`);
+        }
+        
+        if (publicUniversity && !isPublic) {
+          if (process.env.NODE_ENV === 'development') {
+            console.log(`❌ 国公立フィルターで除外: ${university.university_name}`);
+          }
+          return false;
+        }
+        
+        if (privateUniversity && isPublic) {
+          if (process.env.NODE_ENV === 'development') {
+            console.log(`❌ 私立フィルターで除外: ${university.university_name}`);
+          }
+          return false;
+        }
         
         // その他のフィルター
         if (sportsRecommend && !university.entry_conditions.sports_recommend) return false;
@@ -110,6 +147,12 @@ const useUniversitySearch = (universities) => {
             return 0;
           }
         });
+      }
+      
+      // デバッグログ（開発環境のみ）
+      if (process.env.NODE_ENV === 'development') {
+        console.log(`✅ フィルタリング完了: ${result.length}校`);
+        console.log('フィルタリング結果:', result.map(u => u.university_name));
       }
       
       return result;
