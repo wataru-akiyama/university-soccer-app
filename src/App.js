@@ -1,10 +1,9 @@
-// src/App.js（エラー修正版）
+// src/App.js（デバッグコード削除版）
 import React from 'react';
 import ViewManager from './components/ViewManager';
 import ResponsiveHeader from './components/ResponsiveHeader';
 import BottomNavigation from './components/BottomNavigation';
 import DataSourceIndicator from './components/DataSourceIndicator';
-import FilterDebugPanel from './components/FilterDebugPanel'; // 新規追加
 import { useAppState } from './hooks/useAppState';
 
 const App = () => {
@@ -62,9 +61,6 @@ const App = () => {
                 データ再取得
               </button>
             </div>
-            <div className="mt-4 text-xs text-gray-500">
-              <p>環境変数 REACT_APP_FIREBASE_API_URL が正しく設定されているか確認してください。</p>
-            </div>
           </div>
         </div>
       </div>
@@ -89,9 +85,6 @@ const App = () => {
             <div className="bg-gray-200 rounded-full h-2 overflow-hidden">
               <div className="bg-green-600 h-full rounded-full animate-pulse w-3/4"></div>
             </div>
-            <div className="mt-4 text-xs text-gray-500">
-              <p>初回読み込みには数秒かかる場合があります</p>
-            </div>
           </div>
         </div>
       </div>
@@ -100,25 +93,22 @@ const App = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* ヘッダー（シンプル版） */}
+      {/* ヘッダー */}
       <ResponsiveHeader 
         currentView={currentView}
         onChangeView={actions.changeView}
       />
 
-      {/* データソース表示（開発環境のみ） */}
-      <DataSourceIndicator 
-        universities={universities}
-        loading={universitiesLoading}
-        error={universitiesError}
-        onRefresh={actions.refetchUniversities}
-        showDetails={process.env.NODE_ENV === 'development'}
-      />
-      
-      {process.env.NODE_ENV === 'development' && universities.length > 0 && (
-        <FilterDebugPanel universities={universities} />
+      {/* データソース表示（エラー時のみ） */}
+      {universitiesError && (
+        <DataSourceIndicator 
+          universities={universities}
+          loading={universitiesLoading}
+          error={universitiesError}
+          onRefresh={actions.refetchUniversities}
+          showDetails={false}
+        />
       )}
-      
 
       {/* メインコンテンツ */}
       <main className="container mx-auto p-4 pt-16 pb-20">

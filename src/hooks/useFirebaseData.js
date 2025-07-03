@@ -1,8 +1,8 @@
-// src/hooks/useFirebaseData.js - Firebase専用版（ローカルフォールバック削除）
+// src/hooks/useFirebaseData.js - 本番向けクリーン版
 import { useState, useEffect } from 'react';
 
 /**
- * Firebaseから大学データを取得するカスタムフック（大学データのみFirebase移行版）
+ * Firebaseから大学データを取得するカスタムフック
  */
 export const useFirebaseData = () => {
   const [universities, setUniversities] = useState([]);
@@ -18,37 +18,30 @@ export const useFirebaseData = () => {
       setLoading(true);
       setError(null);
       
-      // API使用設定の確認
       if (!USE_API) {
-        throw new Error('APIが無効化されています。.envファイルでREACT_APP_USE_API=trueに設定してください。');
+        throw new Error('APIが無効化されています。');
       }
 
       if (!FIREBASE_API_URL) {
-        throw new Error('Firebase API URLが設定されていません。環境変数REACT_APP_FIREBASE_API_URLを設定してください。');
+        throw new Error('Firebase API URLが設定されていません。');
       }
-
-      console.log('🔄 Firebaseから大学データを取得中...');
-      console.log('🌐 API URL:', FIREBASE_API_URL);
 
       const response = await fetch(`${FIREBASE_API_URL}/universities`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
         },
-        // タイムアウト設定
-        signal: AbortSignal.timeout(30000) // 30秒タイムアウト
+        signal: AbortSignal.timeout(30000)
       });
 
       if (!response.ok) {
-        throw new Error(`Firebase API エラー: ${response.status} ${response.statusText}`);
+        throw new Error(`API Error: ${response.status} ${response.statusText}`);
       }
 
       const data = await response.json();
 
-      // レスポンス形式の検証
       if (!data.success || !data.data) {
-        console.error('❌ Firebase APIレスポンス:', data);
-        throw new Error('Firebase APIレスポンス形式エラー: data.success または data.data が見つかりません');
+        throw new Error('不正なAPIレスポンス形式です。');
       }
 
       // データの正規化処理
@@ -88,33 +81,10 @@ export const useFirebaseData = () => {
       }));
 
       setUniversities(universitiesData);
-      console.log('✅ Firebase大学データ取得成功:', universitiesData.length, '校');
-
-      // データ検証ログ
-      const sampleUniversity = universitiesData[0];
-      if (sampleUniversity) {
-        console.log('📊 サンプルデータ:', {
-          name: sampleUniversity.university_name,
-          location: sampleUniversity.location,
-          league: sampleUniversity.soccer_club?.league
-        });
-      }
-
+      
     } catch (err) {
-      console.error('❌ Firebase大学データ取得エラー:', err);
       setError(err.message);
-      
-      // ❌ 大学データのローカルフォールバック削除 - Firebase必須
       setUniversities([]);
-      
-      // エラー詳細をユーザーに表示するための情報
-      console.error('🔧 大学データ取得エラー解決方法:');
-      console.error('1. .envファイルでREACT_APP_USE_API=trueに設定されているか確認');
-      console.error('2. REACT_APP_FIREBASE_API_URLが正しく設定されているか確認');
-      console.error('3. Firebase APIサーバーが稼働しているか確認');
-      console.error('4. ネットワーク接続を確認');
-      console.warn('⚠️ 大学データはFirebaseからのみ取得されます。ローカルフォールバックはありません。');
-      
     } finally {
       setLoading(false);
     }
@@ -131,11 +101,7 @@ export const useFirebaseData = () => {
     refetch: () => {
       setError(null);
       fetchUniversities();
-    },
-    // 追加情報
-    isFirebaseOnly: true,
-    apiUrl: FIREBASE_API_URL,
-    apiEnabled: USE_API
+    }
   };
 };
 

@@ -1,11 +1,6 @@
-// src/data/index.js - 学部フィルター削除版
+// src/data/index.js - 本番向けクリーン版
 
-// ❌ 大学データは削除 - Firebaseから取得
-// export const universities = [...]; // この配列を削除
-
-// ✅ 以下の設定データをCSVに合わせて修正
-
-// 1. 地域データ（CSVの「エリア」に合わせて修正）
+// 1. 地域データ
 export const regions = [
   "北海道",
   "東北", 
@@ -18,7 +13,7 @@ export const regions = [
   "九州"
 ];
 
-// 地域グループ化（従来の地域区分との互換性のため）
+// 地域グループ化
 export const regionGroups = {
   "北海道・東北": ["北海道", "東北"],
   "関東": ["関東"],
@@ -28,7 +23,7 @@ export const regionGroups = {
   "九州・沖縄": ["九州"]
 };
 
-// 2. リーグデータ（CSVの「カテゴリ」に合わせて修正）
+// 2. リーグデータ
 export const leagues = [
   // 関西
   "関西1部",
@@ -48,7 +43,7 @@ export const leagues = [
   "東京・神奈川3部",
   "東京・神奈川チャレンジ",
   
-  // Norte（関東エリア）
+  // Norte
   "Norte1部",
   "Norte2部",
   
@@ -140,7 +135,7 @@ export const leagueRegionMapping = {
   "北信越2部": "北信越"
 };
 
-// 3. 学力ランク（CSVの新しい概念）
+// 3. 学力ランク
 export const academicRanks = [
   "A：難関私大",
   "B：上位私大",
@@ -150,7 +145,7 @@ export const academicRanks = [
   "F：国公立"
 ];
 
-// 4. 志向性ジャンル（CSVの「ジャンル①②」）
+// 4. 志向性ジャンル
 export const playerAspirations = [
   "A：大学経由でプロを目指したい",
   "B：自分がどこまで上を目指せるか挑戦したい",
@@ -160,35 +155,7 @@ export const playerAspirations = [
   "F：選手以外の形でサッカーと関わりたい"
 ];
 
-// 5. 学部データ（定義は残すが、検索フィルターからは除外）
-// ※ 他のコンポーネントで使用される可能性があるため定義は保持
-const availableQualifications = [
-  "スポーツ科学部",
-  "スポーツ健康科学部", 
-  "体育学部",
-  "体育専門学群",
-  "商学部",
-  "経済学部",
-  "経営学部",
-  "政治経済学部",
-  "法学部",
-  "文学部",
-  "教育学部",
-  "教育人間科学部",
-  "人間福祉学部",
-  "社会学部",
-  "人文社会系",
-  "理工学群",
-  "情報学部",
-  "工学部",
-  "医学部",
-  "保健医療学部",
-  "総合政策学部",
-  "国際関係学部",
-  "児童スポーツ教育学部"
-];
-
-// 6. 取得可能資格データ
+// 5. 取得可能資格データ
 export const availableCertifications = [
   "JFA公認コーチングライセンス",
   "教員免許（保健体育）",
@@ -200,7 +167,7 @@ export const availableCertifications = [
   "スポーツビジネス関連資格"
 ];
 
-// 7. ユーザープロフィール（ローカル保持）
+// 6. ユーザープロフィール
 export const userProfile = {
   personalInfo: {
     name: "佐藤 翔太",
@@ -244,9 +211,9 @@ export const userProfile = {
   ]
 };
 
-// 8. 検索ヘルパー（CSVデータ構造に合わせて修正）
+// 7. 検索ヘルパー
 export const searchHelpers = {
-  // 地域と大学名のマッピング（参考用）
+  // 地域と大学名のマッピング
   regionMapping: {
     "関東": ["早稲田", "慶應", "明治", "法政", "青山", "筑波", "順天堂", "日本体育"],
     "関西": ["関西学院", "立命館", "関西", "大阪体育"],
@@ -255,22 +222,19 @@ export const searchHelpers = {
     "北海道": ["北海道"]
   },
   
-  // 地域による大学フィルタリング（CSV構造に対応）
+  // 地域による大学フィルタリング
   isUniversityInRegion: (university, region) => {
     if (!university || !region) return false;
     
-    // CSVの「エリア」フィールドと直接比較
     if (university.area === region || university.location === region) {
       return true;
     }
     
-    // リーグ名から地域を推測（フォールバック）
     const league = university.soccer_club?.league || university.category;
     if (league && leagueRegionMapping[league] === region) {
       return true;
     }
     
-    // 地域グループでの検索（従来の区分との互換性）
     for (const [groupName, regions] of Object.entries(regionGroups)) {
       if (groupName === region && regions.includes(university.area)) {
         return true;
@@ -284,7 +248,6 @@ export const searchHelpers = {
   isUniversityInLeague: (university, league) => {
     if (!university || !league) return false;
     
-    // CSVの「カテゴリ」フィールドと比較（前後の空白を削除）
     const universityLeague = (university.soccer_club?.league || university.category || '').trim();
     return universityLeague === league.trim();
   },
@@ -301,16 +264,14 @@ export const searchHelpers = {
     return university.genre1 === aspiration || university.genre2 === aspiration;
   },
   
-  // 国公立大学の判定（学力ランクを利用）
+  // 国公立大学の判定
   isPublicUniversity: (university) => {
     if (!university) return false;
     
-    // CSVの学力ランクから判定
     if (university.academic_rank === 'F：国公立') {
       return true;
     }
     
-    // 大学名からも判定（フォールバック）
     const name = university.university_name || '';
     
     const nationalUniversities = [
@@ -342,7 +303,7 @@ export const searchHelpers = {
   }
 };
 
-// 9. 検索オプション（学部を除外した更新版）
+// 8. 検索オプション
 export const searchOptions = {
   regions,
   regionGroups,
@@ -350,8 +311,6 @@ export const searchOptions = {
   leagueRegionMapping,
   academicRanks,
   playerAspirations,
-  // 学部をメインフィルターから除外
-  // qualifications: availableQualifications, // コメントアウト
   certifications: availableCertifications,
   sortOptions: [
     { value: '', label: '並び替えなし' },
@@ -362,7 +321,7 @@ export const searchOptions = {
   ]
 };
 
-// 10. デフォルトエクスポート（学部を除外した後方互換性のため）
+// デフォルトエクスポート
 export default {
   regions,
   regionGroups,
@@ -370,17 +329,8 @@ export default {
   leagueRegionMapping,
   academicRanks,
   playerAspirations,
-  // 学部は内部利用のみに変更
-  // availableQualifications, // エクスポートしない
   availableCertifications,
   userProfile,
   searchHelpers,
   searchOptions
 };
-
-// 📝 学部フィルター削除対応メモ:
-// ✅ availableQualifications定義は保持（他コンポーネントでの利用可能性）
-// ✅ searchOptionsから学部（qualifications）を除外
-// ✅ メインエクスポートから学部を削除
-// ✅ メインフィルターは4つに絞る：地域・リーグ・学力・志向性
-// ✅ チェックボックスフィルター等は引き続き利用可能

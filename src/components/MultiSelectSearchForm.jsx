@@ -1,5 +1,5 @@
-// src/components/MultiSelectSearchForm.jsx - 学部フィルター削除版
-import React, { useState, useEffect } from 'react';
+// src/components/MultiSelectSearchForm.jsx - 本番向けクリーン版
+import React, { useState } from 'react';
 import { Search, ChevronDown, X, Filter, Trophy, ChevronUp, Star, Users, School } from 'lucide-react';
 import MultiSelectDropdown from './MultiSelectDropdown';
 import { regions, leagues, academicRanks, playerAspirations } from '../data';
@@ -11,14 +11,10 @@ const MultiSelectSearchForm = ({
   setSelectedRegions,
   selectedLeagues,
   setSelectedLeagues,
-  // 学部関連のpropsを削除
-  // selectedQualifications,
-  // setSelectedQualifications,
   selectedAcademicRanks,
   setSelectedAcademicRanks,
   selectedPlayerAspirations, 
   setSelectedPlayerAspirations,
-  // 既存のフィルター
   sportsRecommend,
   setSportsRecommend,
   selectionAvailable,
@@ -36,21 +32,11 @@ const MultiSelectSearchForm = ({
   const [showAllFilters, setShowAllFilters] = useState(false);
   const [showAllTags, setShowAllTags] = useState(false);
   
-  // デバッグ用：選択肢の確認
-  useEffect(() => {
-    console.log('🗾 地域選択肢（CSVに合わせて更新）:', regions);
-    console.log('🏟️ リーグ選択肢（CSVに合わせて更新）:', leagues);
-    console.log('📚 学力ランク選択肢:', academicRanks);
-    console.log('🎯 志向性選択肢:', playerAspirations);
-  }, []);
-  
   // 全条件クリアハンドラー
   const clearAllFilters = () => {
     setSearchQuery('');
     setSelectedRegions([]);
     setSelectedLeagues([]);
-    // 学部関連を削除
-    // setSelectedQualifications([]);
     setSelectedAcademicRanks([]);
     setSelectedPlayerAspirations([]);
     setSportsRecommend(false);
@@ -67,8 +53,6 @@ const MultiSelectSearchForm = ({
     if (searchQuery) count++;
     count += selectedRegions.length;
     count += selectedLeagues.length;
-    // 学部関連を削除
-    // count += selectedQualifications.length;
     count += selectedAcademicRanks.length;
     count += selectedPlayerAspirations.length;
     if (sportsRecommend) count++;
@@ -95,7 +79,6 @@ const MultiSelectSearchForm = ({
     });
     
     selectedLeagues.forEach(league => {
-      // リーグ名を短縮表示
       const shortLeague = league.replace(/リーグ|大学サッカー/g, '').trim();
       tags.push({
         id: `league-${league}`,
@@ -106,22 +89,8 @@ const MultiSelectSearchForm = ({
       });
     });
     
-    // 学部関連のタグ処理を削除
-    /*
-    selectedQualifications.forEach(qual => {
-      tags.push({
-        id: `qual-${qual}`,
-        label: qual,
-        type: 'qualification',
-        value: qual,
-        color: 'bg-purple-100 text-purple-800'
-      });
-    });
-    */
-    
     selectedAcademicRanks.forEach(rank => {
-      // 学力ランクを短縮表示
-      const shortRank = rank.split('：')[0]; // "A：難関私大" → "A"
+      const shortRank = rank.split('：')[0];
       tags.push({
         id: `rank-${rank}`,
         label: shortRank,
@@ -132,7 +101,6 @@ const MultiSelectSearchForm = ({
     });
     
     selectedPlayerAspirations.forEach(aspiration => {
-      // 志向性を短縮表示
       const shortAspiration = aspiration.split('：')[1]?.substring(0, 8) + '...' || aspiration.split('：')[0];
       tags.push({
         id: `aspiration-${aspiration}`,
@@ -209,12 +177,6 @@ const MultiSelectSearchForm = ({
       case 'league':
         setSelectedLeagues(selectedLeagues.filter(l => l !== tag.value));
         break;
-      // 学部関連のケースを削除
-      /*
-      case 'qualification':
-        setSelectedQualifications(selectedQualifications.filter(q => q !== tag.value));
-        break;
-      */
       case 'academicRank':
         setSelectedAcademicRanks(selectedAcademicRanks.filter(r => r !== tag.value));
         break;
@@ -246,13 +208,12 @@ const MultiSelectSearchForm = ({
   
   const tags = createTags();
   const activeFiltersCount = getActiveFiltersCount();
-  const maxVisibleTags = 3; // 小画面で表示するタグの最大数
+  const maxVisibleTags = 3;
   
   return (
     <div className="bg-white p-4 sm:p-6 rounded-lg shadow-md mb-6">
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-lg sm:text-xl font-semibold">大学サッカー部を探す</h2>
-        {/* フィルター開閉ボタン（小画面のみ） */}
         <button 
           className="md:hidden flex items-center text-green-600 text-sm"
           onClick={() => setShowAllFilters(!showAllFilters)}
@@ -275,11 +236,10 @@ const MultiSelectSearchForm = ({
         <Search className="absolute left-3 top-3 text-gray-400" size={20} />
       </div>
       
-      {/* ドロップダウンフィルター（小画面では折りたたみ可能） */}
+      {/* ドロップダウンフィルター */}
       <div className={`${showAllFilters ? 'block' : 'hidden'} md:block mb-4`}>
-        {/* メインフィルター（4つに絞る） */}
+        {/* メインフィルター */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-4">
-          {/* 地域選択 */}
           <MultiSelectDropdown
             label="地域を選択"
             icon={<Filter className="text-blue-600" size={16} />}
@@ -288,7 +248,6 @@ const MultiSelectSearchForm = ({
             onChange={setSelectedRegions}
           />
           
-          {/* リーグ選択 */}
           <MultiSelectDropdown
             label="リーグを選択"
             icon={<Trophy className="text-green-600" size={16} />}
@@ -297,7 +256,6 @@ const MultiSelectSearchForm = ({
             onChange={setSelectedLeagues}
           />
           
-          {/* 学力ランク選択 */}
           <MultiSelectDropdown
             label="学力ランク"
             icon={<Star className="text-yellow-600" size={16} />}
@@ -306,7 +264,6 @@ const MultiSelectSearchForm = ({
             onChange={setSelectedAcademicRanks}
           />
           
-          {/* 志向性選択 */}
           <MultiSelectDropdown
             label="あなたの志向性"
             icon={<Users className="text-indigo-600" size={16} />}
@@ -315,8 +272,6 @@ const MultiSelectSearchForm = ({
             onChange={setSelectedPlayerAspirations}
           />
         </div>
-        
-        {/* 学部選択のMultiSelectDropdownを削除 */}
         
         {/* チェックボックスフィルター */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
@@ -360,7 +315,6 @@ const MultiSelectSearchForm = ({
             <span className="text-sm sm:text-base">一般入部可</span>
           </label>
 
-          {/* 国公立・私立大学チェックボックス */}
           <label className="flex items-center cursor-pointer">
             <input 
               type="checkbox" 
@@ -389,13 +343,12 @@ const MultiSelectSearchForm = ({
         </div>
       </div>
       
-      {/* 選択中のタグ表示（レスポンシブ対応・色分け対応） */}
+      {/* 選択中のタグ表示 */}
       {tags.length > 0 && (
         <div className="bg-gray-50 p-3 rounded-lg mb-4">
           <span className="text-sm text-gray-500 mb-2 block">現在の検索条件:</span>
           
           <div className="flex flex-wrap gap-2">
-            {/* 小画面では一部のタグのみ表示 */}
             {(showAllTags ? tags : tags.slice(0, maxVisibleTags)).map(tag => (
               <span 
                 key={tag.id} 
@@ -411,7 +364,6 @@ const MultiSelectSearchForm = ({
               </span>
             ))}
             
-            {/* 追加のタグがある場合の表示切り替えボタン */}
             {tags.length > maxVisibleTags && (
               <button
                 onClick={() => setShowAllTags(!showAllTags)}
@@ -439,17 +391,6 @@ const MultiSelectSearchForm = ({
           検索する {activeFiltersCount > 0 && `(${activeFiltersCount}件の条件)`}
         </button>
       </div>
-      
-      {/* CSVデータ対応の説明 */}
-      {process.env.NODE_ENV === 'development' && (
-        <div className="mt-4 p-3 bg-blue-50 rounded-lg text-xs text-blue-700">
-          <p className="font-semibold mb-1">📊 メインフィルター（4つ）</p>
-          <p>• 地域: CSVの「エリア」に対応（9地域）</p>
-          <p>• リーグ: CSVの「カテゴリ」に対応（実際のリーグ名）</p>
-          <p>• 学力ランク: CSVの「学力ランク」に対応（A〜F）</p>
-          <p>• 志向性: CSVの「ジャンル①②」に対応（A〜F）</p>
-        </div>
-      )}
     </div>
   );
 };
