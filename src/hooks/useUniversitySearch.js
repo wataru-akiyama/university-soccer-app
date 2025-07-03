@@ -1,4 +1,4 @@
-// src/hooks/useUniversitySearch.js - CSVデータ対応修正版
+// src/hooks/useUniversitySearch.js - 学部フィルター削除版
 
 import { useState, useMemo } from 'react';
 import { searchHelpers } from '../data';
@@ -8,9 +8,10 @@ const useUniversitySearch = (universities) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedRegions, setSelectedRegions] = useState([]);
   const [selectedLeagues, setSelectedLeagues] = useState([]);
-  const [selectedQualifications, setSelectedQualifications] = useState([]);
+  // 学部フィルターを削除
+  // const [selectedQualifications, setSelectedQualifications] = useState([]);
   
-  // 新しい検索状態（CSVデータ対応）
+  // CSVデータ対応の検索状態
   const [selectedAcademicRanks, setSelectedAcademicRanks] = useState([]);
   const [selectedPlayerAspirations, setSelectedPlayerAspirations] = useState([]);
   
@@ -46,13 +47,15 @@ const useUniversitySearch = (universities) => {
           const queryLower = searchQuery.toLowerCase().trim();
           const universityName = university.university_name || university['大学名'] || '';
           const league = university.soccer_club?.league || university['カテゴリ'] || '';
-          const faculties = university.main_faculties || university['部員主な学部'] || '';
+          // 学部検索を削除
+          // const faculties = university.main_faculties || university['部員主な学部'] || '';
           
           const matchesText = 
             universityName.toLowerCase().includes(queryLower) ||
-            league.toLowerCase().includes(queryLower) ||
-            (typeof faculties === 'string' ? faculties.toLowerCase().includes(queryLower) : false) ||
-            (Array.isArray(faculties) ? faculties.some(f => f.toLowerCase().includes(queryLower)) : false);
+            league.toLowerCase().includes(queryLower);
+            // 学部での検索を削除
+            // (typeof faculties === 'string' ? faculties.toLowerCase().includes(queryLower) : false) ||
+            // (Array.isArray(faculties) ? faculties.some(f => f.toLowerCase().includes(queryLower)) : false);
           
           if (!matchesText) {
             if (process.env.NODE_ENV === 'development') {
@@ -97,6 +100,8 @@ const useUniversitySearch = (universities) => {
         }
         
         // ===== 4. 学部フィルター =====
+        // 学部フィルターを完全に削除
+        /*
         if (selectedQualifications.length > 0) {
           const universityFaculties = university.main_faculties || university['部員主な学部'] || '';
           let facultiesArray = [];
@@ -120,8 +125,9 @@ const useUniversitySearch = (universities) => {
             return false;
           }
         }
+        */
         
-        // ===== 5. 学力ランクフィルター（新規：CSVの「学力ランク」対応） =====
+        // ===== 4. 学力ランクフィルター（番号を繰り上げ） =====
         if (selectedAcademicRanks.length > 0) {
           const universityRank = university.academic_rank || university['学力ランク'] || '';
           const matchesRank = selectedAcademicRanks.includes(universityRank);
@@ -134,7 +140,7 @@ const useUniversitySearch = (universities) => {
           }
         }
         
-        // ===== 6. 志向性フィルター（新規：CSVの「ジャンル①②」対応） =====
+        // ===== 5. 志向性フィルター（番号を繰り上げ） =====
         if (selectedPlayerAspirations.length > 0) {
           const genre1 = university.genre1 || university['ジャンル➀'] || '';
           const genre2 = university.genre2 || university['ジャンル②'] || '';
@@ -151,7 +157,7 @@ const useUniversitySearch = (universities) => {
           }
         }
         
-        // ===== 7. 国公立・私立フィルター（学力ランクベース） =====
+        // ===== 6. 国公立・私立フィルター（番号を繰り上げ） =====
         let isPublic = false;
         const academicRank = university.academic_rank || university['学力ランク'] || '';
         
@@ -176,7 +182,7 @@ const useUniversitySearch = (universities) => {
           return false;
         }
         
-        // ===== 8. その他のフィルター（CSVフィールド名対応） =====
+        // ===== 7. その他のフィルター（番号を繰り上げ） =====
         
         // スポーツ推薦
         if (sportsRecommend) {
@@ -209,7 +215,7 @@ const useUniversitySearch = (universities) => {
         return true;
       });
       
-      // ===== 9. ソート処理 =====
+      // ===== 8. ソート処理（番号を繰り上げ） =====
       if (sortOption) {
         const multiplier = sortDirection === 'asc' ? 1 : -1;
         
@@ -283,7 +289,8 @@ const useUniversitySearch = (universities) => {
     searchQuery,
     selectedRegions,
     selectedLeagues,
-    selectedQualifications,
+    // 学部フィルターを削除
+    // selectedQualifications,
     selectedAcademicRanks,
     selectedPlayerAspirations,
     sportsRecommend,
@@ -304,10 +311,11 @@ const useUniversitySearch = (universities) => {
     setSelectedRegions,
     selectedLeagues,
     setSelectedLeagues,
-    selectedQualifications,
-    setSelectedQualifications,
+    // 学部フィルターを削除
+    // selectedQualifications,
+    // setSelectedQualifications,
     
-    // 新規フィルター（CSVデータ対応）
+    // CSVデータ対応フィルター
     selectedAcademicRanks,
     setSelectedAcademicRanks,
     selectedPlayerAspirations,

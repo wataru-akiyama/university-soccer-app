@@ -1,4 +1,4 @@
-// src/data/index.js - CSVデータに合わせて修正版
+// src/data/index.js - 学部フィルター削除版
 
 // ❌ 大学データは削除 - Firebaseから取得
 // export const universities = [...]; // この配列を削除
@@ -160,8 +160,9 @@ export const playerAspirations = [
   "F：選手以外の形でサッカーと関わりたい"
 ];
 
-// 5. 学部データ（CSVから抽出した実際の学部名に更新予定）
-export const availableQualifications = [
+// 5. 学部データ（定義は残すが、検索フィルターからは除外）
+// ※ 他のコンポーネントで使用される可能性があるため定義は保持
+const availableQualifications = [
   "スポーツ科学部",
   "スポーツ健康科学部", 
   "体育学部",
@@ -341,7 +342,7 @@ export const searchHelpers = {
   }
 };
 
-// 9. 検索オプション（更新版）
+// 9. 検索オプション（学部を除外した更新版）
 export const searchOptions = {
   regions,
   regionGroups,
@@ -349,7 +350,8 @@ export const searchOptions = {
   leagueRegionMapping,
   academicRanks,
   playerAspirations,
-  qualifications: availableQualifications,
+  // 学部をメインフィルターから除外
+  // qualifications: availableQualifications, // コメントアウト
   certifications: availableCertifications,
   sortOptions: [
     { value: '', label: '並び替えなし' },
@@ -360,7 +362,7 @@ export const searchOptions = {
   ]
 };
 
-// 10. デフォルトエクスポート（後方互換性のため）
+// 10. デフォルトエクスポート（学部を除外した後方互換性のため）
 export default {
   regions,
   regionGroups,
@@ -368,17 +370,17 @@ export default {
   leagueRegionMapping,
   academicRanks,
   playerAspirations,
-  availableQualifications,
+  // 学部は内部利用のみに変更
+  // availableQualifications, // エクスポートしない
   availableCertifications,
   userProfile,
   searchHelpers,
   searchOptions
 };
 
-// 📝 CSVデータ対応修正メモ:
-// ✅ エリア → regionsを細分化（9地域）
-// ✅ カテゴリ → leaguesを実際のリーグ名に修正
-// ✅ 学力ランク → academicRanksを新規追加
-// ✅ ジャンル①② → playerAspirationsを新規追加
-// ✅ 検索ヘルパーをCSV構造に対応
-// ✅ 地域グループ化で従来の区分との互換性を保持
+// 📝 学部フィルター削除対応メモ:
+// ✅ availableQualifications定義は保持（他コンポーネントでの利用可能性）
+// ✅ searchOptionsから学部（qualifications）を除外
+// ✅ メインエクスポートから学部を削除
+// ✅ メインフィルターは4つに絞る：地域・リーグ・学力・志向性
+// ✅ チェックボックスフィルター等は引き続き利用可能

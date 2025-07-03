@@ -114,11 +114,11 @@ const App = () => {
         onRefresh={actions.refetchUniversities}
         showDetails={process.env.NODE_ENV === 'development'}
       />
-
-      {/* フィルターデバッグパネル（開発環境のみ） */}
+      
       {process.env.NODE_ENV === 'development' && universities.length > 0 && (
         <FilterDebugPanel universities={universities} />
       )}
+      
 
       {/* メインコンテンツ */}
       <main className="container mx-auto p-4 pt-16 pb-20">

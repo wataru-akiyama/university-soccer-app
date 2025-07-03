@@ -1,11 +1,11 @@
-// src/components/FilterDebugPanel.jsx - 新規作成
+// src/components/FilterDebugPanel.jsx - 修正版
 import React, { useState } from 'react';
 import { ChevronDown, ChevronUp, Bug } from 'lucide-react';
 import { searchHelpers } from '../data';
 
 const FilterDebugPanel = ({ universities }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [testRegion, setTestRegion] = useState('北海道・東北');
+  const [testRegion, setTestRegion] = useState('北海道');
   
   // 開発環境でのみ表示
   if (process.env.NODE_ENV !== 'development') return null;
@@ -33,19 +33,22 @@ const FilterDebugPanel = ({ universities }) => {
   // データ構造の表示
   const showDataStructure = () => {
     console.log('📊 大学データ構造確認');
-    const hokkaido = universities.find(uni => uni.university_name.includes('北海道'));
-    if (hokkaido) {
-      console.log('北海道大学のデータ:', {
-        id: hokkaido.id,
-        university_name: hokkaido.university_name,
-        location: hokkaido.location,
+    const sampleUniversity = universities[0];
+    if (sampleUniversity) {
+      console.log('サンプル大学のデータ:', {
+        id: sampleUniversity.id,
+        university_name: sampleUniversity.university_name,
+        location: sampleUniversity.location,
         soccer_club: {
-          league: hokkaido.soccer_club?.league,
-          total_members: hokkaido.soccer_club?.total_members
-        }
+          league: sampleUniversity.soccer_club?.league,
+          total_members: sampleUniversity.soccer_club?.total_members
+        },
+        academic_rank: sampleUniversity.academic_rank,
+        genre1: sampleUniversity.genre1,
+        genre2: sampleUniversity.genre2
       });
     } else {
-      console.log('❌ 北海道大学が見つかりません');
+      console.log('❌ 大学データが見つかりません');
     }
   };
   
@@ -75,11 +78,12 @@ const FilterDebugPanel = ({ universities }) => {
               onChange={(e) => setTestRegion(e.target.value)}
               className="w-full text-xs border rounded px-2 py-1"
             >
-              <option value="北海道・東北">北海道・東北</option>
+              <option value="北海道">北海道</option>
+              <option value="東北">東北</option>
               <option value="関東">関東</option>
               <option value="関西">関西</option>
-              <option value="中部">中部</option>
-              <option value="九州・沖縄">九州・沖縄</option>
+              <option value="東海">東海</option>
+              <option value="九州">九州</option>
             </select>
           </div>
           
@@ -108,6 +112,7 @@ const FilterDebugPanel = ({ universities }) => {
           
           <div className="text-xs text-gray-500 border-t pt-2">
             <p>コンソールログを確認してください</p>
+            <p className="mt-1">メインフィルター: 地域・リーグ・学力・志向性</p>
           </div>
         </div>
       )}

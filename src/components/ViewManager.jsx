@@ -1,4 +1,4 @@
-// src/components/ViewManager.jsx（CSVデータ対応版・新しいフィルター追加）
+// src/components/ViewManager.jsx（学部フィルター削除版）
 import React from 'react';
 import EnhancedPlayerPortfolio from './EnhancedPlayerPortfolio';
 import EnhancedUniversityDetails from './EnhancedUniversityDetails';
@@ -7,7 +7,7 @@ import MultiSelectSearchForm from './MultiSelectSearchForm';
 import UniversityList from './UniversityList';
 
 /**
- * ViewManager - アプリケーションの現在のビューを管理するコンポーネント（CSVデータ対応版）
+ * ViewManager - アプリケーションの現在のビューを管理するコンポーネント（学部フィルター削除版）
  */
 const ViewManager = ({
   currentView,
@@ -18,7 +18,7 @@ const ViewManager = ({
   const renderHomeView = () => {
     return (
       <>
-        {/* 検索フォーム - CSVデータ対応の新しいフィルターを追加 */}
+        {/* 検索フォーム - 学部フィルターを削除 */}
         <MultiSelectSearchForm
           searchQuery={data.searchState.searchQuery}
           setSearchQuery={data.searchState.setSearchQuery}
@@ -26,8 +26,6 @@ const ViewManager = ({
           setSelectedRegions={data.searchState.setSelectedRegions}
           selectedLeagues={data.searchState.selectedLeagues}
           setSelectedLeagues={data.searchState.setSelectedLeagues}
-          selectedQualifications={data.searchState.selectedQualifications}
-          setSelectedQualifications={data.searchState.setSelectedQualifications}
           selectedAcademicRanks={data.searchState.selectedAcademicRanks}
           setSelectedAcademicRanks={data.searchState.setSelectedAcademicRanks}
           selectedPlayerAspirations={data.searchState.selectedPlayerAspirations}
