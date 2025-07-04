@@ -880,51 +880,101 @@ const CostsTab = ({ university }) => {
 
 // 施設・環境タブコンポーネント
 const FacilitiesTab = ({ university }) => (
-  <div className="space-y-6">
+  <div className="space-y-8">
+    {/* 1. 練習施設 */}
     <div>
-      <h3 className="text-lg font-semibold text-gray-900 mb-4">練習施設</h3>
-      <div className="bg-gray-50 p-4 rounded-lg">
-        <p className="text-gray-700 mb-2">
-          {university.soccer_club?.facility_note || "施設情報はありません"}
-        </p>
-        {university.soccer_club?.practice_location && (
-          <p className="text-sm text-gray-500">
-            場所: {university.soccer_club.practice_location}
-          </p>
-        )}
-      </div>
-    </div>
-    
-    <div>
-      <h3 className="text-lg font-semibold text-gray-900 mb-4">寮について</h3>
-      <div className="flex items-center space-x-3 mb-4">
-        {university.soccer_club?.dorm_available ? (
-          <>
-            <Check size={20} className="text-green-600" />
-            <span className="text-gray-700 font-medium">寮あり</span>
-          </>
-        ) : (
-          <>
-            <X size={20} className="text-red-500" />
-            <span className="text-gray-700 font-medium">寮なし</span>
-          </>
-        )}
-      </div>
-      {university.extended_data?.dorm_features && (
-        <div className="bg-gray-50 p-4 rounded-lg">
-          <p className="text-gray-700">{university.extended_data.dorm_features}</p>
+      <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+        <Building size={18} className="text-green-600 mr-2" />
+        練習施設
+      </h3>
+      <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
+        <div className="space-y-4">
+          {/* 基本情報 */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <p className="text-sm text-gray-600 mb-1">練習場所</p>
+              <p className="font-medium text-gray-900 flex items-center">
+                <MapPin size={16} className="text-blue-600 mr-2" />
+                {university.soccer_club?.practice_location || "情報なし"}
+              </p>
+            </div>
+            <div>
+              <p className="text-sm text-gray-600 mb-1">サッカーコート数</p>
+              <p className="font-medium text-gray-900">
+                {university.soccer_club?.soccer_field_count || 0}面
+              </p>
+            </div>
+          </div>
+          
+          {/* 施設詳細 */}
+          {university.soccer_club?.facility_note && (
+            <div>
+              <p className="text-sm text-gray-600 mb-2">施設詳細</p>
+              <p className="text-gray-700 text-sm leading-relaxed">
+                {university.soccer_club.facility_note}
+              </p>
+            </div>
+          )}
         </div>
-      )}
+      </div>
     </div>
 
-    {university.extended_data?.training_facilities && (
-      <div>
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">トレーニング施設</h3>
-        <div className="bg-gray-50 p-4 rounded-lg">
-          <p className="text-gray-700">{university.extended_data.training_facilities}</p>
+    {/* 2. 寮について */}
+    <div>
+      <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+        <Home size={18} className="text-purple-600 mr-2" />
+        寮について
+      </h3>
+      <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
+        <div className="space-y-4">
+          {/* 寮の有無 */}
+          <div className="flex items-center space-x-3">
+            {university.soccer_club?.dorm_available ? (
+              <>
+                <Check size={20} className="text-green-600" />
+                <span className="text-gray-700 font-medium">寮あり</span>
+              </>
+            ) : (
+              <>
+                <X size={20} className="text-red-500" />
+                <span className="text-gray-700 font-medium">寮なし</span>
+              </>
+            )}
+          </div>
+          
+          {/* 寮の詳細 */}
+          {university.soccer_club?.dorm_available && university.extended_data?.dorm_features && (
+            <div>
+              <p className="text-sm text-gray-600 mb-2">寮の特徴・詳細</p>
+              <p className="text-gray-700 text-sm leading-relaxed">
+                {university.extended_data.dorm_features}
+              </p>
+            </div>
+          )}
+          
+          {/* 寮がない場合の説明 */}
+          {!university.soccer_club?.dorm_available && (
+            <div>
+              <p className="text-gray-600 text-sm">
+                部員寮はありませんが、大学近辺には学生向けアパートや下宿が充実しています。
+                住環境についてはサッカー部または学生課にお問い合わせください。
+              </p>
+            </div>
+          )}
         </div>
       </div>
-    )}
+    </div>
+
+    {/* 3. 注意事項 */}
+    <div className="bg-blue-50 p-4 rounded-lg border-l-4 border-blue-500">
+      <h4 className="font-semibold text-gray-900 mb-2">ご注意</h4>
+      <ul className="text-sm text-gray-700 space-y-1">
+        <li>• 施設の利用時間や利用条件は変更される場合があります</li>
+        <li>• 寮の入居条件や費用については直接お問い合わせください</li>
+        <li>• 練習施設の詳細や見学については事前にご連絡ください</li>
+        <li>• 天候等により練習場所が変更される場合があります</li>
+      </ul>
+    </div>
   </div>
 );
 
