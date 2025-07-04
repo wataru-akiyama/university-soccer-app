@@ -1,30 +1,24 @@
+// src/components/EnhancedUniversityDetails.jsx - ヒーローセクション修正版
 import React, { useState, useRef, useEffect } from 'react';
 import { 
   ChevronLeft, 
   Heart, 
-  Users, 
-  Award, 
-  Home, 
-  Medal, 
   Calendar, 
   ArrowUpRight, 
-  FileText, 
   Check, 
   Info,
   Briefcase,
   MessageSquare,
-  X,
   Plus,
-  Trophy,
   BookOpen,
   Star,
-  TrendingUp,
   Building,
   MapPin,
-  User,
   GraduationCap,
+  DollarSign,
+  Target,
   Zap,
-  DollarSign
+  X
 } from 'lucide-react';
 
 const EnhancedUniversityDetails = ({ 
@@ -35,10 +29,73 @@ const EnhancedUniversityDetails = ({
   isInCompareList,
   isInFavorites 
 }) => {
-  const [activeTab, setActiveTab] = useState('overview'); // デフォルトを概要に変更
+  const [activeTab, setActiveTab] = useState('overview');
   const [showScrollHint, setShowScrollHint] = useState(false);
   const tabContainerRef = useRef(null);
-  
+
+  // バッジ色分け関数（大学カードと統一）
+  const getLeagueColor = (league) => {
+    if (league?.includes('1部')) return 'bg-green-100 text-green-800 border-green-200';
+    if (league?.includes('2部')) return 'bg-blue-100 text-blue-800 border-blue-200';
+    return 'bg-gray-100 text-gray-800 border-gray-200';
+  };
+
+  const getAcademicRankColor = (rank) => {
+    if (!rank) return 'bg-gray-100 text-gray-800 border-gray-200';
+    
+    if (rank.startsWith('A：')) return 'bg-red-100 text-red-800 border-red-200';
+    if (rank.startsWith('B：')) return 'bg-orange-100 text-orange-800 border-orange-200';
+    if (rank.startsWith('C：')) return 'bg-yellow-100 text-yellow-800 border-yellow-200';
+    if (rank.startsWith('D：')) return 'bg-green-100 text-green-800 border-green-200';
+    if (rank.startsWith('E：')) return 'bg-blue-100 text-blue-800 border-blue-200';
+    if (rank.startsWith('F：')) return 'bg-purple-100 text-purple-800 border-purple-200';
+    return 'bg-gray-100 text-gray-800 border-gray-200';
+  };
+
+  const getGenreColor = (genre) => {
+    if (!genre) return 'bg-gray-50 text-gray-700 border-gray-200';
+    
+    if (genre.startsWith('A：')) return 'bg-red-50 text-red-700 border-red-200';
+    if (genre.startsWith('B：')) return 'bg-orange-50 text-orange-700 border-orange-200';
+    if (genre.startsWith('C：')) return 'bg-yellow-50 text-yellow-700 border-yellow-200';
+    if (genre.startsWith('D：')) return 'bg-green-50 text-green-700 border-green-200';
+    if (genre.startsWith('E：')) return 'bg-blue-50 text-blue-700 border-blue-200';
+    if (genre.startsWith('F：')) return 'bg-purple-50 text-purple-700 border-purple-200';
+    return 'bg-gray-50 text-gray-700 border-gray-200';
+  };
+
+  const getShortGenre = (genre) => {
+    if (!genre) return '';
+    
+    const parts = genre.split('：');
+    if (parts.length > 1) {
+      const type = parts[0];
+      const description = parts[1];
+      if (description.length > 20) {
+        return `${type}：${description.substring(0, 20)}...`;
+      }
+    }
+    return genre;
+  };
+
+  const getShortAcademicRank = (rank) => {
+    if (!rank) return '';
+    return rank.split('：')[0];
+  };
+
+  // 志向性の取得
+  const getGenres = () => {
+    if (university.genres && Array.isArray(university.genres) && university.genres.length > 0) {
+      return university.genres;
+    }
+    
+    const genres = [];
+    if (university.genre1) genres.push(university.genre1);
+    if (university.genre2) genres.push(university.genre2);
+    
+    return genres;
+  };
+
   // スクロール状態を監視
   useEffect(() => {
     const container = tabContainerRef.current;
@@ -50,13 +107,8 @@ const EnhancedUniversityDetails = ({
       setShowScrollHint(isScrollable && !isAtEnd);
     };
 
-    // 初期チェック
     checkScrollable();
-
-    // スクロールイベントリスナー
     container.addEventListener('scroll', checkScrollable);
-    
-    // リサイズイベントリスナー
     window.addEventListener('resize', checkScrollable);
 
     return () => {
@@ -66,55 +118,8 @@ const EnhancedUniversityDetails = ({
   }, []);
   
   if (!university) return null;
-  
-  // パフォーマンス指標の計算
-  const performanceMetrics = [
-    {
-      label: "Jリーグ内定者数",
-      value: university.soccer_club?.j_league_nominees_2022_24 || 
-             ((university.soccer_club?.j_league_nominees_2022 || 0) + 
-              (university.soccer_club?.j_league_nominees_2023 || 0) + 
-              (university.soccer_club?.j_league_nominees_2024 || 0)),
-      unit: "名",
-      subtitle: "過去3年間",
-      trend: university.soccer_club?.j_league_nominees_2022_24 > 5 ? "+25%" : "安定",
-      icon: Trophy,
-      color: "text-yellow-600",
-      bgColor: "bg-yellow-50"
-    },
-    {
-      label: "部員数",
-      value: university.soccer_club?.total_members || 0,
-      unit: "名",
-      subtitle: "2024年度",
-      trend: "安定",
-      icon: Users,
-      color: "text-blue-600",
-      bgColor: "bg-blue-50"
-    },
-    {
-      label: "年間総費用",
-      value: Math.round((university.costs?.total_annual_cost || 2500000) / 10000),
-      unit: "万円",
-      subtitle: "概算",
-      trend: "",
-      icon: DollarSign,
-      color: "text-green-600",
-      bgColor: "bg-green-50"
-    },
-    {
-      label: "サッカーコート",
-      value: university.soccer_club?.soccer_field_count || 0,
-      unit: "面",
-      subtitle: "専用施設",
-      trend: "",
-      icon: Home,
-      color: "text-purple-600",
-      bgColor: "bg-purple-50"
-    }
-  ];
 
-  // 新しいタブ構成（スマホ対応）
+  // タブ構成
   const tabs = [
     { id: 'overview', label: '概要・方針', shortLabel: '概要', icon: Info },
     { id: 'admission', label: '入部条件', shortLabel: '入部', icon: GraduationCap },
@@ -133,6 +138,8 @@ const EnhancedUniversityDetails = ({
   const handlePracticeApplication = () => {
     alert(`${university.university_name}サッカー部の練習体験に申し込みます。`);
   };
+
+  const genres = getGenres();
 
   return (
     <div className="bg-gray-50 min-h-screen">
@@ -187,81 +194,71 @@ const EnhancedUniversityDetails = ({
           </div>
           
           {/* メイン情報 */}
-          <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-4 sm:space-y-0 sm:space-x-6 mb-6 lg:mb-8">
+          <div className="flex flex-col lg:flex-row items-start lg:items-center space-y-6 lg:space-y-0 lg:space-x-8 mb-8">
             <div className="w-20 h-20 lg:w-24 lg:h-24 bg-white rounded-2xl p-3 lg:p-4 shadow-xl flex items-center justify-center flex-shrink-0">
               <div className="w-full h-full bg-gradient-to-br from-green-500 to-green-600 rounded-lg flex items-center justify-center text-white font-bold text-lg lg:text-xl">
                 {getShortName(university.university_name)}
               </div>
             </div>
             
-            <div className="flex-1 min-w-0">
-              <div className="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-3 mb-2">
-                <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white truncate">
-                  {university.university_name}
-                </h1>
-                <span className="bg-green-500 text-white px-3 py-1 rounded-full text-sm font-medium inline-block">
-                  {university.soccer_club?.league}
-                </span>
-              </div>
+            <div className="flex-1 min-w-0 space-y-4">
+              {/* 大学名 */}
+              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white">
+                {university.university_name}
+              </h1>
               
-              <div className="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-4 text-gray-300 mb-4">
-                <div className="flex items-center">
-                  <MapPin size={16} className="mr-1 flex-shrink-0" />
-                  <span className="truncate">{university.location}</span>
-                </div>
-                <div className="flex items-center">
-                  <User size={16} className="mr-1 flex-shrink-0" />
-                  <span className="truncate">監督: {university.soccer_club?.coach_name}</span>
-                </div>
-              </div>
-              
+              {/* 第1行: リーグバッジ + 練習場所バッジ */}
               <div className="flex flex-wrap gap-2">
-                {university.main_faculties?.slice(0, 3).map((faculty, index) => (
-                  <span key={index} className="bg-white/10 text-white px-3 py-1 rounded-full text-sm backdrop-blur-sm">
-                    {faculty}
+                <span className={`inline-block px-3 py-1 rounded-full text-sm font-medium border ${getLeagueColor(university.soccer_club?.league)}`}>
+                  {university.soccer_club?.league || 'リーグ不明'}
+                </span>
+                
+                {university.soccer_club?.practice_location && (
+                  <span className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-white/10 text-white border border-white/20 backdrop-blur-sm">
+                    <MapPin size={14} className="mr-1" />
+                    {university.soccer_club.practice_location}
                   </span>
-                ))}
+                )}
+              </div>
+
+              {/* 第2行: 学力ランクバッジ + 志向性バッジ */}
+              <div className="flex flex-wrap gap-2">
+                {university.academic_rank && (
+                  <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm border ${getAcademicRankColor(university.academic_rank)}`}>
+                    <Star size={14} className="mr-1" />
+                    <span className="hidden lg:inline">{university.academic_rank}</span>
+                    <span className="lg:hidden">{getShortAcademicRank(university.academic_rank)}</span>
+                  </span>
+                )}
+                
+                {genres.length > 0 && (
+                  <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm border ${getGenreColor(genres[0])}`}>
+                    <Target size={14} className="mr-1" />
+                    <span className="hidden lg:inline">{getShortGenre(genres[0])}</span>
+                    <span className="lg:hidden">{genres[0].split('：')[0]}</span>
+                  </span>
+                )}
               </div>
             </div>
           </div>
-        </div>
-      </div>
 
-      {/* パフォーマンス指標 */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-6 lg:-mt-8 relative z-10">
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-6 mb-6 lg:mb-8">
-          {performanceMetrics.map((metric, index) => {
-            const Icon = metric.icon;
-            return (
-              <div key={index} className="bg-white rounded-xl p-4 lg:p-6 shadow-lg hover:shadow-xl transition-shadow border border-gray-100">
-                <div className="flex items-center justify-between mb-3 lg:mb-4">
-                  <div className={`p-2 lg:p-3 rounded-lg ${metric.bgColor}`}>
-                    <Icon size={20} className={`lg:w-6 lg:h-6 ${metric.color}`} />
-                  </div>
-                  {metric.trend && (
-                    <span className="text-xs lg:text-sm font-medium text-green-600 bg-green-50 px-2 py-1 rounded-full">
-                      {metric.trend}
-                    </span>
-                  )}
-                </div>
-                
-                <div className="mb-2">
-                  <div className="flex items-baseline space-x-1">
-                    <span className="text-2xl lg:text-3xl font-bold text-gray-900">{metric.value}</span>
-                    <span className="text-sm lg:text-lg text-gray-600">{metric.unit}</span>
-                  </div>
-                  <p className="text-xs lg:text-sm text-gray-500">{metric.subtitle}</p>
-                </div>
-                
-                <h3 className="text-xs lg:text-sm font-medium text-gray-700">{metric.label}</h3>
-              </div>
-            );
-          })}
+          {/* PLAYMAKERコメント */}
+          {university.extended_data?.playmaker_comment && (
+            <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 border border-white/20">
+              <h2 className="text-lg font-semibold text-white mb-4 flex items-center">
+                <div className="w-2 h-2 bg-green-400 rounded-full mr-3"></div>
+                PLAYMAKERコメント
+              </h2>
+              <p className="text-gray-200 leading-relaxed">
+                {university.extended_data.playmaker_comment}
+              </p>
+            </div>
+          )}
         </div>
       </div>
 
       {/* メインコンテンツ */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-8 lg:pb-12">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
         <div className="space-y-6 lg:space-y-8">
           {/* ナビゲーションタブ（スマホ対応 + スクロールヒント） */}
           <div className="bg-white rounded-xl shadow-sm overflow-hidden">
@@ -295,12 +292,9 @@ const EnhancedUniversityDetails = ({
               {/* 右端グラデーション + スクロールヒント */}
               {showScrollHint && (
                 <>
-                  {/* グラデーションオーバーレイ */}
                   <div 
                     className="absolute top-0 right-0 h-full w-8 bg-gradient-to-l from-white via-white/80 to-transparent pointer-events-none z-10"
                   />
-                  
-                  {/* スクロールヒント */}
                   <div className="absolute top-1/2 right-2 transform -translate-y-1/2 pointer-events-none z-20">
                     <div className="flex items-center text-xs text-gray-400">
                       <span className="mr-1">→</span>
