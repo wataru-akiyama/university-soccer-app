@@ -590,67 +590,179 @@ const OverviewTab = ({ university }) => {
 
 // 入部条件タブコンポーネント
 const AdmissionTab = ({ university }) => (
-  <div className="space-y-6">
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-      <div className="border border-gray-200 rounded-lg p-4">
-        <div className="flex items-center space-x-2 mb-3">
-          <Zap size={18} className="text-green-600" />
-          <h4 className="font-semibold text-gray-900">スポーツ推薦</h4>
-        </div>
+  <div className="space-y-8">
+    {/* 1. スポーツ推薦セクション */}
+    <div>
+      <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+        <Zap size={18} className="text-green-600 mr-2" />
+        スポーツ推薦
+      </h3>
+      <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
         {university.entry_conditions?.sports_recommend ? (
-          <div>
-            <span className="inline-block bg-green-100 text-green-800 px-2 py-1 rounded text-sm mb-2">利用可能</span>
-            <p className="text-sm text-gray-700 mb-2">{university.entry_conditions.recommend_criteria}</p>
-            <div className="text-xs text-gray-500">
-              推薦率: {university.extended_data?.recommend_ratio || "約70%"}
+          <div className="space-y-4">
+            <div className="flex items-center">
+              <span className="inline-block bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-medium">利用可能</span>
             </div>
-          </div>
-        ) : (
-          <span className="text-gray-500">利用不可</span>
-        )}
-      </div>
-      
-      <div className="border border-gray-200 rounded-lg p-4">
-        <div className="flex items-center space-x-2 mb-3">
-          <Calendar size={18} className="text-blue-600" />
-          <h4 className="font-semibold text-gray-900">セレクション</h4>
-        </div>
-        {university.entry_conditions?.selection ? (
-          <div>
-            <span className="inline-block bg-blue-100 text-blue-800 px-2 py-1 rounded text-sm mb-2">実施あり</span>
-            <p className="text-sm text-gray-700 mb-2">時期: {university.entry_conditions.selection_period}</p>
-            {university.extended_data?.selection_details && (
-              <p className="text-xs text-gray-500">{university.extended_data.selection_details}</p>
+            
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <div>
+                <p className="text-sm text-gray-600">推薦率</p>
+                <p className="font-medium text-gray-900">
+                  {university.extended_data?.recommend_ratio || "約70%"}
+                </p>
+              </div>
+              <div>
+                <p className="text-sm text-gray-600">受入人数</p>
+                <p className="font-medium text-gray-900">
+                  {university.entry_conditions?.recommend_people_count || "お問い合わせください"}
+                </p>
+              </div>
+              <div>
+                <p className="text-sm text-gray-600">基準</p>
+                <p className="font-medium text-gray-900">
+                  {university.entry_conditions?.recommend_criteria || "実力・実績による"}
+                </p>
+              </div>
+            </div>
+
+            {university.entry_conditions?.recommend_criteria_detail && (
+              <div>
+                <p className="text-sm text-gray-600 mb-2">詳細な推薦基準</p>
+                <p className="text-gray-700 text-sm leading-relaxed">
+                  {university.entry_conditions.recommend_criteria_detail}
+                </p>
+              </div>
             )}
           </div>
         ) : (
-          <span className="text-gray-500">実施なし</span>
+          <div className="flex items-center">
+            <span className="inline-block bg-red-100 text-red-800 px-3 py-1 rounded-full text-sm font-medium">利用不可</span>
+            <p className="text-gray-600 text-sm ml-3">スポーツ推薦制度はありません</p>
+          </div>
         )}
       </div>
     </div>
 
-    <div className="border border-gray-200 rounded-lg p-4">
-      <div className="flex items-center space-x-2 mb-3">
-        <GraduationCap size={18} className="text-purple-600" />
-        <h4 className="font-semibold text-gray-900">一般入部</h4>
+    {/* 2. セレクションセクション */}
+    <div>
+      <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+        <Calendar size={18} className="text-blue-600 mr-2" />
+        セレクション
+      </h3>
+      <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
+        {university.entry_conditions?.selection ? (
+          <div className="space-y-4">
+            <div className="flex items-center">
+              <span className="inline-block bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">実施あり</span>
+            </div>
+            
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <p className="text-sm text-gray-600">実施時期</p>
+                <p className="font-medium text-gray-900">
+                  {university.entry_conditions?.selection_period || "お問い合わせください"}
+                </p>
+              </div>
+              <div>
+                <p className="text-sm text-gray-600">募集方法</p>
+                <p className="font-medium text-gray-900">公募制</p>
+              </div>
+            </div>
+
+            {university.extended_data?.selection_details && (
+              <div>
+                <p className="text-sm text-gray-600 mb-2">セレクション詳細</p>
+                <p className="text-gray-700 text-sm leading-relaxed">
+                  {university.extended_data.selection_details}
+                </p>
+              </div>
+            )}
+          </div>
+        ) : (
+          <div className="flex items-center">
+            <span className="inline-block bg-red-100 text-red-800 px-3 py-1 rounded-full text-sm font-medium">実施なし</span>
+            <p className="text-gray-600 text-sm ml-3">一般的なセレクションは実施していません</p>
+          </div>
+        )}
       </div>
-      {university.entry_conditions?.general_admission ? (
-        <div>
-          <span className="inline-block bg-purple-100 text-purple-800 px-2 py-1 rounded text-sm mb-2">可能</span>
-          <p className="text-sm text-gray-700">{university.entry_conditions.general_conditions}</p>
-        </div>
-      ) : (
-        <span className="text-gray-500">不可</span>
-      )}
     </div>
 
-    {/* 奨学金制度 */}
-    {university.extended_data?.scholarship_details && (
-      <div className="bg-yellow-50 p-4 rounded-lg border-l-4 border-yellow-500">
-        <h4 className="font-semibold text-gray-900 mb-2">奨学金制度</h4>
-        <p className="text-sm text-gray-700">{university.extended_data.scholarship_details}</p>
+    {/* 3. 一般入部セクション */}
+    <div>
+      <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+        <GraduationCap size={18} className="text-purple-600 mr-2" />
+        一般入部
+      </h3>
+      <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
+        {university.entry_conditions?.general_admission ? (
+          <div className="space-y-4">
+            <div className="flex items-center">
+              <span className="inline-block bg-purple-100 text-purple-800 px-3 py-1 rounded-full text-sm font-medium">入部可能</span>
+            </div>
+            
+            <div>
+              <p className="text-sm text-gray-600 mb-2">入部条件</p>
+              <p className="text-gray-700 text-sm leading-relaxed">
+                {university.entry_conditions?.general_conditions || "大学入学後に入部希望届を提出し、体力テスト・面接を経て入部決定"}
+              </p>
+            </div>
+          </div>
+        ) : (
+          <div className="flex items-center">
+            <span className="inline-block bg-red-100 text-red-800 px-3 py-1 rounded-full text-sm font-medium">入部不可</span>
+            <p className="text-gray-600 text-sm ml-3">一般入部は受け付けていません</p>
+          </div>
+        )}
       </div>
-    )}
+    </div>
+
+    {/* 4. 奨学金制度セクション */}
+    <div>
+      <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+        <DollarSign size={18} className="text-yellow-600 mr-2" />
+        奨学金制度
+      </h3>
+      <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
+        {university.soccer_club?.sports_scholarship ? (
+          <div className="space-y-4">
+            <div className="flex items-center">
+              <span className="inline-block bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full text-sm font-medium">制度あり</span>
+            </div>
+            
+            {university.extended_data?.scholarship_details ? (
+              <div>
+                <p className="text-sm text-gray-600 mb-2">制度詳細</p>
+                <p className="text-gray-700 text-sm leading-relaxed">
+                  {university.extended_data.scholarship_details}
+                </p>
+              </div>
+            ) : (
+              <div>
+                <p className="text-gray-700 text-sm leading-relaxed">
+                  スポーツ奨学金制度を設けています。詳細については大学へお問い合わせください。
+                </p>
+              </div>
+            )}
+          </div>
+        ) : (
+          <div className="flex items-center">
+            <span className="inline-block bg-gray-100 text-gray-800 px-3 py-1 rounded-full text-sm font-medium">制度なし</span>
+            <p className="text-gray-600 text-sm ml-3">スポーツ特有の奨学金制度はありません</p>
+          </div>
+        )}
+      </div>
+    </div>
+
+    {/* 注意事項 */}
+    <div className="bg-blue-50 p-4 rounded-lg border-l-4 border-blue-500">
+      <h4 className="font-semibold text-gray-900 mb-2">ご注意</h4>
+      <ul className="text-sm text-gray-700 space-y-1">
+        <li>• 入部条件は年度により変更される場合があります</li>
+        <li>• 詳細な条件や手続きについては、必ず大学に直接お問い合わせください</li>
+        <li>• 推薦やセレクションの実施時期は前年度を参考にしています</li>
+        <li>• 奨学金制度の詳細は大学の学生課またはサッカー部にお問い合わせください</li>
+      </ul>
+    </div>
   </div>
 );
 
