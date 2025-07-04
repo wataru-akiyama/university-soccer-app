@@ -24,9 +24,7 @@ import {
   Home, 
   User, 
   Clock, 
-  Medal,
-  TrendingUp,
-  Award
+  TrendingUp
 } from 'lucide-react';
 
 const EnhancedUniversityDetails = ({ 
@@ -385,7 +383,7 @@ const EnhancedUniversityDetails = ({
 
 // 概要タブコンポーネント - アイコン色付き実装版
 const OverviewTab = ({ university }) => {
-  // デフォルト値とフォールバック処理
+  // 基本データの取得
   const getBasicData = () => {
     return [
       {
@@ -453,37 +451,13 @@ const OverviewTab = ({ university }) => {
     };
   };
 
-  // 最近の実績データの取得
-  const getRecentAchievements = () => {
-    if (university?.extended_data?.recent_achievements && 
-        Array.isArray(university.extended_data.recent_achievements)) {
-      return university.extended_data.recent_achievements;
-    }
-
-    return [
-      {
-        year: "2024年",
-        achievement: `${university?.soccer_club?.league || "リーグ戦"} 参加`,
-        detail: "シーズン通じて活動"
-      },
-      {
-        year: "2023年",
-        achievement: "Jリーグ内定者輩出",
-        detail: `${university?.soccer_club?.j_league_nominees_2023 || 0}名が内定`
-      }
-    ].filter(achievement => 
-      !(achievement.detail.includes("0名") && achievement.achievement.includes("内定者"))
-    );
-  };
-
   const basicData = getBasicData();
   const coachingStaff = getCoachingStaff();
   const practiceEnvironment = getPracticeEnvironment();
-  const recentAchievements = getRecentAchievements();
 
   return (
     <div className="space-y-8">
-      {/* 1. 基本データ */}
+      {/* 1. 基本データ（数値4つをコンパクトに） */}
       <div>
         <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
           <TrendingUp size={18} className="text-blue-600 mr-2" />
@@ -509,146 +483,105 @@ const OverviewTab = ({ university }) => {
         </div>
       </div>
 
-      {/* 2カラムレイアウト */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        {/* 左カラム */}
-        <div className="space-y-8">
-          {/* 監督・指導体制 */}
-          <div>
-            <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
-              <User size={18} className="text-green-600 mr-2" />
-              監督・指導体制
-            </h3>
-            <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <p className="text-sm text-gray-600">監督</p>
-                  <p className="font-medium text-gray-900">{coachingStaff.coach_name}</p>
-                </div>
-                <div>
-                  <p className="text-sm text-gray-600">指導歴</p>
-                  <p className="font-medium text-gray-900">{coachingStaff.coaching_experience}</p>
-                </div>
-                <div>
-                  <p className="text-sm text-gray-600">スタッフ数</p>
-                  <p className="font-medium text-gray-900">
-                    {coachingStaff.staff_count === "情報なし" ? "情報なし" : `${coachingStaff.staff_count}名体制`}
-                  </p>
-                </div>
-                <div>
-                  <p className="text-sm text-gray-600">指導方針</p>
-                  <p className="font-medium text-gray-900">{coachingStaff.coaching_philosophy}</p>
-                </div>
-              </div>
+      {/* 2. 監督・指導体制 */}
+      <div>
+        <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+          <User size={18} className="text-green-600 mr-2" />
+          監督・指導体制
+        </h3>
+        <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div>
+              <p className="text-sm text-gray-600">監督</p>
+              <p className="font-medium text-gray-900">{coachingStaff.coach_name}</p>
             </div>
-          </div>
-
-          {/* チームの方針・特色 */}
-          <div>
-            <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
-              <MessageSquare size={18} className="text-purple-600 mr-2" />
-              チームの方針・特色
-            </h3>
-            <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
-              <p className="text-gray-700 leading-relaxed">
-                {university?.team_philosophy || 
-                 university?.extended_data?.team_philosophy || 
-                 `${university?.university_name || "この大学"}サッカー部では、技術向上と人間的成長を両立させることを重視しています。学生が主体となって活動し、サッカーを通じて社会で活躍できる人材の育成を目指しています。`}
+            <div>
+              <p className="text-sm text-gray-600">指導歴</p>
+              <p className="font-medium text-gray-900">{coachingStaff.coaching_experience}</p>
+            </div>
+            <div>
+              <p className="text-sm text-gray-600">スタッフ数</p>
+              <p className="font-medium text-gray-900">
+                {coachingStaff.staff_count === "情報なし" ? "情報なし" : `${coachingStaff.staff_count}名体制`}
               </p>
             </div>
-          </div>
-
-          {/* 取得可能資格 */}
-          <div>
-            <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
-              <BookOpen size={18} className="text-indigo-600 mr-2" />
-              取得可能資格
-            </h3>
-            <div className="flex flex-wrap gap-2">
-              {university?.soccer_club?.qualifications && university.soccer_club.qualifications.length > 0 ? (
-                university.soccer_club.qualifications.map((qualification, index) => (
-                  <span key={index} className="bg-gray-100 text-gray-700 px-3 py-2 rounded-lg text-sm border border-gray-200">
-                    {qualification}
-                  </span>
-                ))
-              ) : (
-                <span className="text-gray-500 text-sm">資格情報は大学にお問い合わせください</span>
-              )}
+            <div>
+              <p className="text-sm text-gray-600">指導方針</p>
+              <p className="font-medium text-gray-900">{coachingStaff.coaching_philosophy}</p>
             </div>
           </div>
         </div>
+      </div>
 
-        {/* 右カラム */}
-        <div className="space-y-8">
-          {/* 練習環境・活動概要 */}
-          <div>
-            <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
-              <MapPin size={18} className="text-red-600 mr-2" />
-              練習環境・活動概要
-            </h3>
-            <div className="bg-gray-50 p-4 rounded-lg border border-gray-200 space-y-3">
-              <div className="grid grid-cols-2 gap-4">
-                <div className="flex items-center">
-                  <Clock size={16} className="text-red-600 mr-2 flex-shrink-0" />
-                  <div>
-                    <p className="text-sm text-gray-600">練習頻度</p>
-                    <p className="font-medium text-gray-900">{practiceEnvironment.practice_frequency}</p>
-                  </div>
-                </div>
-                <div className="flex items-center">
-                  <MapPin size={16} className="text-red-600 mr-2 flex-shrink-0" />
-                  <div>
-                    <p className="text-sm text-gray-600">活動拠点</p>
-                    <p className="font-medium text-gray-900">{practiceEnvironment.practice_location}</p>
-                  </div>
-                </div>
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <p className="text-sm text-gray-600">平日練習</p>
-                  <p className="font-medium text-gray-900">{practiceEnvironment.practice_hours_weekday}</p>
-                </div>
-                <div>
-                  <p className="text-sm text-gray-600">土日練習</p>
-                  <p className="font-medium text-gray-900">{practiceEnvironment.practice_hours_weekend}</p>
-                </div>
-              </div>
+      {/* 3. チームの方針・特色 */}
+      <div>
+        <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+          <MessageSquare size={18} className="text-purple-600 mr-2" />
+          チームの方針・特色
+        </h3>
+        <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
+          <p className="text-gray-700 leading-relaxed">
+            {university?.team_philosophy || 
+             university?.extended_data?.team_philosophy || 
+             `${university?.university_name || "この大学"}サッカー部では、技術向上と人間的成長を両立させることを重視しています。学生が主体となって活動し、サッカーを通じて社会で活躍できる人材の育成を目指しています。`}
+          </p>
+        </div>
+      </div>
+
+      {/* 4. 練習環境・活動概要 */}
+      <div>
+        <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+          <MapPin size={18} className="text-red-600 mr-2" />
+          練習環境・活動概要
+        </h3>
+        <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
+          <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
+            <div className="flex items-center">
+              <Clock size={16} className="text-red-600 mr-2 flex-shrink-0" />
               <div>
-                <p className="text-sm text-gray-600">年間合宿</p>
-                <p className="font-medium text-gray-900">{practiceEnvironment.annual_camps}回実施</p>
+                <p className="text-sm text-gray-600">練習頻度</p>
+                <p className="font-medium text-gray-900">{practiceEnvironment.practice_frequency}</p>
               </div>
             </div>
-          </div>
-
-          {/* 最近の実績 */}
-          <div>
-            <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
-              <Medal size={18} className="text-orange-600 mr-2" />
-              最近の実績
-            </h3>
-            <div className="space-y-3">
-              {recentAchievements.length > 0 ? (
-                recentAchievements.map((achievement, index) => (
-                  <div key={index} className="bg-gray-50 p-3 rounded-lg border border-gray-200">
-                    <div className="flex items-start justify-between">
-                      <div className="flex-1">
-                        <div className="flex items-center space-x-2 mb-1">
-                          <span className="text-sm font-medium text-gray-800">{achievement.year}</span>
-                          <Award size={14} className="text-orange-600" />
-                        </div>
-                        <h4 className="font-medium text-gray-900">{achievement.achievement}</h4>
-                        <p className="text-sm text-gray-600 mt-1">{achievement.detail}</p>
-                      </div>
-                    </div>
-                  </div>
-                ))
-              ) : (
-                <div className="bg-gray-50 p-4 rounded-lg border border-gray-200 text-center">
-                  <p className="text-gray-500 text-sm">実績情報は大学にお問い合わせください</p>
-                </div>
-              )}
+            <div className="flex items-center">
+              <MapPin size={16} className="text-red-600 mr-2 flex-shrink-0" />
+              <div>
+                <p className="text-sm text-gray-600">活動拠点</p>
+                <p className="font-medium text-gray-900">{practiceEnvironment.practice_location}</p>
+              </div>
+            </div>
+            <div>
+              <p className="text-sm text-gray-600">平日練習</p>
+              <p className="font-medium text-gray-900">{practiceEnvironment.practice_hours_weekday}</p>
+            </div>
+            <div>
+              <p className="text-sm text-gray-600">土日練習</p>
+              <p className="font-medium text-gray-900">{practiceEnvironment.practice_hours_weekend}</p>
+            </div>
+            <div>
+              <p className="text-sm text-gray-600">年間合宿</p>
+              <p className="font-medium text-gray-900">{practiceEnvironment.annual_camps}回実施</p>
             </div>
           </div>
+        </div>
+      </div>
+
+      {/* 5. 取得可能資格 */}
+      <div>
+        <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+          <BookOpen size={18} className="text-indigo-600 mr-2" />
+          取得可能資格
+        </h3>
+        <div className="flex flex-wrap gap-2">
+          {university?.soccer_club?.qualifications && university.soccer_club.qualifications.length > 0 ? (
+            university.soccer_club.qualifications.map((qualification, index) => (
+              <span key={index} className="bg-gray-100 text-gray-700 px-3 py-2 rounded-lg text-sm border border-gray-200">
+                {qualification}
+              </span>
+            ))
+          ) : (
+            <span className="text-gray-500 text-sm">資格情報は大学にお問い合わせください</span>
+          )}
         </div>
       </div>
     </div>
