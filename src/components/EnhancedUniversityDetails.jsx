@@ -771,123 +771,107 @@ const CostsTab = ({ university }) => {
   const costs = university.costs || {};
   
   return (
-    <div className="space-y-6">
-      {/* 年間総費用概算 */}
-      <div className="bg-green-50 p-6 rounded-lg border-l-4 border-green-500">
-        <div className="text-center">
-          <h3 className="text-2xl font-bold text-green-800 mb-2">
-            年間総費用: 約{Math.round((costs.total_annual_cost || 2500000) / 10000)}万円
-          </h3>
-          <p className="text-sm text-green-600">※概算です。詳細は大学にお問い合わせください</p>
-        </div>
-      </div>
-
-      {/* 大学費用 */}
+    <div className="space-y-8">
+      {/* 1. 年間総費用概算 */}
       <div>
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">大学費用（年額）</h3>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <div className="bg-white border rounded-lg p-4">
-            <div className="text-sm text-gray-600 mb-1">授業料</div>
-            <div className="text-2xl font-bold text-gray-900">
-              {((costs.university_costs?.annual_tuition || 1200000) / 10000).toFixed(0)}万円
-            </div>
-          </div>
-          <div className="bg-white border rounded-lg p-4">
-            <div className="text-sm text-gray-600 mb-1">入学金</div>
-            <div className="text-2xl font-bold text-gray-900">
-              {((costs.university_costs?.entrance_fee || 300000) / 10000).toFixed(0)}万円
-            </div>
-          </div>
-          <div className="bg-white border rounded-lg p-4">
-            <div className="text-sm text-gray-600 mb-1">施設費</div>
-            <div className="text-2xl font-bold text-gray-900">
-              {((costs.university_costs?.facility_fee || 150000) / 10000).toFixed(0)}万円
-            </div>
+        <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+          <DollarSign size={18} className="text-green-600 mr-2" />
+          年間総費用概算
+        </h3>
+        <div className="bg-green-50 p-6 rounded-lg border-l-4 border-green-500">
+          <div className="text-center">
+            <h3 className="text-2xl font-bold text-green-800 mb-2">
+              年間総費用: 約{Math.round((costs.total_annual_cost || 2500000) / 10000)}万円
+            </h3>
+            <p className="text-sm text-green-600">※概算です。詳細は大学にお問い合わせください</p>
           </div>
         </div>
       </div>
 
-      {/* サッカー部費用 */}
+      {/* 2. 大学費用（年額） */}
       <div>
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">サッカー部費用（年額）</h3>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div className="bg-white border rounded-lg p-4">
-            <div className="text-sm text-gray-600 mb-1">部費</div>
-            <div className="text-xl font-bold text-gray-900">
-              月額{((costs.soccer_club_costs?.monthly_club_fee || 15000) / 10000).toFixed(1)}万円
-            </div>
-          </div>
-          <div className="bg-white border rounded-lg p-4">
-            <div className="text-sm text-gray-600 mb-1">用具代</div>
-            <div className="text-xl font-bold text-gray-900">
-              年{((costs.soccer_club_costs?.equipment_cost || 80000) / 10000).toFixed(0)}万円
-            </div>
-          </div>
-          <div className="bg-white border rounded-lg p-4">
-            <div className="text-sm text-gray-600 mb-1">合宿費</div>
-            <div className="text-xl font-bold text-gray-900">
-              年{((costs.soccer_club_costs?.camp_cost || 200000) / 10000).toFixed(0)}万円
-            </div>
-          </div>
-          <div className="bg-white border rounded-lg p-4">
-            <div className="text-sm text-gray-600 mb-1">遠征費</div>
-            <div className="text-xl font-bold text-gray-900">
-              年{((costs.soccer_club_costs?.travel_cost || 100000) / 10000).toFixed(0)}万円
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* 生活費 */}
-      <div>
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">生活費（月額）</h3>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          {university.soccer_club?.dorm_available ? (
+        <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+          <GraduationCap size={18} className="text-blue-600 mr-2" />
+          大学費用（年額）
+        </h3>
+        <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div className="bg-white border rounded-lg p-4">
-              <div className="text-sm text-gray-600 mb-1">寮費</div>
-              <div className="text-xl font-bold text-gray-900">
-                {(costs.living_costs?.dorm_fee || 45000) >= 10000 
-                  ? `${((costs.living_costs?.dorm_fee || 45000) / 10000).toFixed(1)}万円`
-                  : `${((costs.living_costs?.dorm_fee || 45000) / 1000).toFixed(0)}千円`
-                }
+              <div className="text-sm text-gray-600 mb-1">授業料</div>
+              <div className="text-2xl font-bold text-gray-900">
+                {((costs.university_costs?.annual_tuition || 1200000) / 10000).toFixed(0)}万円
               </div>
             </div>
-          ) : (
             <div className="bg-white border rounded-lg p-4">
-              <div className="text-sm text-gray-600 mb-1">家賃</div>
-              <div className="text-xl font-bold text-gray-900">6〜8万円</div>
-              <div className="text-xs text-gray-500">※一人暮らしの場合</div>
+              <div className="text-sm text-gray-600 mb-1">入学金</div>
+              <div className="text-2xl font-bold text-gray-900">
+                {((costs.university_costs?.entrance_fee || 300000) / 10000).toFixed(0)}万円
+              </div>
             </div>
-          )}
-          <div className="bg-white border rounded-lg p-4">
-            <div className="text-sm text-gray-600 mb-1">食費</div>
-            <div className="text-xl font-bold text-gray-900">
-              {(costs.living_costs?.meal_cost || 25000) >= 10000 
-                ? `${((costs.living_costs?.meal_cost || 25000) / 10000).toFixed(1)}万円`
-                : `${((costs.living_costs?.meal_cost || 25000) / 1000).toFixed(0)}千円`
-              }
-            </div>
-          </div>
-          <div className="bg-white border rounded-lg p-4">
-            <div className="text-sm text-gray-600 mb-1">交通費</div>
-            <div className="text-xl font-bold text-gray-900">
-              {(costs.living_costs?.commute_cost || 8000) >= 10000 
-                ? `${((costs.living_costs?.commute_cost || 8000) / 10000).toFixed(1)}万円`
-                : `${((costs.living_costs?.commute_cost || 8000) / 1000).toFixed(0)}千円`
-              }
+            <div className="bg-white border rounded-lg p-4">
+              <div className="text-sm text-gray-600 mb-1">施設費</div>
+              <div className="text-2xl font-bold text-gray-900">
+                {((costs.university_costs?.facility_fee || 150000) / 10000).toFixed(0)}万円
+              </div>
             </div>
           </div>
         </div>
       </div>
 
-      {/* 注意事項 */}
-      <div className="bg-yellow-50 p-4 rounded-lg">
+      {/* 3. サッカー部費用（年額） */}
+      <div>
+        <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+          <Users size={18} className="text-green-600 mr-2" />
+          サッカー部費用（年額）
+        </h3>
+        <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
+          <div className="space-y-4">
+            {/* 部費とチームウェア代 */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="bg-white border rounded-lg p-4">
+                <div className="text-sm text-gray-600 mb-1">部費</div>
+                <div className="text-xl font-bold text-gray-900">
+                  月額{((costs.soccer_club_costs?.monthly_club_fee || 15000) / 10000).toFixed(1)}万円
+                </div>
+                <div className="text-xs text-gray-500 mt-1">年額約{(((costs.soccer_club_costs?.monthly_club_fee || 15000) * 12) / 10000).toFixed(0)}万円</div>
+              </div>
+              <div className="bg-white border rounded-lg p-4 flex items-center">
+                <Target size={20} className="text-blue-600 mr-3 flex-shrink-0" />
+                <div>
+                  <div className="text-sm text-gray-600 mb-1">チームウェア代</div>
+                  <div className="text-xl font-bold text-gray-900">
+                    年{((costs.soccer_club_costs?.equipment_cost || 80000) / 10000).toFixed(0)}万円
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            {/* 合宿・遠征費 */}
+            <div className="bg-white border rounded-lg p-4">
+              <div className="flex items-start mb-3">
+                <MapPin size={20} className="text-purple-600 mr-3 flex-shrink-0 mt-0.5" />
+                <div className="flex-1">
+                  <h4 className="font-semibold text-gray-900 mb-2">合宿・遠征費</h4>
+                  <p className="text-gray-700 text-sm leading-relaxed">
+                    {costs.soccer_club_costs?.camp_travel_description || 
+                     "年3回の合宿（春季・夏季・冬季）と関東リーグ戦での遠征があります。合宿費用は1回あたり約8-10万円、遠征費は月2-3回程度で交通費・宿泊費込みで年間約15万円程度を想定してください。"}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* 4. 注意事項 */}
+      <div className="bg-blue-50 p-4 rounded-lg border-l-4 border-blue-500">
         <h4 className="font-semibold text-gray-900 mb-2">ご注意</h4>
         <ul className="text-sm text-gray-700 space-y-1">
           <li>• 上記は概算金額です。正確な費用は大学にお問い合わせください</li>
           <li>• 奨学金制度により実質負担額が軽減される場合があります</li>
           <li>• 遠征や合宿の回数により年間費用は変動します</li>
           <li>• 教材費や保険料等は含まれていません</li>
+          <li>• チームウェア代には練習着・試合用ユニフォーム・トレーニングシューズ等が含まれます</li>
         </ul>
       </div>
     </div>
