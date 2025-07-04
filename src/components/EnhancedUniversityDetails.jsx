@@ -144,11 +144,11 @@ const EnhancedUniversityDetails = ({
   return (
     <div className="bg-gray-50 min-h-screen">
       {/* ヒーローセクション */}
-      <div className="relative bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
+      <div className="relative bg-gradient-to-br from-gray-50 to-white">
         {/* 背景パターン */}
-        <div className="absolute inset-0 opacity-10">
+        <div className="absolute inset-0 opacity-5">
           <div className="absolute inset-0" style={{
-            backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.1'%3E%3Ccircle cx='30' cy='30' r='2'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
+            backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%2316a34a' fill-opacity='0.1'%3E%3Ccircle cx='30' cy='30' r='2'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
             backgroundSize: '60px 60px'
           }}></div>
         </div>
@@ -158,7 +158,7 @@ const EnhancedUniversityDetails = ({
           {/* ナビゲーション */}
           <div className="flex justify-between items-center mb-6 lg:mb-8">
             <button 
-              className="flex items-center text-white hover:text-gray-300 transition-colors"
+              className="flex items-center text-gray-700 hover:text-gray-900 transition-colors"
               onClick={onBack}
             >
               <ChevronLeft size={20} className="mr-2" />
@@ -168,10 +168,10 @@ const EnhancedUniversityDetails = ({
             
             <div className="flex space-x-3">
               <button 
-                className={`p-3 rounded-full transition-all duration-200 ${
+                className={`p-3 rounded-full transition-all duration-200 shadow-md ${
                   isInFavorites
                   ? "bg-red-500 text-white shadow-lg scale-105"
-                  : "bg-white/10 text-white hover:bg-white/20 backdrop-blur-sm"
+                  : "bg-white text-gray-600 hover:text-red-500 hover:shadow-lg border border-gray-200"
                 }`}
                 onClick={() => onAddToFavorites(university)}
                 title={isInFavorites ? "進路プランから削除" : "進路プランに追加"}
@@ -184,7 +184,7 @@ const EnhancedUniversityDetails = ({
                   href={university.homepage_url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="bg-white/10 text-white hover:bg-white/20 backdrop-blur-sm p-3 rounded-full transition-colors"
+                  className="bg-white text-gray-600 hover:text-green-600 hover:shadow-lg p-3 rounded-full transition-colors shadow-md border border-gray-200"
                   title="公式サイトを開く"
                 >
                   <ArrowUpRight size={20} />
@@ -195,7 +195,7 @@ const EnhancedUniversityDetails = ({
           
           {/* メイン情報 */}
           <div className="flex flex-col lg:flex-row items-start lg:items-center space-y-6 lg:space-y-0 lg:space-x-8 mb-8">
-            <div className="w-20 h-20 lg:w-24 lg:h-24 bg-white rounded-2xl p-3 lg:p-4 shadow-xl flex items-center justify-center flex-shrink-0">
+            <div className="w-20 h-20 lg:w-24 lg:h-24 bg-white rounded-2xl p-3 lg:p-4 shadow-xl flex items-center justify-center flex-shrink-0 border border-gray-100">
               <div className="w-full h-full bg-gradient-to-br from-green-500 to-green-600 rounded-lg flex items-center justify-center text-white font-bold text-lg lg:text-xl">
                 {getShortName(university.university_name)}
               </div>
@@ -203,7 +203,7 @@ const EnhancedUniversityDetails = ({
             
             <div className="flex-1 min-w-0 space-y-4">
               {/* 大学名 */}
-              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white">
+              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900">
                 {university.university_name}
               </h1>
               
@@ -214,7 +214,7 @@ const EnhancedUniversityDetails = ({
                 </span>
                 
                 {university.soccer_club?.practice_location && (
-                  <span className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-white/10 text-white border border-white/20 backdrop-blur-sm">
+                  <span className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-gray-100 text-gray-700 border border-gray-200">
                     <MapPin size={14} className="mr-1" />
                     {university.soccer_club.practice_location}
                   </span>
@@ -244,12 +244,12 @@ const EnhancedUniversityDetails = ({
 
           {/* PLAYMAKERコメント */}
           {university.extended_data?.playmaker_comment && (
-            <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 border border-white/20">
-              <h2 className="text-lg font-semibold text-white mb-4 flex items-center">
-                <div className="w-2 h-2 bg-green-400 rounded-full mr-3"></div>
+            <div className="bg-green-50 rounded-xl p-6 border border-green-200 shadow-sm">
+              <h2 className="text-lg font-semibold text-green-800 mb-4 flex items-center">
+                <div className="w-2 h-2 bg-green-500 rounded-full mr-3"></div>
                 PLAYMAKERコメント
               </h2>
-              <p className="text-gray-200 leading-relaxed">
+              <p className="text-gray-700 leading-relaxed">
                 {university.extended_data.playmaker_comment}
               </p>
             </div>
@@ -373,6 +373,7 @@ const EnhancedUniversityDetails = ({
     </div>
   );
 };
+
 
 // 概要タブコンポーネント
 const OverviewTab = ({ university }) => (
