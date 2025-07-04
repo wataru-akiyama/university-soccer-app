@@ -980,48 +980,107 @@ const FacilitiesTab = ({ university }) => (
 
 // 進路・将来性タブコンポーネント
 const CareersTab = ({ university }) => (
-  <div className="space-y-6">
+  <div className="space-y-8">
+    {/* 1. 大学全体の卒業後の進路 */}
     <div>
-      <h3 className="text-lg font-semibold text-gray-900 mb-4">卒業後の進路</h3>
-      <div className="space-y-4">
-        {university.extended_data?.career_paths?.map((path, index) => (
-          <div key={index} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-            <div className="flex items-center space-x-3">
-              <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-              <span className="font-medium text-gray-900">{path.category}</span>
-            </div>
-            <div className="flex items-center space-x-2">
-              <div className="text-2xl font-bold text-gray-900">{path.percentage}%</div>
-            </div>
+      <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+        <GraduationCap size={18} className="text-blue-600 mr-2" />
+        大学全体の卒業後の進路
+      </h3>
+      <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
+        <div className="space-y-3">
+          <p className="text-sm text-gray-600 mb-3">主な進路先</p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            {university.career_paths?.university_general?.map((path, index) => (
+              <div key={index} className="flex items-center py-2">
+                <div className="w-2 h-2 bg-blue-500 rounded-full mr-3 flex-shrink-0"></div>
+                <span className="text-gray-700 text-sm">{path}</span>
+              </div>
+            )) || (
+              // デフォルトの進路先
+              [
+                "一般企業（金融・商社・メーカー等）",
+                "公務員（国家・地方）",
+                "教員（中学・高校）",
+                "大学院進学",
+                "起業・独立",
+                "その他"
+              ].map((path, index) => (
+                <div key={index} className="flex items-center py-2">
+                  <div className="w-2 h-2 bg-blue-500 rounded-full mr-3 flex-shrink-0"></div>
+                  <span className="text-gray-700 text-sm">{path}</span>
+                </div>
+              ))
+            )}
           </div>
-        )) || (
-          <div className="text-center text-gray-500 py-4">
-            進路情報はありません
-          </div>
-        )}
+          
+          {university.career_support?.university_support && (
+            <div className="mt-4 pt-4 border-t border-gray-200">
+              <p className="text-sm text-gray-600 mb-2">キャリアサポート</p>
+              <p className="text-gray-700 text-sm leading-relaxed">
+                {university.career_support.university_support}
+              </p>
+            </div>
+          )}
+        </div>
       </div>
     </div>
-    
+
+    {/* 2. サッカー部の卒業後の進路 */}
     <div>
-      <h3 className="text-lg font-semibold text-gray-900 mb-4">進路サポート</h3>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div className="border border-gray-200 rounded-lg p-4">
-          <h4 className="font-semibold text-gray-900 mb-2">Jリーグ関連</h4>
-          <ul className="text-sm text-gray-700 space-y-1">
-            <li>• スカウト向け映像制作</li>
-            <li>• Jクラブとのパイプ</li>
-            <li>• セレクション情報提供</li>
-          </ul>
-        </div>
-        <div className="border border-gray-200 rounded-lg p-4">
-          <h4 className="font-semibold text-gray-900 mb-2">一般企業</h4>
-          <ul className="text-sm text-gray-700 space-y-1">
-            <li>• OB・OGネットワーク</li>
-            <li>• 就職活動サポート</li>
-            <li>• インターンシップ紹介</li>
-          </ul>
+      <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+        <Users size={18} className="text-green-600 mr-2" />
+        サッカー部の卒業後の進路
+      </h3>
+      <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
+        <div className="space-y-3">
+          <p className="text-sm text-gray-600 mb-3">主な進路先</p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            {university.career_paths?.soccer_club?.map((path, index) => (
+              <div key={index} className="flex items-center py-2">
+                <div className="w-2 h-2 bg-green-500 rounded-full mr-3 flex-shrink-0"></div>
+                <span className="text-gray-700 text-sm">{path}</span>
+              </div>
+            )) || (
+              // デフォルトの進路先
+              [
+                "指導者（コーチ・監督）",
+                "教員（保健体育）",
+                "一般企業（営業・企画等）",
+                "Jリーグ関連（クラブ職員・審判等）",
+                "社会人チーム",
+                "スポーツ関連企業",
+                "その他"
+              ].map((path, index) => (
+                <div key={index} className="flex items-center py-2">
+                  <div className="w-2 h-2 bg-green-500 rounded-full mr-3 flex-shrink-0"></div>
+                  <span className="text-gray-700 text-sm">{path}</span>
+                </div>
+              ))
+            )}
+          </div>
+          
+          {university.career_support?.soccer_club_support && (
+            <div className="mt-4 pt-4 border-t border-gray-200">
+              <p className="text-sm text-gray-600 mb-2">部独自のサポート</p>
+              <p className="text-gray-700 text-sm leading-relaxed">
+                {university.career_support.soccer_club_support}
+              </p>
+            </div>
+          )}
         </div>
       </div>
+    </div>
+
+    {/* 3. 注意事項 */}
+    <div className="bg-blue-50 p-4 rounded-lg border-l-4 border-blue-500">
+      <h4 className="font-semibold text-gray-900 mb-2">ご注意</h4>
+      <ul className="text-sm text-gray-700 space-y-1">
+        <li>• 進路情報は過去の実績に基づく参考情報です</li>
+        <li>• 年度により進路先の傾向は変動する可能性があります</li>
+        <li>• 詳細な進路状況は大学キャリアセンターにお問い合わせください</li>
+        <li>• サッカー部独自の進路支援については部へ直接お問い合わせください</li>
+      </ul>
     </div>
   </div>
 );
