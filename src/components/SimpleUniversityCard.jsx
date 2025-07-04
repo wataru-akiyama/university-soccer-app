@@ -1,6 +1,6 @@
-// src/components/SimpleUniversityCard.jsx - 進路プラン対応版
+// src/components/SimpleUniversityCard.jsx - PLAYMAKERコメント対応版
 import React from 'react';
-import { Heart, Plus, Check, MapPin, ChevronUp, ChevronDown, X, Info } from 'lucide-react';
+import { Heart, Plus, Check, MapPin, ChevronUp, ChevronDown, X, Info, Star, Target } from 'lucide-react';
 
 const SimpleUniversityCard = ({ 
   university, 
@@ -20,10 +20,79 @@ const SimpleUniversityCard = ({
   canMoveDown = true,
   onRemoveFromPortfolio = null
 }) => {
+  // リーグバッジの色分け
   const getLeagueColor = (league) => {
-    if (league.includes('1部')) return 'bg-green-100 text-green-800';
-    if (league.includes('2部')) return 'bg-blue-100 text-blue-800';
-    return 'bg-gray-100 text-gray-800';
+    if (league.includes('1部')) return 'bg-green-100 text-green-800 border-green-200';
+    if (league.includes('2部')) return 'bg-blue-100 text-blue-800 border-blue-200';
+    return 'bg-gray-100 text-gray-800 border-gray-200';
+  };
+
+  // 学力ランクバッジの色分け
+  const getAcademicRankColor = (rank) => {
+    if (!rank) return 'bg-gray-100 text-gray-800 border-gray-200';
+    
+    if (rank.startsWith('A：')) return 'bg-red-100 text-red-800 border-red-200';
+    if (rank.startsWith('B：')) return 'bg-orange-100 text-orange-800 border-orange-200';
+    if (rank.startsWith('C：')) return 'bg-yellow-100 text-yellow-800 border-yellow-200';
+    if (rank.startsWith('D：')) return 'bg-green-100 text-green-800 border-green-200';
+    if (rank.startsWith('E：')) return 'bg-blue-100 text-blue-800 border-blue-200';
+    if (rank.startsWith('F：')) return 'bg-purple-100 text-purple-800 border-purple-200';
+    return 'bg-gray-100 text-gray-800 border-gray-200';
+  };
+
+  // 志向性バッジの色分け
+  const getGenreColor = (genre) => {
+    if (!genre) return 'bg-gray-50 text-gray-700 border-gray-200';
+    
+    if (genre.startsWith('A：')) return 'bg-red-50 text-red-700 border-red-200';
+    if (genre.startsWith('B：')) return 'bg-orange-50 text-orange-700 border-orange-200';
+    if (genre.startsWith('C：')) return 'bg-yellow-50 text-yellow-700 border-yellow-200';
+    if (genre.startsWith('D：')) return 'bg-green-50 text-green-700 border-green-200';
+    if (genre.startsWith('E：')) return 'bg-blue-50 text-blue-700 border-blue-200';
+    if (genre.startsWith('F：')) return 'bg-purple-50 text-purple-700 border-purple-200';
+    return 'bg-gray-50 text-gray-700 border-gray-200';
+  };
+
+  // 志向性テキストの短縮
+  const getShortGenre = (genre) => {
+    if (!genre) return '';
+    
+    const parts = genre.split('：');
+    if (parts.length > 1) {
+      const type = parts[0];
+      const description = parts[1];
+      if (description.length > 15) {
+        return `${type}：${description.substring(0, 15)}...`;
+      }
+    }
+    return genre;
+  };
+
+  // 学力ランクテキストの短縮
+  const getShortAcademicRank = (rank) => {
+    if (!rank) return '';
+    return rank.split('：')[0]; // 「A」「B」などの部分のみ
+  };
+
+  // PLAYMAKERコメントの取得
+  const getPlaymakerComment = () => {
+    return university.extended_data?.playmaker_comment || 
+           "この大学の詳細な評価情報は準備中です。";
+  };
+
+  // 志向性の取得
+  const getGenres = () => {
+    // genres配列がある場合
+    if (university.genres && Array.isArray(university.genres) && university.genres.length > 0) {
+      return university.genres;
+    }
+    
+    // genre1, genre2の個別フィールドがある場合
+    const genres = [];
+    if (university.genre1) genres.push(university.genre1);
+    if (university.genre2) genres.push(university.genre2);
+    
+    return genres;
   };
   
   const handleFavoriteClick = (e) => {
@@ -58,6 +127,11 @@ const SimpleUniversityCard = ({
     e.stopPropagation();
     onRemoveFromPortfolio && onRemoveFromPortfolio(university.id);
   };
+
+  const genres = getGenres();
+  const academicRank = university.academic_rank || '';
+  const practiceLocation = university.soccer_club?.practice_location || '';
+  const playmakerComment = getPlaymakerComment();
   
   return (
     <div 
@@ -119,7 +193,7 @@ const SimpleUniversityCard = ({
         )}
       </div>
       
-      {/* カードヘッダー - 大学名とハイライト */}
+      {/* カードヘッダー - 大学名とバッジ */}
       <div className="p-3 sm:p-4 border-b border-gray-100 bg-gradient-to-r from-gray-50 to-white">
         <div className="flex">
           {/* 大学ロゴ */}
@@ -130,31 +204,55 @@ const SimpleUniversityCard = ({
               className="w-8 h-8 sm:w-10 sm:h-10 object-contain"
               onError={(e) => {
                 e.target.onerror = null;
-                e.target.src = `${process.env.PUBLIC_URL}/images/default-logo.png`;
+                e.target.style.display = 'none';
+                e.currentTarget.parentNode.innerHTML += `
+                <div class="w-full h-full flex items-center justify-center bg-green-100 text-green-600 font-bold text-sm">
+                  ${(university.university_name || 'U').charAt(0)}
+                </div>
+                `;
               }}
             />
           </div>
           
-          <div className="flex-1 min-w-0 pr-16"> {/* 右のボタンスペース確保 */}
-            <h3 className="font-bold text-base sm:text-lg text-gray-800 mb-1 truncate">{university.university_name}</h3>
+          <div className="flex-1 min-w-0 pr-16 space-y-2">
+            {/* 大学名 */}
+            <h3 className="font-bold text-base sm:text-lg text-gray-800 truncate">
+              {university.university_name || '大学名不明'}
+            </h3>
             
-            {/* タグエリア - リーグと練習場所を表示 */}
+            {/* 第1行: リーグバッジ + 練習場所バッジ */}
             <div className="flex flex-wrap gap-1">
-              {/* リーグバッジ */}
-              <span className={`inline-block px-2 py-0.5 rounded-full text-xs ${getLeagueColor(university.soccer_club.league)}`}>
-                {/* 小画面では短縮表示 */}
-                <span className="hidden sm:inline">{university.soccer_club.league}</span>
+              <span className={`inline-block px-2 py-0.5 rounded-full text-xs border ${getLeagueColor(university.soccer_club?.league || '')}`}>
+                <span className="hidden sm:inline">{university.soccer_club?.league || 'リーグ不明'}</span>
                 <span className="sm:hidden">
-                  {university.soccer_club.league.includes('1部') ? '1部' : 
-                   university.soccer_club.league.includes('2部') ? '2部' : '他'}
+                  {(university.soccer_club?.league || '').includes('1部') ? '1部' : 
+                   (university.soccer_club?.league || '').includes('2部') ? '2部' : '他'}
                 </span>
               </span>
               
-              {/* 練習場所情報 - 大画面のみ表示 */}
-              {university.soccer_club.practice_location && (
-                <span className="hidden sm:inline-flex items-center px-2 py-0.5 rounded-full text-xs bg-gray-100 text-gray-700">
+              {practiceLocation && (
+                <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs bg-gray-100 text-gray-700 border border-gray-200">
                   <MapPin size={10} className="mr-1" />
-                  {university.soccer_club.practice_location}
+                  {practiceLocation}
+                </span>
+              )}
+            </div>
+
+            {/* 第2行: 学力ランクバッジ + 志向性バッジ */}
+            <div className="flex flex-wrap gap-1">
+              {academicRank && (
+                <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs border ${getAcademicRankColor(academicRank)}`}>
+                  <Star size={10} className="mr-1" />
+                  <span className="hidden sm:inline">{academicRank}</span>
+                  <span className="sm:hidden">{getShortAcademicRank(academicRank)}</span>
+                </span>
+              )}
+              
+              {genres.length > 0 && (
+                <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs border ${getGenreColor(genres[0])}`}>
+                  <Target size={10} className="mr-1" />
+                  <span className="hidden sm:inline">{getShortGenre(genres[0])}</span>
+                  <span className="sm:hidden">{genres[0].split('：')[0]}</span>
                 </span>
               )}
             </div>
@@ -164,51 +262,38 @@ const SimpleUniversityCard = ({
       
       {/* カード本体 */}
       <div className="p-3 sm:p-4">
-        {/* 基本情報 - レスポンシブグリッド */}
+        {/* PLAYMAKERコメント */}
         <div className="mb-3 sm:mb-4">
-          <div className="grid grid-cols-2 gap-2 text-sm">
-            <div className="flex justify-between">
-              <span className="text-gray-600">部員数:</span>
-              <span className="font-medium">{university.soccer_club.total_members}名</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-gray-600 truncate">監督:</span>
-              <span className="font-medium truncate ml-1">{university.soccer_club.coach_name}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-gray-600">J内定:</span>
-              <span className="font-medium text-yellow-600">{university.soccer_club.j_league_nominees_2022_24 || 0}名</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-gray-600">コート:</span>
-              <span className="font-medium">{university.soccer_club.soccer_field_count}面</span>
-            </div>
+          <div className="bg-green-50 p-3 rounded-lg border-l-4 border-green-500">
+            <p className="text-sm text-gray-700 leading-relaxed line-clamp-3">
+              {playmakerComment}
+            </p>
           </div>
         </div>
         
         {/* 特徴タグ - 小画面では重要なもののみ表示 */}
         <div className="flex flex-wrap gap-1 mb-3 sm:mb-4">
-          {university.entry_conditions.sports_recommend && (
+          {university.entry_conditions?.sports_recommend && (
             <span className="bg-green-50 text-green-700 text-xs px-2 py-1 rounded-full border border-green-100">
               <span className="hidden sm:inline">スポーツ推薦</span>
               <span className="sm:hidden">推薦</span>
             </span>
           )}
           
-          {university.soccer_club.dorm_available && (
+          {university.soccer_club?.dorm_available && (
             <span className="bg-purple-50 text-purple-700 text-xs px-2 py-1 rounded-full border border-purple-100">
               寮あり
             </span>
           )}
           
           {/* 小画面では最大2つまで表示 */}
-          {university.entry_conditions.selection && (
+          {university.entry_conditions?.selection && (
             <span className="hidden sm:inline-block bg-blue-50 text-blue-700 text-xs px-2 py-1 rounded-full border border-blue-100">
               セレクション
             </span>
           )}
           
-          {university.soccer_club.sports_scholarship && (
+          {university.soccer_club?.sports_scholarship && (
             <span className="hidden sm:inline-block bg-yellow-50 text-yellow-700 text-xs px-2 py-1 rounded-full border border-yellow-100">
               奨学金あり
             </span>
@@ -259,6 +344,16 @@ const SimpleUniversityCard = ({
           )}
         </div>
       </div>
+      
+      {/* line-clamp-3 用のスタイル（Tailwind CSS で対応していない場合） */}
+      <style jsx>{`
+        .line-clamp-3 {
+          display: -webkit-box;
+          -webkit-line-clamp: 3;
+          -webkit-box-orient: vertical;
+          overflow: hidden;
+        }
+      `}</style>
     </div>
   );
 };
