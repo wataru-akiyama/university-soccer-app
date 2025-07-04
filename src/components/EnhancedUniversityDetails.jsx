@@ -131,8 +131,8 @@ const EnhancedUniversityDetails = ({
     { id: 'admission', label: '入部条件', shortLabel: '入部', icon: GraduationCap },
     { id: 'costs', label: '費用・お金', shortLabel: '費用', icon: DollarSign },
     { id: 'facilities', label: '施設・環境', shortLabel: '施設', icon: Building },
-    { id: 'reviews', label: '口コミ・評判', shortLabel: '口コミ', icon: MessageSquare },
-    { id: 'careers', label: '進路・将来性', shortLabel: '進路', icon: Briefcase }
+    { id: 'careers', label: '進路・将来性', shortLabel: '進路', icon: Briefcase },
+    { id: 'reviews', label: '口コミ・評判', shortLabel: '口コミ', icon: MessageSquare }
   ];
 
   // 大学名から短縮名を生成
@@ -315,8 +315,8 @@ const EnhancedUniversityDetails = ({
               {activeTab === 'admission' && <AdmissionTab university={university} />}
               {activeTab === 'costs' && <CostsTab university={university} />}
               {activeTab === 'facilities' && <FacilitiesTab university={university} />}
-              {activeTab === 'reviews' && <ReviewsTab university={university} />}
               {activeTab === 'careers' && <CareersTab university={university} />}
+              {activeTab === 'reviews' && <ReviewsTab university={university} />}
             </div>
           </div>
           
@@ -978,117 +978,6 @@ const FacilitiesTab = ({ university }) => (
   </div>
 );
 
-// 口コミ・評判タブコンポーネント
-const ReviewsTab = ({ university }) => {
-  const reviews = university.reviews || {};
-  
-  return (
-    <div className="space-y-6">
-      {/* 学生の口コミ */}
-      <div>
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">現役部員の声</h3>
-        <div className="space-y-4">
-          {reviews.student_reviews?.map((review, index) => (
-            <div key={index} className="bg-blue-50 p-4 rounded-lg">
-              <div className="flex justify-between items-start mb-2">
-                <div className="flex items-center space-x-2">
-                  <span className="text-sm font-medium text-blue-800">{review.grade}</span>
-                  <span className="text-sm text-blue-600">{review.position}</span>
-                </div>
-                <div className="flex items-center">
-                  {[...Array(5)].map((_, i) => (
-                    <Star key={i} size={14} className={i < review.rating ? "text-yellow-500 fill-current" : "text-gray-300"} />
-                  ))}
-                </div>
-              </div>
-              <p className="text-gray-700">{review.review}</p>
-            </div>
-          )) || (
-            <div className="bg-blue-50 p-4 rounded-lg">
-              <div className="flex justify-between items-start mb-2">
-                <div className="flex items-center space-x-2">
-                  <span className="text-sm font-medium text-blue-800">3年生</span>
-                  <span className="text-sm text-blue-600">MF</span>
-                </div>
-                <div className="flex items-center">
-                  {[...Array(5)].map((_, i) => (
-                    <Star key={i} size={14} className={i < 4 ? "text-yellow-500 fill-current" : "text-gray-300"} />
-                  ))}
-                </div>
-              </div>
-              <p className="text-gray-700">監督の指導が的確で技術的に成長できました。寮生活でチームワークも向上し、人間的にも大きく成長できています。</p>
-            </div>
-          )}
-        </div>
-      </div>
-
-      {/* 保護者の口コミ */}
-      <div>
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">保護者の声</h3>
-        <div className="space-y-4">
-          {reviews.parent_reviews?.map((review, index) => (
-            <div key={index} className="bg-green-50 p-4 rounded-lg">
-              <div className="flex justify-between items-start mb-2">
-                <span className="text-sm font-medium text-green-800">保護者</span>
-                <div className="flex items-center">
-                  {[...Array(5)].map((_, i) => (
-                    <Star key={i} size={14} className={i < review.rating ? "text-yellow-500 fill-current" : "text-gray-300"} />
-                  ))}
-                </div>
-              </div>
-              <p className="text-gray-700">{review.review}</p>
-            </div>
-          )) || (
-            <div className="bg-green-50 p-4 rounded-lg">
-              <div className="flex justify-between items-start mb-2">
-                <span className="text-sm font-medium text-green-800">保護者</span>
-                <div className="flex items-center">
-                  {[...Array(5)].map((_, i) => (
-                    <Star key={i} size={14} className={i < 4 ? "text-yellow-500 fill-current" : "text-gray-300"} />
-                  ))}
-                </div>
-              </div>
-              <p className="text-gray-700">費用は決して安くありませんが、子供の成長を考えると納得できます。コーチの方々も親身に相談に乗ってくれて、とても信頼しています。</p>
-            </div>
-          )}
-        </div>
-      </div>
-
-      {/* 卒業生の声 */}
-      <div>
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">卒業生の声</h3>
-        <div className="space-y-4">
-          {reviews.graduate_reviews?.map((review, index) => (
-            <div key={index} className="bg-purple-50 p-4 rounded-lg">
-              <div className="flex justify-between items-start mb-2">
-                <span className="text-sm font-medium text-purple-800">{review.graduation_year}年卒</span>
-                <span className="text-sm text-purple-600">{review.current_status}</span>
-              </div>
-              <p className="text-gray-700">{review.review}</p>
-            </div>
-          )) || (
-            <div className="bg-purple-50 p-4 rounded-lg">
-              <div className="flex justify-between items-start mb-2">
-                <span className="text-sm font-medium text-purple-800">2023年卒</span>
-                <span className="text-sm text-purple-600">社会人チーム所属</span>
-              </div>
-              <p className="text-gray-700">4年間で人間的にも競技的にも大きく成長できました。社会人になった今でも、大学で学んだチームワークや規律が役立っています。</p>
-            </div>
-          )}
-        </div>
-      </div>
-
-      {/* 口コミ投稿の案内 */}
-      <div className="bg-gray-50 p-4 rounded-lg text-center">
-        <p className="text-sm text-gray-600 mb-2">あなたの体験談もお聞かせください</p>
-        <button className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-blue-700 transition-colors">
-          口コミを投稿する
-        </button>
-      </div>
-    </div>
-  );
-};
-
 // 進路・将来性タブコンポーネント
 const CareersTab = ({ university }) => (
   <div className="space-y-6">
@@ -1136,5 +1025,150 @@ const CareersTab = ({ university }) => (
     </div>
   </div>
 );
+
+// 口コミ・評判タブコンポーネント
+const ReviewsTab = ({ university }) => {
+  const reviews = university.reviews || {};
+  
+  return (
+    <div className="space-y-8">
+      {/* 1. 学生の口コミ */}
+      <div>
+        <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+          <MessageSquare size={18} className="text-blue-600 mr-2" />
+          現役部員の声
+        </h3>
+        <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
+          <div className="space-y-4">
+            {reviews.student_reviews?.map((review, index) => (
+              <div key={index} className="pb-4 border-b border-gray-200 last:border-b-0 last:pb-0">
+                <div className="flex justify-between items-start mb-2">
+                  <div className="flex items-center space-x-2">
+                    <span className="text-sm font-medium text-blue-800">{review.grade}</span>
+                    <span className="text-sm text-blue-600">{review.position}</span>
+                  </div>
+                  <div className="flex items-center">
+                    {[...Array(5)].map((_, i) => (
+                      <Star key={i} size={14} className={i < review.rating ? "text-yellow-500 fill-current" : "text-gray-300"} />
+                    ))}
+                  </div>
+                </div>
+                <p className="text-gray-700">{review.review}</p>
+              </div>
+            )) || (
+              <div>
+                <div className="flex justify-between items-start mb-2">
+                  <div className="flex items-center space-x-2">
+                    <span className="text-sm font-medium text-blue-800">3年生</span>
+                    <span className="text-sm text-blue-600">MF</span>
+                  </div>
+                  <div className="flex items-center">
+                    {[...Array(5)].map((_, i) => (
+                      <Star key={i} size={14} className={i < 4 ? "text-yellow-500 fill-current" : "text-gray-300"} />
+                    ))}
+                  </div>
+                </div>
+                <p className="text-gray-700">監督の指導が的確で技術的に成長できました。寮生活でチームワークも向上し、人間的にも大きく成長できています。</p>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* 2. 保護者の声 */}
+      <div>
+        <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+          <Users size={18} className="text-green-600 mr-2" />
+          保護者の声
+        </h3>
+        <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
+          <div className="space-y-4">
+            {reviews.parent_reviews?.map((review, index) => (
+              <div key={index} className="pb-4 border-b border-gray-200 last:border-b-0 last:pb-0">
+                <div className="flex justify-between items-start mb-2">
+                  <span className="text-sm font-medium text-green-800">保護者</span>
+                  <div className="flex items-center">
+                    {[...Array(5)].map((_, i) => (
+                      <Star key={i} size={14} className={i < review.rating ? "text-yellow-500 fill-current" : "text-gray-300"} />
+                    ))}
+                  </div>
+                </div>
+                <p className="text-gray-700">{review.review}</p>
+              </div>
+            )) || (
+              <div>
+                <div className="flex justify-between items-start mb-2">
+                  <span className="text-sm font-medium text-green-800">保護者</span>
+                  <div className="flex items-center">
+                    {[...Array(5)].map((_, i) => (
+                      <Star key={i} size={14} className={i < 4 ? "text-yellow-500 fill-current" : "text-gray-300"} />
+                    ))}
+                  </div>
+                </div>
+                <p className="text-gray-700">費用は決して安くありませんが、子供の成長を考えると納得できます。コーチの方々も親身に相談に乗ってくれて、とても信頼しています。</p>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* 3. 卒業生の声 */}
+      <div>
+        <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+          <GraduationCap size={18} className="text-purple-600 mr-2" />
+          卒業生の声
+        </h3>
+        <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
+          <div className="space-y-4">
+            {reviews.graduate_reviews?.map((review, index) => (
+              <div key={index} className="pb-4 border-b border-gray-200 last:border-b-0 last:pb-0">
+                <div className="flex justify-between items-start mb-2">
+                  <span className="text-sm font-medium text-purple-800">{review.graduation_year}年卒</span>
+                  <span className="text-sm text-purple-600">{review.current_status}</span>
+                </div>
+                <p className="text-gray-700">{review.review}</p>
+              </div>
+            )) || (
+              <div>
+                <div className="flex justify-between items-start mb-2">
+                  <span className="text-sm font-medium text-purple-800">2023年卒</span>
+                  <span className="text-sm text-purple-600">社会人チーム所属</span>
+                </div>
+                <p className="text-gray-700">4年間で人間的にも競技的にも大きく成長できました。社会人になった今でも、大学で学んだチームワークや規律が役立っています。</p>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* 4. 口コミ投稿の案内 */}
+      <div>
+        <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+          <Plus size={18} className="text-orange-600 mr-2" />
+          口コミを投稿する
+        </h3>
+        <div className="bg-gray-50 p-4 rounded-lg border border-gray-200 text-center">
+          <p className="text-sm text-gray-600 mb-3">あなたの体験談もお聞かせください</p>
+          <button className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-blue-700 transition-colors">
+            口コミを投稿する
+          </button>
+        </div>
+      </div>
+
+      {/* 5. 注意事項 */}
+      <div className="bg-blue-50 p-4 rounded-lg border-l-4 border-blue-500">
+        <h4 className="font-semibold text-gray-900 mb-2">ご注意</h4>
+        <ul className="text-sm text-gray-700 space-y-1">
+          <li>• 口コミは個人の感想・体験談であり、大学の公式見解ではありません</li>
+          <li>• 投稿内容の真偽について当サイトでは責任を負いかねます</li>
+          <li>• 最新の情報については直接大学にお問い合わせください</li>
+          <li>• 不適切な投稿は予告なく削除する場合があります</li>
+        </ul>
+      </div>
+    </div>
+  );
+};
+
+
 
 export default EnhancedUniversityDetails;
