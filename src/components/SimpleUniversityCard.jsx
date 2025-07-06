@@ -1,6 +1,7 @@
-// src/components/SimpleUniversityCard.jsx - PLAYMAKERコメント対応版
+// src/components/SimpleUniversityCard.jsx - UniversityLogo完全対応版
 import React from 'react';
 import { Heart, Plus, Check, MapPin, ChevronUp, ChevronDown, X, Info, Star, Target } from 'lucide-react';
+import UniversityLogo from './UniversityLogo'; // 大学ロゴコンポーネントをインポート
 
 const SimpleUniversityCard = ({ 
   university, 
@@ -196,23 +197,13 @@ const SimpleUniversityCard = ({
       {/* カードヘッダー - 大学名とバッジ */}
       <div className="p-3 sm:p-4 border-b border-gray-100 bg-gradient-to-r from-gray-50 to-white">
         <div className="flex">
-          {/* 大学ロゴ */}
-          <div className="w-12 h-12 sm:w-14 sm:h-14 bg-white rounded-full flex items-center justify-center mr-3 overflow-hidden border border-gray-200 shadow-sm flex-shrink-0">
-            <img 
-              src={`/images/logos/${university.id}.png`}
-              alt={`${university.university_name} ロゴ`}
-              className="w-8 h-8 sm:w-10 sm:h-10 object-contain"
-              onError={(e) => {
-                e.target.onerror = null;
-                e.target.style.display = 'none';
-                e.currentTarget.parentNode.innerHTML += `
-                <div class="w-full h-full flex items-center justify-center bg-green-100 text-green-600 font-bold text-sm">
-                  ${(university.university_name || 'U').charAt(0)}
-                </div>
-                `;
-              }}
-            />
-          </div>
+          {/* 大学ロゴ - 新しいUniversityLogoコンポーネントを使用 */}
+          <UniversityLogo 
+            university={university}
+            size="md"
+            className="mr-3 shadow-sm"
+            showFallback={true}
+          />
           
           <div className="flex-1 min-w-0 pr-16 space-y-2">
             {/* 大学名 */}
