@@ -1,5 +1,6 @@
 import React from 'react';
 import { ChevronRight, X } from 'lucide-react';
+import UniversityLogo from './UniversityLogo'; // 追加
 
 // 比較ビューコンポーネント - スマホ対応テーブル版
 const CompareView = ({ universities, onBack, onRemove }) => {
@@ -78,13 +79,10 @@ const CompareView = ({ universities, onBack, onRemove }) => {
                     <div className="relative">
                       {/* 背景ロゴ */}
                       <div className="absolute top-0 right-0 bottom-0 left-0 flex justify-center opacity-10">
-                        <img 
-                          src={`/images/logos/${university.id}.png`}
-                          alt=""
-                          className="h-12 sm:h-24 w-12 sm:w-24 object-contain"
-                          onError={(e) => {
-                            e.target.style.display = 'none';
-                          }}
+                        <UniversityLogo 
+                          university={university}
+                          size="lg"
+                          showFallback={false}
                         />
                       </div>
                       
@@ -99,17 +97,12 @@ const CompareView = ({ universities, onBack, onRemove }) => {
                         </div>
                         
                         <div className="flex flex-col items-center mb-2 pt-2 sm:pt-3">
-                          <div className="bg-white rounded-full p-1 sm:p-2 shadow-sm mb-1 sm:mb-2">
-                            <img 
-                              src={`/images/logos/${university.id}.png`}
-                              alt={`${university.university_name} ロゴ`}
-                              className="w-6 h-6 sm:w-10 sm:h-10 object-contain"
-                              onError={(e) => {
-                                e.target.onerror = null;
-                                e.target.src = `${process.env.PUBLIC_URL}/images/default-logo.png`;
-                              }}
-                            />
-                          </div>
+                          <UniversityLogo 
+                            university={university}
+                            size="sm"
+                            className="mb-1 sm:mb-2 shadow-sm"
+                            showFallback={true}
+                          />
                           <h3 className="font-bold text-center text-xs sm:text-sm leading-tight px-1">{university.university_name}</h3>
                           <p className="text-xs text-gray-600 mt-1 text-center">{university.soccer_club.league}</p>
                         </div>

@@ -1,10 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { 
-    UserCircle, 
     ChevronLeft, 
     Edit, 
     Trophy, 
-    Star, 
     Camera,
     MessageSquare, 
     BookOpen, 
@@ -16,9 +14,6 @@ import {
     Plus, 
     Download, 
     Heart,
-    ChevronUp,
-    ChevronDown,
-    Info,
     Send,
     Users
 } from 'lucide-react';
@@ -239,10 +234,6 @@ const IntegratedUniversitiesTab = ({
 
 // 選手カードタブのコンテンツ（スマホ対応修正版）
 const PlayerCardTab = ({ player, editMode }) => {
-  // 数値編集用のステート
-  const [editing, setEditing] = useState(null);
-  const [editValue, setEditValue] = useState(0);
-  
   // 日付をフォーマットする関数
   const formatDate = (dateString) => {
     const date = new Date(dateString);
