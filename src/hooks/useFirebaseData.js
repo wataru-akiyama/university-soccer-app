@@ -1,5 +1,5 @@
-// src/hooks/useFirebaseData.js - 本番向けクリーン版
-import { useState, useEffect } from 'react';
+// src/hooks/useFirebaseData.js - ESLint警告修正済み完全版
+import { useState, useEffect, useCallback } from 'react';
 
 /**
  * Firebaseから大学データを取得するカスタムフック
@@ -13,7 +13,7 @@ export const useFirebaseData = () => {
   const FIREBASE_API_URL = process.env.REACT_APP_FIREBASE_API_URL;
   const USE_API = process.env.REACT_APP_USE_API === 'true';
 
-  const fetchUniversities = async () => {
+  const fetchUniversities = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
@@ -88,20 +88,17 @@ export const useFirebaseData = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [FIREBASE_API_URL, USE_API]);
 
   useEffect(() => {
     fetchUniversities();
-  }, [FIREBASE_API_URL, USE_API]);
+  }, [fetchUniversities]);
 
   return {
     universities,
     loading,
     error,
-    refetch: () => {
-      setError(null);
-      fetchUniversities();
-    }
+    refetch: fetchUniversities
   };
 };
 

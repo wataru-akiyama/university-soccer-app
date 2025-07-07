@@ -22,11 +22,10 @@ import {
   Users, 
   Trophy, 
   Home, 
-  User, 
-  Clock, 
+  User,
   TrendingUp
 } from 'lucide-react';
-import UniversityLogo from './UniversityLogo'; // 追加
+import UniversityLogo from './UniversityLogo';
 
 const EnhancedUniversityDetails = ({ 
   university, 
@@ -383,23 +382,26 @@ const EnhancedUniversityDetails = ({
 
 // 概要タブコンポーネント - 整理済み版
 const OverviewTab = ({ university }) => {
-  // 基本データの取得（年間費用を削除）
+  // 基本データの取得（Firebase新形式対応）
   const getBasicData = () => {
+    const soccerClub = university.soccer_club || {};
+    const facilities = university.facilities || {};
+    
     return [
       {
         icon: Users,
         label: "部員数",
-        value: university?.soccer_club?.total_members || 0,
+        value: soccerClub.total_members || 0,
         unit: "名",
         iconColor: "text-blue-600"
       },
       {
         icon: Trophy,
         label: "J内定者",
-        value: university?.soccer_club?.j_league_nominees_2022_24 || 
-               ((university?.soccer_club?.j_league_nominees_2022 || 0) + 
-                (university?.soccer_club?.j_league_nominees_2023 || 0) + 
-                (university?.soccer_club?.j_league_nominees_2024 || 0)),
+        value: soccerClub.j_league_nominees_2022_24 || 
+               ((soccerClub.j_league_nominees_2022 || 0) + 
+                (soccerClub.j_league_nominees_2023 || 0) + 
+                (soccerClub.j_league_nominees_2024 || 0)),
         unit: "名",
         subtitle: "過去3年",
         iconColor: "text-yellow-600"
@@ -407,7 +409,7 @@ const OverviewTab = ({ university }) => {
       {
         icon: Home,
         label: "コート数",
-        value: university?.soccer_club?.soccer_field_count || 0,
+        value: facilities.soccer_field_count || soccerClub.soccer_field_count || 0,
         unit: "面",
         iconColor: "text-purple-600"
       }
@@ -444,30 +446,144 @@ const OverviewTab = ({ university }) => {
         </div>
       </div>
 
-      {/* 2. 監督・指導体制（監督名のみ） */}
+      {/* 2. 監督・指導体制 */}
       <div>
         <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
           <User size={18} className="text-green-600 mr-2" />
-          監督
+          監督・指導体制
         </h3>
         <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
           <div>
             <p className="text-sm text-gray-600">監督</p>
             <p className="font-medium text-gray-900 text-lg">
-              {university?.soccer_club?.coach_name || "情報なし"}
+              {university.soccer_club?.coach_name || "情報なし"}
             </p>
           </div>
         </div>
       </div>
 
-      {/* 3. 取得可能資格 */}
+      {/* 3. 施設情報（Firebase新形式対応） */}
+      <div>
+        <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+          <Building size={18} className="text-indigo-600 mr-2" />
+          施設情報
+        </h3>
+        <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <p className="text-sm text-gray-600 mb-1">グラウンド名</p>
+              <p className="font-medium text-gray-900">
+                {university.facilities?.ground_name || 
+                 university.soccer_club?.practice_location || "情報なし"}
+              </p>
+            </div>
+            <div>
+              <p className="text-sm text-gray-600 mb-1">コート数</p>
+              <p className="font-medium text-gray-900">
+                {university.facilities?.soccer_field_count || 
+                 university.soccer_club?.soccer_field_count || 0}面
+              </p>
+            </div>
+          </div>
+          
+          {/* グラウンド住所の表示 */}
+          {university.facilities?.ground_address && (
+            <div className="mt-4 pt-4 border-t border-gray-200">
+              <p className="text-sm text-gray-600 mb-1">所在地</p>
+              <p className="text-gray-700 text-sm">{university.facilities.ground_address}</p>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* 4. 寮情報（Firebase新形式対応） */}
+      <div>
+        <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+          <Home size={18} className="text-purple-600 mr-2" />
+          寮情報
+        </h3>
+        <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
+          {university.soccer_club?.dorm_details ? (
+            // 新形式：詳細な寮情報
+            <div className="space-y-3">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <div className="flex items-center space-x-2">
+                  {university.soccer_club.dorm_details.university_dorm ? (
+                    <>
+                      <Check size={16} className="text-green-600" />
+                      <span className="text-gray-700 text-sm">大学寮</span>
+                    </>
+                  ) : (
+                    <>
+                      <X size={16} className="text-red-500" />
+                      <span className="text-gray-500 text-sm">大学寮なし</span>
+                    </>
+                  )}
+                </div>
+                
+                <div className="flex items-center space-x-2">
+                  {university.soccer_club.dorm_details.soccer_club_dorm ? (
+                    <>
+                      <Check size={16} className="text-green-600" />
+                      <span className="text-gray-700 text-sm">サッカー部寮</span>
+                    </>
+                  ) : (
+                    <>
+                      <X size={16} className="text-red-500" />
+                      <span className="text-gray-500 text-sm">サッカー部寮なし</span>
+                    </>
+                  )}
+                </div>
+                
+                <div className="flex items-center space-x-2">
+                  {university.soccer_club.dorm_details.general_dorm ? (
+                    <>
+                      <Check size={16} className="text-green-600" />
+                      <span className="text-gray-700 text-sm">部員寮</span>
+                    </>
+                  ) : (
+                    <>
+                      <X size={16} className="text-red-500" />
+                      <span className="text-gray-500 text-sm">部員寮なし</span>
+                    </>
+                  )}
+                </div>
+              </div>
+              
+              {university.soccer_club.dorm_details.dorm_notes && (
+                <div className="mt-3 pt-3 border-t border-gray-200">
+                  <p className="text-sm text-gray-600 mb-1">寮について</p>
+                  <p className="text-gray-700 text-sm">{university.soccer_club.dorm_details.dorm_notes}</p>
+                </div>
+              )}
+            </div>
+          ) : (
+            // 旧形式：基本的な寮情報
+            <div className="flex items-center space-x-3">
+              {university.soccer_club?.dorm_available ? (
+                <>
+                  <Check size={20} className="text-green-600" />
+                  <span className="text-gray-700 font-medium">寮あり</span>
+                </>
+              ) : (
+                <>
+                  <X size={20} className="text-red-500" />
+                  <span className="text-gray-700 font-medium">寮なし</span>
+                </>
+              )}
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* 5. 取得可能資格 */}
       <div>
         <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
           <BookOpen size={18} className="text-indigo-600 mr-2" />
           取得可能資格
         </h3>
         <div className="flex flex-wrap gap-2">
-          {university?.soccer_club?.qualifications && university.soccer_club.qualifications.length > 0 ? (
+          {university.soccer_club?.qualifications && university.soccer_club.qualifications.length > 0 ? (
             university.soccer_club.qualifications.map((qualification, index) => (
               <span key={index} className="bg-gray-100 text-gray-700 px-3 py-2 rounded-lg text-sm border border-gray-200">
                 {qualification}
@@ -481,6 +597,7 @@ const OverviewTab = ({ university }) => {
     </div>
   );
 };
+
 // 入部条件タブコンポーネント
 const AdmissionTab = ({ university }) => (
   <div className="space-y-8">
@@ -675,21 +792,24 @@ const CostsTab = ({ university }) => {
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div>
               <div className="text-sm text-gray-600 mb-1">授業料</div>
-              <div className="text-2xl font-bold text-gray-900">
+              <div className="text-lg font-semibold text-gray-900">
                 {((costs.university_costs?.annual_tuition || 1200000) / 10000).toFixed(0)}万円
               </div>
+              <div className="text-xs text-gray-500 mt-1">年額</div>
             </div>
             <div>
               <div className="text-sm text-gray-600 mb-1">入学金</div>
-              <div className="text-2xl font-bold text-gray-900">
+              <div className="text-lg font-semibold text-gray-900">
                 {((costs.university_costs?.entrance_fee || 300000) / 10000).toFixed(0)}万円
               </div>
+              <div className="text-xs text-gray-500 mt-1">入学時のみ</div>
             </div>
             <div>
               <div className="text-sm text-gray-600 mb-1">施設費</div>
-              <div className="text-2xl font-bold text-gray-900">
+              <div className="text-lg font-semibold text-gray-900">
                 {((costs.university_costs?.facility_fee || 150000) / 10000).toFixed(0)}万円
               </div>
+              <div className="text-xs text-gray-500 mt-1">年額</div>
             </div>
           </div>
         </div>
@@ -707,18 +827,19 @@ const CostsTab = ({ university }) => {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <div className="text-sm text-gray-600 mb-1">部費</div>
-                <div className="text-xl font-bold text-gray-900">
+                <div className="text-lg font-semibold text-gray-900">
                   月額{((costs.soccer_club_costs?.monthly_club_fee || 15000) / 10000).toFixed(1)}万円
                 </div>
                 <div className="text-xs text-gray-500 mt-1">年額約{(((costs.soccer_club_costs?.monthly_club_fee || 15000) * 12) / 10000).toFixed(0)}万円</div>
               </div>
-              <div className="flex items-center">
-                <Target size={20} className="text-blue-600 mr-3 flex-shrink-0" />
+              <div className="flex items-start">
+                <Target size={16} className="text-blue-600 mr-3 flex-shrink-0 mt-1" />
                 <div>
                   <div className="text-sm text-gray-600 mb-1">チームウェア代</div>
-                  <div className="text-xl font-bold text-gray-900">
+                  <div className="text-lg font-semibold text-gray-900">
                     年{((costs.soccer_club_costs?.equipment_cost || 80000) / 10000).toFixed(0)}万円
                   </div>
+                  <div className="text-xs text-gray-500 mt-1">ユニフォーム・練習着等</div>
                 </div>
               </div>
             </div>
@@ -726,9 +847,14 @@ const CostsTab = ({ university }) => {
             {/* 合宿・遠征費 */}
             <div className="pt-4 border-t border-gray-200">
               <div className="flex items-start mb-3">
-                <MapPin size={20} className="text-purple-600 mr-3 flex-shrink-0 mt-0.5" />
+                <MapPin size={16} className="text-purple-600 mr-3 flex-shrink-0 mt-1" />
                 <div className="flex-1">
-                  <h4 className="font-semibold text-gray-900 mb-2">合宿・遠征費</h4>
+                  <h4 className="font-medium text-gray-900 mb-2 flex items-center">
+                    合宿・遠征費
+                    <span className="ml-2 text-base font-semibold text-purple-700">
+                      年約{((costs.soccer_club_costs?.camp_cost || 200000) / 10000).toFixed(0)}万円
+                    </span>
+                  </h4>
                   <p className="text-gray-700 text-sm leading-relaxed">
                     {costs.soccer_club_costs?.camp_travel_description || 
                      "年3回の合宿（春季・夏季・冬季）と関東リーグ戦での遠征があります。合宿費用は1回あたり約8-10万円、遠征費は月2-3回程度で交通費・宿泊費込みで年間約15万円程度を想定してください。"}
@@ -740,7 +866,29 @@ const CostsTab = ({ university }) => {
         </div>
       </div>
 
-      {/* 3. 注意事項 */}
+      {/* 3. 奨学金・支援制度 */}
+      {university.soccer_club?.sports_scholarship && (
+        <div>
+          <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+            <Star size={18} className="text-yellow-600 mr-2" />
+            奨学金・支援制度
+          </h3>
+          <div className="bg-yellow-50 p-4 rounded-lg border border-yellow-200">
+            <div className="flex items-start">
+              <Star size={20} className="text-yellow-600 mr-3 flex-shrink-0 mt-0.5" />
+              <div>
+                <h4 className="font-medium text-yellow-800 mb-2">スポーツ奨学金制度あり</h4>
+                <p className="text-yellow-700 text-sm leading-relaxed">
+                  {university.extended_data?.scholarship_details || 
+                   "スポーツ奨学金制度を設けています。詳細については大学へお問い合わせください。実力や実績に応じて、授業料の一部または全額免除の可能性があります。"}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 4. 注意事項 */}
       <div className="bg-blue-50 p-4 rounded-lg border-l-4 border-blue-500">
         <h4 className="font-semibold text-gray-900 mb-2">ご注意</h4>
         <ul className="text-sm text-gray-700 space-y-1">
@@ -756,211 +904,389 @@ const CostsTab = ({ university }) => {
 };
 
 // 施設・環境タブコンポーネント
-const FacilitiesTab = ({ university }) => (
-  <div className="space-y-8">
-    {/* 1. 練習施設 */}
-    <div>
-      <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
-        <Building size={18} className="text-green-600 mr-2" />
-        練習施設
-      </h3>
-      <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
-        <div className="space-y-4">
-          {/* 基本情報 */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
-              <p className="text-sm text-gray-600 mb-1">練習場所</p>
-              <p className="font-medium text-gray-900 flex items-center">
-                <MapPin size={16} className="text-blue-600 mr-2" />
-                {university.soccer_club?.practice_location || "情報なし"}
-              </p>
+const FacilitiesTab = ({ university }) => {
+  // Firebase新形式の施設データを取得
+  const facilities = university.facilities || {};
+  const soccerClub = university.soccer_club || {};
+  
+  return (
+    <div className="space-y-8">
+      {/* 1. グラウンド・練習施設 */}
+      <div>
+        <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+          <Building size={18} className="text-green-600 mr-2" />
+          グラウンド・練習施設
+        </h3>
+        <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
+          <div className="space-y-4">
+            {/* 基本情報 */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <p className="text-sm text-gray-600 mb-1">グラウンド名</p>
+                <p className="font-medium text-gray-900 flex items-center">
+                  <MapPin size={16} className="text-blue-600 mr-2" />
+                  {facilities.ground_name || soccerClub.practice_location || "情報なし"}
+                </p>
+              </div>
+              <div>
+                <p className="text-sm text-gray-600 mb-1">サッカーコート数</p>
+                <p className="font-medium text-gray-900">
+                  {facilities.soccer_field_count || soccerClub.soccer_field_count || 0}面
+                </p>
+              </div>
             </div>
-            <div>
-              <p className="text-sm text-gray-600 mb-1">サッカーコート数</p>
-              <p className="font-medium text-gray-900">
-                {university.soccer_club?.soccer_field_count || 0}面
-              </p>
-            </div>
-          </div>
-          
-          {/* 施設詳細 */}
-          {university.soccer_club?.facility_note && (
-            <div>
-              <p className="text-sm text-gray-600 mb-2">施設詳細</p>
-              <p className="text-gray-700 text-sm leading-relaxed">
-                {university.soccer_club.facility_note}
-              </p>
-            </div>
-          )}
-        </div>
-      </div>
-    </div>
-
-    {/* 2. 寮について */}
-    <div>
-      <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
-        <Home size={18} className="text-purple-600 mr-2" />
-        寮について
-      </h3>
-      <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
-        <div className="space-y-4">
-          {/* 寮の有無 */}
-          <div className="flex items-center space-x-3">
-            {university.soccer_club?.dorm_available ? (
-              <>
-                <Check size={20} className="text-green-600" />
-                <span className="text-gray-700 font-medium">寮あり</span>
-              </>
-            ) : (
-              <>
-                <X size={20} className="text-red-500" />
-                <span className="text-gray-700 font-medium">寮なし</span>
-              </>
+            
+            {/* グラウンド住所 */}
+            {facilities.ground_address && (
+              <div>
+                <p className="text-sm text-gray-600 mb-1">グラウンド住所</p>
+                <p className="text-gray-700 text-sm leading-relaxed">
+                  {facilities.ground_address}
+                </p>
+              </div>
+            )}
+            
+            {/* グラウンド特記事項 */}
+            {facilities.ground_notes && (
+              <div>
+                <p className="text-sm text-gray-600 mb-2">グラウンド特記事項</p>
+                <p className="text-gray-700 text-sm leading-relaxed">
+                  {facilities.ground_notes}
+                </p>
+              </div>
+            )}
+            
+            {/* 施設特記事項（旧形式フォールバック） */}
+            {facilities.facility_note && (
+              <div>
+                <p className="text-sm text-gray-600 mb-2">施設特記事項</p>
+                <p className="text-gray-700 text-sm leading-relaxed">
+                  {facilities.facility_note}
+                </p>
+              </div>
             )}
           </div>
-          
-          {/* 寮の詳細 */}
-          {university.soccer_club?.dorm_available && university.extended_data?.dorm_features && (
-            <div>
-              <p className="text-sm text-gray-600 mb-2">寮の特徴・詳細</p>
-              <p className="text-gray-700 text-sm leading-relaxed">
-                {university.extended_data.dorm_features}
-              </p>
-            </div>
-          )}
-          
-          {/* 寮がない場合の説明 */}
-          {!university.soccer_club?.dorm_available && (
-            <div>
-              <p className="text-gray-600 text-sm">
-                部員寮はありませんが、大学近辺には学生向けアパートや下宿が充実しています。
-                住環境についてはサッカー部または学生課にお問い合わせください。
-              </p>
-            </div>
-          )}
         </div>
       </div>
-    </div>
 
-    {/* 3. 注意事項 */}
-    <div className="bg-blue-50 p-4 rounded-lg border-l-4 border-blue-500">
-      <h4 className="font-semibold text-gray-900 mb-2">ご注意</h4>
-      <ul className="text-sm text-gray-700 space-y-1">
-        <li>• 施設の利用時間や利用条件は変更される場合があります</li>
-        <li>• 寮の入居条件や費用については直接お問い合わせください</li>
-        <li>• 練習施設の詳細や見学については事前にご連絡ください</li>
-        <li>• 天候等により練習場所が変更される場合があります</li>
-      </ul>
+      {/* 2. 寮について - Firebase新形式対応 */}
+      <div>
+        <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+          <Home size={18} className="text-purple-600 mr-2" />
+          寮について
+        </h3>
+        <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
+          <div className="space-y-4">
+            {/* 寮の有無 - 詳細表示 */}
+            <div className="space-y-3">
+              {soccerClub.dorm_details ? (
+                <>
+                  {/* 新形式：詳細な寮情報 */}
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <div className="flex items-center space-x-2">
+                      {soccerClub.dorm_details.university_dorm ? (
+                        <>
+                          <Check size={16} className="text-green-600" />
+                          <span className="text-gray-700 text-sm font-medium">大学寮あり</span>
+                        </>
+                      ) : (
+                        <>
+                          <X size={16} className="text-red-500" />
+                          <span className="text-gray-500 text-sm">大学寮なし</span>
+                        </>
+                      )}
+                    </div>
+                    
+                    <div className="flex items-center space-x-2">
+                      {soccerClub.dorm_details.soccer_club_dorm ? (
+                        <>
+                          <Check size={16} className="text-green-600" />
+                          <span className="text-gray-700 text-sm font-medium">サッカー部寮あり</span>
+                        </>
+                      ) : (
+                        <>
+                          <X size={16} className="text-red-500" />
+                          <span className="text-gray-500 text-sm">サッカー部寮なし</span>
+                        </>
+                      )}
+                    </div>
+                    
+                    <div className="flex items-center space-x-2">
+                      {soccerClub.dorm_details.general_dorm ? (
+                        <>
+                          <Check size={16} className="text-green-600" />
+                          <span className="text-gray-700 text-sm font-medium">部員寮あり</span>
+                        </>
+                      ) : (
+                        <>
+                          <X size={16} className="text-red-500" />
+                          <span className="text-gray-500 text-sm">部員寮なし</span>
+                        </>
+                      )}
+                    </div>
+                  </div>
+                  
+                  {/* 寮特記事項 */}
+                  {soccerClub.dorm_details.dorm_notes && (
+                    <div className="mt-4 pt-4 border-t border-gray-200">
+                      <p className="text-sm text-gray-600 mb-2">寮特記事項</p>
+                      <p className="text-gray-700 text-sm leading-relaxed">
+                        {soccerClub.dorm_details.dorm_notes}
+                      </p>
+                    </div>
+                  )}
+                </>
+              ) : (
+                <>
+                  {/* 旧形式：基本的な寮情報 */}
+                  <div className="flex items-center space-x-3">
+                    {soccerClub.dorm_available ? (
+                      <>
+                        <Check size={20} className="text-green-600" />
+                        <span className="text-gray-700 font-medium">寮あり</span>
+                      </>
+                    ) : (
+                      <>
+                        <X size={20} className="text-red-500" />
+                        <span className="text-gray-700 font-medium">寮なし</span>
+                      </>
+                    )}
+                  </div>
+                </>
+              )}
+            </div>
+            
+            {/* 寮がない場合の説明 */}
+            {!soccerClub.dorm_available && !soccerClub.dorm_details?.university_dorm && 
+             !soccerClub.dorm_details?.soccer_club_dorm && !soccerClub.dorm_details?.general_dorm && (
+              <div>
+                <p className="text-gray-600 text-sm">
+                  部員寮はありませんが、大学近辺には学生向けアパートや下宿が充実しています。
+                  住環境についてはサッカー部または学生課にお問い合わせください。
+                </p>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* 3. その他の施設情報 */}
+      {(facilities.ground_name || facilities.ground_address || facilities.ground_notes) && (
+        <div>
+          <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+            <Info size={18} className="text-blue-600 mr-2" />
+            アクセス・その他
+          </h3>
+          <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
+            <div className="space-y-3">
+              {facilities.ground_address && (
+                <div>
+                  <p className="text-sm text-gray-600 mb-1">アクセス</p>
+                  <p className="text-gray-700 text-sm">
+                    最寄り駅や交通アクセスについては、大学公式サイトまたはサッカー部にお問い合わせください。
+                  </p>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 4. 注意事項 */}
+      <div className="bg-blue-50 p-4 rounded-lg border-l-4 border-blue-500">
+        <h4 className="font-semibold text-gray-900 mb-2">ご注意</h4>
+        <ul className="text-sm text-gray-700 space-y-1">
+          <li>• 施設の利用時間や利用条件は変更される場合があります</li>
+          <li>• 寮の入居条件や費用については直接お問い合わせください</li>
+          <li>• 練習施設の詳細や見学については事前にご連絡ください</li>
+          <li>• 天候等により練習場所が変更される場合があります</li>
+          <li>• グラウンドの住所や詳細なアクセス方法は大学またはサッカー部にお問い合わせください</li>
+        </ul>
+      </div>
     </div>
-  </div>
-);
+  );
+};
 
 // 進路・将来性タブコンポーネント
-const CareersTab = ({ university }) => (
-  <div className="space-y-8">
-    {/* 1. 大学全体の卒業後の進路 */}
-    <div>
-      <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
-        <GraduationCap size={18} className="text-blue-600 mr-2" />
-        大学全体の卒業後の進路
-      </h3>
-      <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
-        <div className="space-y-3">
-          <p className="text-sm text-gray-600 mb-3">主な進路先</p>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-            {university.career_paths?.university_general?.map((path, index) => (
-              <div key={index} className="flex items-center py-2">
-                <div className="w-2 h-2 bg-blue-500 rounded-full mr-3 flex-shrink-0"></div>
-                <span className="text-gray-700 text-sm">{path}</span>
+const CareersTab = ({ university }) => {
+  // Firebase新形式の進路データを取得
+  const careerInfo = university.career_info || {};
+  const careerSupport = university.career_support || {};
+  
+  return (
+    <div className="space-y-8">
+      {/* 1. 大学全体の卒業後の進路 */}
+      <div>
+        <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+          <GraduationCap size={18} className="text-blue-600 mr-2" />
+          大学全体の卒業後の進路
+        </h3>
+        <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
+          <div className="space-y-3">
+            <p className="text-sm text-gray-600 mb-3">主な進路先</p>
+            
+            {/* Firebase新形式: university_career_paths */}
+            {careerInfo.university_career_paths ? (
+              <div className="mb-4">
+                <p className="text-gray-700 text-sm leading-relaxed">
+                  {careerInfo.university_career_paths}
+                </p>
               </div>
-            )) || (
-              // デフォルトの進路先
-              [
-                "一般企業（金融・商社・メーカー等）",
-                "公務員（国家・地方）",
-                "教員（中学・高校）",
-                "大学院進学",
-                "起業・独立",
-                "その他"
-              ].map((path, index) => (
-                <div key={index} className="flex items-center py-2">
-                  <div className="w-2 h-2 bg-blue-500 rounded-full mr-3 flex-shrink-0"></div>
-                  <span className="text-gray-700 text-sm">{path}</span>
-                </div>
-              ))
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                {/* デフォルトの進路先 */}
+                {[
+                  "一般企業（金融・商社・メーカー等）",
+                  "公務員（国家・地方）",
+                  "教員（中学・高校）",
+                  "大学院進学",
+                  "起業・独立",
+                  "その他"
+                ].map((path, index) => (
+                  <div key={index} className="flex items-center py-2">
+                    <div className="w-2 h-2 bg-blue-500 rounded-full mr-3 flex-shrink-0"></div>
+                    <span className="text-gray-700 text-sm">{path}</span>
+                  </div>
+                ))}
+              </div>
+            )}
+            
+            {/* 大学のキャリアサポート */}
+            {careerSupport.university_support && (
+              <div className="mt-4 pt-4 border-t border-gray-200">
+                <p className="text-sm text-gray-600 mb-2">キャリアサポート</p>
+                <p className="text-gray-700 text-sm leading-relaxed">
+                  {careerSupport.university_support}
+                </p>
+              </div>
             )}
           </div>
-          
-          {university.career_support?.university_support && (
-            <div className="mt-4 pt-4 border-t border-gray-200">
-              <p className="text-sm text-gray-600 mb-2">キャリアサポート</p>
-              <p className="text-gray-700 text-sm leading-relaxed">
-                {university.career_support.university_support}
-              </p>
-            </div>
-          )}
         </div>
       </div>
-    </div>
 
-    {/* 2. サッカー部の卒業後の進路 */}
-    <div>
-      <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
-        <Users size={18} className="text-green-600 mr-2" />
-        サッカー部の卒業後の進路
-      </h3>
-      <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
-        <div className="space-y-3">
-          <p className="text-sm text-gray-600 mb-3">主な進路先</p>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-            {university.career_paths?.soccer_club?.map((path, index) => (
-              <div key={index} className="flex items-center py-2">
-                <div className="w-2 h-2 bg-green-500 rounded-full mr-3 flex-shrink-0"></div>
-                <span className="text-gray-700 text-sm">{path}</span>
+      {/* 2. サッカー部の卒業後の進路 */}
+      <div>
+        <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+          <Users size={18} className="text-green-600 mr-2" />
+          サッカー部の卒業後の進路
+        </h3>
+        <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
+          <div className="space-y-3">
+            <p className="text-sm text-gray-600 mb-3">主な進路先</p>
+            
+            {/* Firebase新形式: soccer_club_career_paths */}
+            {careerInfo.soccer_club_career_paths ? (
+              <div className="mb-4">
+                <p className="text-gray-700 text-sm leading-relaxed">
+                  {careerInfo.soccer_club_career_paths}
+                </p>
               </div>
-            )) || (
-              // デフォルトの進路先
-              [
-                "指導者（コーチ・監督）",
-                "教員（保健体育）",
-                "一般企業（営業・企画等）",
-                "Jリーグ関連（クラブ職員・審判等）",
-                "社会人チーム",
-                "スポーツ関連企業",
-                "その他"
-              ].map((path, index) => (
-                <div key={index} className="flex items-center py-2">
-                  <div className="w-2 h-2 bg-green-500 rounded-full mr-3 flex-shrink-0"></div>
-                  <span className="text-gray-700 text-sm">{path}</span>
-                </div>
-              ))
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                {/* デフォルトの進路先 */}
+                {[
+                  "指導者（コーチ・監督）",
+                  "教員（保健体育）",
+                  "一般企業（営業・企画等）",
+                  "Jリーグ関連（クラブ職員・審判等）",
+                  "社会人チーム",
+                  "スポーツ関連企業",
+                  "その他"
+                ].map((path, index) => (
+                  <div key={index} className="flex items-center py-2">
+                    <div className="w-2 h-2 bg-green-500 rounded-full mr-3 flex-shrink-0"></div>
+                    <span className="text-gray-700 text-sm">{path}</span>
+                  </div>
+                ))}
+              </div>
+            )}
+            
+            {/* サッカー部独自のサポート */}
+            {careerSupport.soccer_club_support && (
+              <div className="mt-4 pt-4 border-t border-gray-200">
+                <p className="text-sm text-gray-600 mb-2">部独自のサポート</p>
+                <p className="text-gray-700 text-sm leading-relaxed">
+                  {careerSupport.soccer_club_support}
+                </p>
+              </div>
             )}
           </div>
-          
-          {university.career_support?.soccer_club_support && (
-            <div className="mt-4 pt-4 border-t border-gray-200">
-              <p className="text-sm text-gray-600 mb-2">部独自のサポート</p>
-              <p className="text-gray-700 text-sm leading-relaxed">
-                {university.career_support.soccer_club_support}
-              </p>
-            </div>
-          )}
         </div>
       </div>
-    </div>
 
-    {/* 3. 注意事項 */}
-    <div className="bg-blue-50 p-4 rounded-lg border-l-4 border-blue-500">
-      <h4 className="font-semibold text-gray-900 mb-2">ご注意</h4>
-      <ul className="text-sm text-gray-700 space-y-1">
-        <li>• 進路情報は過去の実績に基づく参考情報です</li>
-        <li>• 年度により進路先の傾向は変動する可能性があります</li>
-        <li>• 詳細な進路状況は大学キャリアセンターにお問い合わせください</li>
-        <li>• サッカー部独自の進路支援については部へ直接お問い合わせください</li>
-      </ul>
+      {/* 3. Firebase新形式: 進路データ（percentage情報） */}
+      {careerInfo.career_paths && Array.isArray(careerInfo.career_paths) && careerInfo.career_paths.length > 0 && (
+        <div>
+          <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+            <TrendingUp size={18} className="text-purple-600 mr-2" />
+            進路統計
+          </h3>
+          <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
+            <div className="space-y-3">
+              <p className="text-sm text-gray-600 mb-3">進路別の割合</p>
+              <div className="space-y-3">
+                {careerInfo.career_paths.map((path, index) => (
+                  <div key={index} className="flex justify-between items-center">
+                    <span className="text-gray-700 text-sm font-medium">{path.category}</span>
+                    <div className="flex items-center space-x-3">
+                      <div className="w-20 bg-gray-200 rounded-full h-2">
+                        <div 
+                          className="bg-green-600 h-2 rounded-full transition-all duration-300"
+                          style={{ width: `${path.percentage}%` }}
+                        ></div>
+                      </div>
+                      <span className="text-gray-900 font-medium text-sm min-w-[40px] text-right">
+                        {path.percentage}%
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 4. J内定実績と進路の関連性 */}
+      {university.soccer_club?.j_league_nominees_2022_24 > 0 && (
+        <div>
+          <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+            <Trophy size={18} className="text-yellow-600 mr-2" />
+            プロ志向者向け情報
+          </h3>
+          <div className="bg-yellow-50 p-4 rounded-lg border border-yellow-200">
+            <div className="space-y-3">
+              <div className="flex items-center space-x-3 mb-3">
+                <Trophy size={20} className="text-yellow-600" />
+                <span className="font-semibold text-yellow-800">
+                  過去3年でJリーグ内定者 {university.soccer_club.j_league_nominees_2022_24}名
+                </span>
+              </div>
+              
+              <div className="text-sm text-yellow-700 space-y-2">
+                <p>• この大学はプロ選手輩出の実績があります</p>
+                <p>• プロを目指す環境やサポート体制が期待できます</p>
+                <p>• OB・OGのネットワークがプロ志向者に有利に働く可能性があります</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 5. 注意事項 */}
+      <div className="bg-blue-50 p-4 rounded-lg border-l-4 border-blue-500">
+        <h4 className="font-semibold text-gray-900 mb-2">ご注意</h4>
+        <ul className="text-sm text-gray-700 space-y-1">
+          <li>• 進路情報は過去の実績に基づく参考情報です</li>
+          <li>• 年度により進路先の傾向は変動する可能性があります</li>
+          <li>• 詳細な進路状況は大学キャリアセンターにお問い合わせください</li>
+          <li>• サッカー部独自の進路支援については部へ直接お問い合わせください</li>
+          <li>• 個別の進路相談については、大学説明会やオープンキャンパスをご利用ください</li>
+        </ul>
+      </div>
     </div>
-  </div>
-);
+  );
+};
 
 // 口コミ・評判タブコンポーネント
 const ReviewsTab = ({ university }) => {
