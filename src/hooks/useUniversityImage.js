@@ -26,22 +26,22 @@ export const useUniversityImage = (university) => {
       try {
         // 画像ソースの優先順位
         const imageSources = [
-          // 1. Firebaseデータに直接logo_urlが含まれている場合
-          university.logo_url,
-          
-          // 2. Firebase Storage（PNG形式）
-          `${process.env.REACT_APP_FIREBASE_STORAGE_URL}/logos%2F${university.id}.png?alt=media`,
-          
-          // 3. Firebase Storage（JPG形式）
-          `${process.env.REACT_APP_FIREBASE_STORAGE_URL}/logos%2F${university.id}.jpg?alt=media`,
-          
-          // 4. ローカルの画像フォルダ（開発用）
-          `/images/logos/${university.id}.png`,
-          `/images/logos/${university.id}.jpg`,
-          
-          // 5. 汎用フォールバック画像
-          `${process.env.PUBLIC_URL}/images/default-logo.png`
-        ].filter(Boolean); // nullやundefinedを除外
+            // 1. Firebaseデータに直接logo_urlが含まれている場合（最優先）
+            university.logo_url,
+            
+            // 2. Firebase Storage（PNG形式）
+            `${process.env.REACT_APP_FIREBASE_STORAGE_URL}/logos%2F${university.id}.png?alt=media`,
+            
+            // 3. Firebase Storage（JPG形式）  
+            `${process.env.REACT_APP_FIREBASE_STORAGE_URL}/logos%2F${university.id}.jpg?alt=media`,
+            
+            // 4. 汎用フォールバック画像
+            `${process.env.PUBLIC_URL}/images/default-logo.png`,
+            
+            // 5. ローカルの画像フォルダ（開発用）- 最後に試行
+            `/images/logos/${university.id}.png`,
+            `/images/logos/${university.id}.jpg`
+        ].filter(Boolean);
 
         // 修正: HEADリクエストを使わず、直接Image要素で確認
         for (const source of imageSources) {
