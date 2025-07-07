@@ -1,0 +1,42 @@
+# .github/workflows/deploy.yml
+name: Deploy React App to GitHub Pages
+
+on:
+  push:
+    branches: [ main ]  # main ブランチにプッシュされた時に実行
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+        
+    - name: Install dependencies
+      run: npm ci
+      
+    - name: Build project
+      run: npm run build
+      env:
+        # GitHub Secrets から環境変数を設定
+        REACT_APP_FIREBASE_STORAGE_URL: ${{ secrets.REACT_APP_FIREBASE_STORAGE_URL }}
+        REACT_APP_FIREBASE_API_URL: ${{ secrets.REACT_APP_FIREBASE_API_URL }}
+        REACT_APP_USE_API: true
+        REACT_APP_DEBUG_MODE: false
+        PUBLIC_URL: /university-soccer-app
+        
+    - name: Deploy to GitHub Pages
+      uses: peaceiris/actions-gh-pages@v3
+      if: github.ref == 'refs/heads/main'
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: ./build
