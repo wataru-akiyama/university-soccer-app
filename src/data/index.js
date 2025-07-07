@@ -222,19 +222,22 @@ export const searchHelpers = {
     "北海道": ["北海道"]
   },
   
-  // 地域による大学フィルタリング
+  // 地域による大学フィルタリング（Firebase新形式対応）
   isUniversityInRegion: (university, region) => {
     if (!university || !region) return false;
     
+    // Firebase新形式: area と location での直接マッチング
     if (university.area === region || university.location === region) {
       return true;
     }
     
-    const league = university.soccer_club?.league || university.category;
+    // リーグから地域を判定（Firebase新形式対応）
+    const league = university.soccer_club?.league; // categoryは使用しない
     if (league && leagueRegionMapping[league] === region) {
       return true;
     }
     
+    // 地域グループでの判定
     for (const [groupName, regions] of Object.entries(regionGroups)) {
       if (groupName === region && regions.includes(university.area)) {
         return true;
@@ -244,30 +247,38 @@ export const searchHelpers = {
     return false;
   },
   
-  // リーグによる大学フィルタリング
+  // リーグによる大学フィルタリング（Firebase新形式対応）
   isUniversityInLeague: (university, league) => {
     if (!university || !league) return false;
     
-    const universityLeague = (university.soccer_club?.league || university.category || '').trim();
+    const universityLeague = (university.soccer_club?.league || '').trim(); // categoryは使用しない
     return universityLeague === league.trim();
   },
   
-  // 学力ランクによる大学フィルタリング
+  // 学力ランクによる大学フィルタリング（Firebase新形式対応）
   isUniversityInAcademicRank: (university, rank) => {
     if (!university || !rank) return false;
-    return university.academic_rank === rank;
+    return university.academic_rank === rank; // 新形式のみ
   },
   
-  // 志向性による大学フィルタリング
+  // 志向性による大学フィルタリング（Firebase新形式対応）
   hasPlayerAspiration: (university, aspiration) => {
     if (!university || !aspiration) return false;
+    
+    // Firebase新形式: genres配列をチェック
+    if (university.genres && Array.isArray(university.genres)) {
+      return university.genres.includes(aspiration);
+    }
+    
+    // 旧形式フォールバック
     return university.genre1 === aspiration || university.genre2 === aspiration;
   },
   
-  // 国公立大学の判定
+  // 国公立大学の判定（Firebase新形式対応）
   isPublicUniversity: (university) => {
     if (!university) return false;
     
+    // Firebase新形式: academic_rankでの判定を優先
     if (university.academic_rank === 'F：国公立') {
       return true;
     }

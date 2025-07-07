@@ -90,15 +90,17 @@ const EnhancedUniversityDetails = ({
     return rank.split('：')[0];
   };
 
-  // 志向性の取得
+  // 志向性の取得（Firebase新形式対応）
   const getGenres = () => {
+    // Firebase新形式: genres配列を優先
     if (university.genres && Array.isArray(university.genres) && university.genres.length > 0) {
-      return university.genres;
+      return university.genres.filter(genre => genre && genre.trim() !== '');
     }
     
+    // 旧形式フォールバック（互換性のため）
     const genres = [];
-    if (university.genre1) genres.push(university.genre1);
-    if (university.genre2) genres.push(university.genre2);
+    if (university.genre1 && university.genre1.trim()) genres.push(university.genre1);
+    if (university.genre2 && university.genre2.trim()) genres.push(university.genre2);
     
     return genres;
   };

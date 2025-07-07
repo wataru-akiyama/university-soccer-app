@@ -1,7 +1,8 @@
-// src/components/SimpleUniversityCard.jsx - UniversityLogo完全対応版
+// src/components/SimpleUniversityCard.jsx - Firebase新形式対応版（志向性表示部分の修正）
+
 import React from 'react';
 import { Heart, Plus, Check, MapPin, ChevronUp, ChevronDown, X, Info, Star, Target } from 'lucide-react';
-import UniversityLogo from './UniversityLogo'; // 大学ロゴコンポーネントをインポート
+import UniversityLogo from './UniversityLogo';
 
 const SimpleUniversityCard = ({ 
   university, 
@@ -23,8 +24,8 @@ const SimpleUniversityCard = ({
 }) => {
   // リーグバッジの色分け
   const getLeagueColor = (league) => {
-    if (league.includes('1部')) return 'bg-green-100 text-green-800 border-green-200';
-    if (league.includes('2部')) return 'bg-blue-100 text-blue-800 border-blue-200';
+    if (league?.includes('1部')) return 'bg-green-100 text-green-800 border-green-200';
+    if (league?.includes('2部')) return 'bg-blue-100 text-blue-800 border-blue-200';
     return 'bg-gray-100 text-gray-800 border-gray-200';
   };
 
@@ -81,19 +82,30 @@ const SimpleUniversityCard = ({
            "この大学の詳細な評価情報は準備中です。";
   };
 
-  // 志向性の取得
+  // 志向性の取得（Firebase新形式対応）
   const getGenres = () => {
-    // genres配列がある場合
+    // Firebase新形式: genres配列を優先
     if (university.genres && Array.isArray(university.genres) && university.genres.length > 0) {
-      return university.genres;
+      return university.genres.filter(genre => genre && genre.trim() !== '');
     }
     
-    // genre1, genre2の個別フィールドがある場合
+    // 旧形式フォールバック（互換性のため）
     const genres = [];
-    if (university.genre1) genres.push(university.genre1);
-    if (university.genre2) genres.push(university.genre2);
+    if (university.genre1 && university.genre1.trim()) genres.push(university.genre1);
+    if (university.genre2 && university.genre2.trim()) genres.push(university.genre2);
     
     return genres;
+  };
+
+  // 練習場所の取得（Firebase新形式対応）
+  const getPracticeLocation = () => {
+    // Firebase新形式: facilities.ground_name を優先
+    if (university.facilities?.ground_name) {
+      return university.facilities.ground_name;
+    }
+    
+    // フォールバック
+    return university.soccer_club?.practice_location || '';
   };
   
   const handleFavoriteClick = (e) => {
@@ -129,9 +141,10 @@ const SimpleUniversityCard = ({
     onRemoveFromPortfolio && onRemoveFromPortfolio(university.id);
   };
 
+  // データ取得
   const genres = getGenres();
   const academicRank = university.academic_rank || '';
-  const practiceLocation = university.soccer_club?.practice_location || '';
+  const practiceLocation = getPracticeLocation();
   const playmakerComment = getPlaymakerComment();
   
   return (
@@ -197,7 +210,7 @@ const SimpleUniversityCard = ({
       {/* カードヘッダー - 大学名とバッジ */}
       <div className="p-3 sm:p-4 border-b border-gray-100 bg-gradient-to-r from-gray-50 to-white">
         <div className="flex">
-          {/* 大学ロゴ - 新しいUniversityLogoコンポーネントを使用 */}
+          {/* 大学ロゴ */}
           <UniversityLogo 
             university={university}
             size="md"
@@ -224,7 +237,8 @@ const SimpleUniversityCard = ({
               {practiceLocation && (
                 <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs bg-gray-100 text-gray-700 border border-gray-200">
                   <MapPin size={10} className="mr-1" />
-                  {practiceLocation}
+                  <span className="hidden sm:inline">{practiceLocation}</span>
+                  <span className="sm:hidden">{practiceLocation.length > 8 ? practiceLocation.substring(0, 8) + '...' : practiceLocation}</span>
                 </span>
               )}
             </div>
@@ -262,7 +276,7 @@ const SimpleUniversityCard = ({
           </div>
         </div>
         
-        {/* 特徴タグ - 小画面では重要なもののみ表示 */}
+        {/* 特徴タグ - Firebase新形式対応 */}
         <div className="flex flex-wrap gap-1 mb-3 sm:mb-4">
           {university.entry_conditions?.sports_recommend && (
             <span className="bg-green-50 text-green-700 text-xs px-2 py-1 rounded-full border border-green-100">
@@ -277,7 +291,6 @@ const SimpleUniversityCard = ({
             </span>
           )}
           
-          {/* 小画面では最大2つまで表示 */}
           {university.entry_conditions?.selection && (
             <span className="hidden sm:inline-block bg-blue-50 text-blue-700 text-xs px-2 py-1 rounded-full border border-blue-100">
               セレクション
@@ -336,7 +349,7 @@ const SimpleUniversityCard = ({
         </div>
       </div>
       
-      {/* line-clamp-3 用のスタイル（Tailwind CSS で対応していない場合） */}
+      {/* line-clamp-3 用のスタイル */}
       <style jsx>{`
         .line-clamp-3 {
           display: -webkit-box;
