@@ -1,4 +1,4 @@
-// src/components/EnhancedUniversityDetails.jsx - ヒーローセクション修正版
+// src/components/EnhancedUniversityDetails.jsx - UniversityLogo対応修正版
 import React, { useState, useRef, useEffect } from 'react';
 import { 
   ChevronLeft, 
@@ -26,6 +26,7 @@ import {
   Clock, 
   TrendingUp
 } from 'lucide-react';
+import UniversityLogo from './UniversityLogo'; // 追加
 
 const EnhancedUniversityDetails = ({ 
   university, 
@@ -135,11 +136,6 @@ const EnhancedUniversityDetails = ({
     { id: 'reviews', label: '口コミ・評判', shortLabel: '口コミ', icon: MessageSquare }
   ];
 
-  // 大学名から短縮名を生成
-  const getShortName = (name) => {
-    return name?.charAt(0) || 'U';
-  };
-
   // 練習体験申し込みハンドラー
   const handlePracticeApplication = () => {
     alert(`${university.university_name}サッカー部の練習体験に申し込みます。`);
@@ -201,11 +197,13 @@ const EnhancedUniversityDetails = ({
           
           {/* メイン情報 */}
           <div className="flex flex-col lg:flex-row items-start lg:items-center space-y-6 lg:space-y-0 lg:space-x-8 mb-8">
-            <div className="w-20 h-20 lg:w-24 lg:h-24 bg-white rounded-2xl p-3 lg:p-4 shadow-xl flex items-center justify-center flex-shrink-0 border border-gray-100">
-              <div className="w-full h-full bg-gradient-to-br from-green-500 to-green-600 rounded-lg flex items-center justify-center text-white font-bold text-lg lg:text-xl">
-                {getShortName(university.university_name)}
-              </div>
-            </div>
+            {/* UniversityLogoコンポーネントを使用 */}
+            <UniversityLogo 
+              university={university}
+              size="xl"
+              className="shadow-xl border border-gray-100"
+              showFallback={true}
+            />
             
             <div className="flex-1 min-w-0 space-y-4">
               {/* 大学名 */}

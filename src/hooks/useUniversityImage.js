@@ -1,4 +1,4 @@
-// src/hooks/useUniversityImage.js
+// src/hooks/useUniversityImage.js - HEADリクエスト問題修正版
 import { useState, useEffect } from 'react';
 
 /**
@@ -43,16 +43,13 @@ export const useUniversityImage = (university) => {
           `${process.env.PUBLIC_URL}/images/default-logo.png`
         ].filter(Boolean); // nullやundefinedを除外
 
-        // 各画像ソースを順番に試行
+        // 修正: HEADリクエストを使わず、直接Image要素で確認
         for (const source of imageSources) {
           try {
-            // 画像の存在確認（HEADリクエスト）
-            const response = await fetch(source, { 
-              method: 'HEAD',
-              timeout: 5000 // 5秒でタイムアウト
-            });
+            const success = await testImageLoad(source);
             
-            if (response.ok) {
+            if (success) {
+              console.log(`✅ Image loaded successfully: ${source}`);
               setImageUrl(source);
               setIsLoading(false);
               setHasError(false);
@@ -60,12 +57,13 @@ export const useUniversityImage = (university) => {
             }
           } catch (error) {
             // この画像ソースは失敗、次を試行
-            console.debug(`画像読み込み失敗: ${source}`, error);
+            console.debug(`❌ Image load failed: ${source}`, error);
             continue;
           }
         }
 
         // すべての画像ソースが失敗した場合
+        console.warn(`⚠️ All image sources failed for university: ${university.university_name}`);
         setImageUrl(null);
         setHasError(true);
 
@@ -82,6 +80,37 @@ export const useUniversityImage = (university) => {
   }, [university?.id, university?.logo_url]);
 
   return { imageUrl, isLoading, hasError };
+};
+
+/**
+ * Image要素を使って画像の読み込みをテストする関数
+ * @param {string} src - 画像のURL
+ * @returns {Promise<boolean>} - 読み込み成功時true
+ */
+const testImageLoad = (src) => {
+  return new Promise((resolve) => {
+    const img = new Image();
+    
+    // Firebase StorageのCORS問題を回避するため、crossOriginは設定しない
+    // img.crossOrigin = 'anonymous';
+    
+    // タイムアウト設定
+    const timeout = setTimeout(() => {
+      resolve(false);
+    }, 5000);
+    
+    img.onload = () => {
+      clearTimeout(timeout);
+      resolve(true);
+    };
+    
+    img.onerror = () => {
+      clearTimeout(timeout);
+      resolve(false);
+    };
+    
+    img.src = src;
+  });
 };
 
 export default useUniversityImage;
