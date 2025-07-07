@@ -1,16 +1,16 @@
 {
   "files": {
-    "main.css": "https://wataru-akiyama.github.io/university-soccer-app/static/css/main.4558cb0d.css",
-    "main.js": "https://wataru-akiyama.github.io/university-soccer-app/static/js/main.f25f778d.js",
+    "main.css": "https://wataru-akiyama.github.io/university-soccer-app/static/css/main.61d215f9.css",
+    "main.js": "https://wataru-akiyama.github.io/university-soccer-app/static/js/main.165aa8f9.js",
     "static/js/453.a8a89bf8.chunk.js": "https://wataru-akiyama.github.io/university-soccer-app/static/js/453.a8a89bf8.chunk.js",
     "static/media/soccer-logo.svg": "https://wataru-akiyama.github.io/university-soccer-app/static/media/soccer-logo.38750087238973a10afd2a0ddfa64a91.svg",
     "index.html": "https://wataru-akiyama.github.io/university-soccer-app/index.html",
-    "main.4558cb0d.css.map": "https://wataru-akiyama.github.io/university-soccer-app/static/css/main.4558cb0d.css.map",
-    "main.f25f778d.js.map": "https://wataru-akiyama.github.io/university-soccer-app/static/js/main.f25f778d.js.map",
+    "main.61d215f9.css.map": "https://wataru-akiyama.github.io/university-soccer-app/static/css/main.61d215f9.css.map",
+    "main.165aa8f9.js.map": "https://wataru-akiyama.github.io/university-soccer-app/static/js/main.165aa8f9.js.map",
     "453.a8a89bf8.chunk.js.map": "https://wataru-akiyama.github.io/university-soccer-app/static/js/453.a8a89bf8.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.4558cb0d.css",
-    "static/js/main.f25f778d.js"
+    "static/css/main.61d215f9.css",
+    "static/js/main.165aa8f9.js"
   ]
 }
