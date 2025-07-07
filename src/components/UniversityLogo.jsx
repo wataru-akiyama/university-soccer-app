@@ -1,9 +1,9 @@
-// src/components/UniversityLogo.jsx
-import React from 'react';
+// src/components/UniversityLogo.jsx - 本番環境対応版
+import React, { useState } from 'react';
 import { useUniversityImage } from '../hooks/useUniversityImage';
 
 /**
- * 大学ロゴを表示するコンポーネント
+ * 大学ロゴを表示するコンポーネント（本番環境対応版）
  * @param {Object} props
  * @param {Object} props.university - 大学データオブジェクト
  * @param {string} props.size - ロゴサイズ ('xs'|'sm'|'md'|'lg'|'xl')
@@ -19,7 +19,8 @@ const UniversityLogo = ({
   onClick,
   alt
 }) => {
-  const { imageUrl, isLoading, hasError } = useUniversityImage(university);
+  const { imageUrl, isLoading, hasError, debugInfo } = useUniversityImage(university);
+  const [imgError, setImgError] = useState(false);
   
   // サイズクラスの定義
   const sizeClasses = {
@@ -52,6 +53,27 @@ const UniversityLogo = ({
     ${onClick ? 'cursor-pointer hover:shadow-md transition-shadow' : ''}
   `.trim().replace(/\s+/g, ' ');
 
+  // 画像エラーハンドラー
+  const handleImageError = (e) => {
+    console.log('🖼️ Image error in UniversityLogo:', {
+      src: e.target.src,
+      university: university?.university_name,
+      debugInfo
+    });
+    setImgError(true);
+  };
+
+  // 画像ロードハンドラー
+  const handleImageLoad = (e) => {
+    console.log('🖼️ Image loaded in UniversityLogo:', {
+      src: e.target.src,
+      university: university?.university_name,
+      naturalWidth: e.target.naturalWidth,
+      naturalHeight: e.target.naturalHeight
+    });
+    setImgError(false);
+  };
+
   // ローディング中の表示
   if (isLoading) {
     return (
@@ -65,27 +87,16 @@ const UniversityLogo = ({
     );
   }
 
-  // 画像が正常に読み込まれた場合
-  if (imageUrl && !hasError) {
+  // 画像が正常に読み込まれ、かつコンポーネント内でエラーが発生していない場合
+  if (imageUrl && !hasError && !imgError) {
     return (
       <div className={containerClasses} onClick={onClick}>
         <img 
           src={imageUrl}
           alt={alt || `${university?.university_name || '大学'} ロゴ`}
           className="w-full h-full object-contain p-1"
-          onError={(e) => {
-            // 画像読み込みエラー時にフォールバックを表示
-            e.target.style.display = 'none';
-            if (showFallback) {
-              const parent = e.target.parentNode;
-              if (parent && !parent.querySelector('.fallback-text')) {
-                const fallbackDiv = document.createElement('div');
-                fallbackDiv.className = 'fallback-text w-full h-full bg-green-100 text-green-600 font-bold flex items-center justify-center text-sm';
-                fallbackDiv.textContent = getFallbackText();
-                parent.appendChild(fallbackDiv);
-              }
-            }
-          }}
+          onError={handleImageError}
+          onLoad={handleImageLoad}
         />
       </div>
     );

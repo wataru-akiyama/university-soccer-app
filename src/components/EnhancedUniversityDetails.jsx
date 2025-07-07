@@ -379,9 +379,9 @@ const EnhancedUniversityDetails = ({
 };
 
 
-// 概要タブコンポーネント - アイコン色付き実装版
+// 概要タブコンポーネント - 整理済み版
 const OverviewTab = ({ university }) => {
-  // 基本データの取得
+  // 基本データの取得（年間費用を削除）
   const getBasicData = () => {
     return [
       {
@@ -408,60 +408,21 @@ const OverviewTab = ({ university }) => {
         value: university?.soccer_club?.soccer_field_count || 0,
         unit: "面",
         iconColor: "text-purple-600"
-      },
-      {
-        icon: DollarSign,
-        label: "年間費用",
-        value: Math.round((university?.costs?.total_annual_cost || 2500000) / 10000),
-        unit: "万円",
-        subtitle: "概算",
-        iconColor: "text-green-600"
       }
     ];
   };
 
-  // 監督・指導体制データの取得
-  const getCoachingStaff = () => {
-    return {
-      coach_name: university?.soccer_club?.coach_name || "情報なし",
-      coaching_experience: university?.coaching_staff?.coaching_experience || 
-                          university?.extended_data?.coaching_experience || "情報なし",
-      staff_count: university?.coaching_staff?.staff_count || 
-                  university?.extended_data?.staff_count || "情報なし",
-      coaching_philosophy: university?.coaching_staff?.coaching_philosophy || 
-                           university?.extended_data?.coaching_philosophy || 
-                           "学生主体の自立したチーム作り"
-    };
-  };
-
-  // 練習環境データの取得
-  const getPracticeEnvironment = () => {
-    return {
-      practice_frequency: university?.soccer_club?.practice_frequency || 
-                         university?.extended_data?.practice_frequency || "週6回",
-      practice_location: university?.soccer_club?.practice_location || "キャンパス内",
-      practice_hours_weekday: university?.soccer_club?.practice_hours_weekday || 
-                             university?.extended_data?.practice_hours_weekday || "2時間",
-      practice_hours_weekend: university?.soccer_club?.practice_hours_weekend || 
-                             university?.extended_data?.practice_hours_weekend || "3時間",
-      annual_camps: university?.soccer_club?.annual_camps || 
-                   university?.extended_data?.annual_camps || 3
-    };
-  };
-
   const basicData = getBasicData();
-  const coachingStaff = getCoachingStaff();
-  const practiceEnvironment = getPracticeEnvironment();
 
   return (
     <div className="space-y-8">
-      {/* 1. 基本データ（数値4つをコンパクトに） */}
+      {/* 1. 基本データ（3つの指標） */}
       <div>
         <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
           <TrendingUp size={18} className="text-blue-600 mr-2" />
           基本データ
         </h3>
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           {basicData.map((metric, index) => {
             const Icon = metric.icon;
             return (
@@ -481,90 +442,23 @@ const OverviewTab = ({ university }) => {
         </div>
       </div>
 
-      {/* 2. 監督・指導体制 */}
+      {/* 2. 監督・指導体制（監督名のみ） */}
       <div>
         <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
           <User size={18} className="text-green-600 mr-2" />
-          監督・指導体制
+          監督
         </h3>
         <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            <div>
-              <p className="text-sm text-gray-600">監督</p>
-              <p className="font-medium text-gray-900">{coachingStaff.coach_name}</p>
-            </div>
-            <div>
-              <p className="text-sm text-gray-600">指導歴</p>
-              <p className="font-medium text-gray-900">{coachingStaff.coaching_experience}</p>
-            </div>
-            <div>
-              <p className="text-sm text-gray-600">スタッフ数</p>
-              <p className="font-medium text-gray-900">
-                {coachingStaff.staff_count === "情報なし" ? "情報なし" : `${coachingStaff.staff_count}名体制`}
-              </p>
-            </div>
-            <div>
-              <p className="text-sm text-gray-600">指導方針</p>
-              <p className="font-medium text-gray-900">{coachingStaff.coaching_philosophy}</p>
-            </div>
+          <div>
+            <p className="text-sm text-gray-600">監督</p>
+            <p className="font-medium text-gray-900 text-lg">
+              {university?.soccer_club?.coach_name || "情報なし"}
+            </p>
           </div>
         </div>
       </div>
 
-      {/* 3. チームの方針・特色 */}
-      <div>
-        <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
-          <MessageSquare size={18} className="text-purple-600 mr-2" />
-          チームの方針・特色
-        </h3>
-        <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
-          <p className="text-gray-700 leading-relaxed">
-            {university?.team_philosophy || 
-             university?.extended_data?.team_philosophy || 
-             `${university?.university_name || "この大学"}サッカー部では、技術向上と人間的成長を両立させることを重視しています。学生が主体となって活動し、サッカーを通じて社会で活躍できる人材の育成を目指しています。`}
-          </p>
-        </div>
-      </div>
-
-      {/* 4. 練習環境・活動概要 */}
-      <div>
-        <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
-          <MapPin size={18} className="text-red-600 mr-2" />
-          練習環境・活動概要
-        </h3>
-        <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
-          <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
-            <div className="flex items-center">
-              <Clock size={16} className="text-red-600 mr-2 flex-shrink-0" />
-              <div>
-                <p className="text-sm text-gray-600">練習頻度</p>
-                <p className="font-medium text-gray-900">{practiceEnvironment.practice_frequency}</p>
-              </div>
-            </div>
-            <div className="flex items-center">
-              <MapPin size={16} className="text-red-600 mr-2 flex-shrink-0" />
-              <div>
-                <p className="text-sm text-gray-600">活動拠点</p>
-                <p className="font-medium text-gray-900">{practiceEnvironment.practice_location}</p>
-              </div>
-            </div>
-            <div>
-              <p className="text-sm text-gray-600">平日練習</p>
-              <p className="font-medium text-gray-900">{practiceEnvironment.practice_hours_weekday}</p>
-            </div>
-            <div>
-              <p className="text-sm text-gray-600">土日練習</p>
-              <p className="font-medium text-gray-900">{practiceEnvironment.practice_hours_weekend}</p>
-            </div>
-            <div>
-              <p className="text-sm text-gray-600">年間合宿</p>
-              <p className="font-medium text-gray-900">{practiceEnvironment.annual_camps}回実施</p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* 5. 取得可能資格 */}
+      {/* 3. 取得可能資格 */}
       <div>
         <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
           <BookOpen size={18} className="text-indigo-600 mr-2" />
@@ -585,7 +479,6 @@ const OverviewTab = ({ university }) => {
     </div>
   );
 };
-
 // 入部条件タブコンポーネント
 const AdmissionTab = ({ university }) => (
   <div className="space-y-8">

@@ -24,6 +24,16 @@ jobs:
     - name: Install dependencies
       run: npm ci
       
+    - name: Create default images directory
+      run: |
+        mkdir -p public/images/logos
+        # デフォルト画像が存在しない場合は作成
+        if [ ! -f public/images/default-logo.png ]; then
+          echo "Creating default logo placeholder..."
+          # 透明なPNG画像を作成（プレースホルダー）
+          echo "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=" | base64 -d > public/images/default-logo.png
+        fi
+        
     - name: Build project
       run: npm run build
       env:
@@ -33,6 +43,14 @@ jobs:
         REACT_APP_USE_API: true
         REACT_APP_DEBUG_MODE: false
         PUBLIC_URL: /university-soccer-app
+        
+    - name: Verify build artifacts
+      run: |
+        echo "Checking build directory structure..."
+        ls -la build/
+        echo "Checking images directory..."
+        ls -la build/images/ || echo "No images directory found"
+        ls -la build/static/ || echo "No static directory found"
         
     - name: Deploy to GitHub Pages
       uses: peaceiris/actions-gh-pages@v3
