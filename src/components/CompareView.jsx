@@ -202,21 +202,61 @@ const CompareView = ({ universities, onBack, onRemove }) => {
               </tr>
               <tr className="border-b hover:bg-gray-50">
                 <td className={`p-2 sm:p-3 font-medium bg-gray-50 ${layout.needsScroll ? 'sticky left-0 z-10' : ''} border-r border-gray-200`}>
+                  <span className="hidden sm:inline">グラウンド名</span>
+                  <span className="sm:hidden">グラウンド</span>
+                </td>
+                {universities.map(university => (
+                  <td key={university.id} className="p-2 sm:p-3 text-center text-xs sm:text-sm">
+                    <div className="truncate max-w-[120px] sm:max-w-none">
+                      {/* Firebase新形式対応: facilities.ground_name を優先 */}
+                      {university.facilities?.ground_name || 
+                      university.soccer_club?.practice_location || 
+                      'グラウンド情報なし'}
+                    </div>
+                  </td>
+                ))}
+              </tr>
+              <tr className="border-b hover:bg-gray-50">
+                <td className={`p-2 sm:p-3 font-medium bg-gray-50 ${layout.needsScroll ? 'sticky left-0 z-10' : ''} border-r border-gray-200`}>
                   <span className="hidden sm:inline">サッカーコート数</span>
                   <span className="sm:hidden">コート</span>
                 </td>
                 {universities.map(university => (
-                  <td key={university.id} className="p-2 sm:p-3 text-center">{university.soccer_club.soccer_field_count}面</td>
+                  <td key={university.id} className="p-2 sm:p-3 text-center">
+                    {/* Firebase新形式対応: facilities.soccer_field_count を優先 */}
+                    {university.facilities?.soccer_field_count || university.soccer_club?.soccer_field_count || 0}面
+                  </td>
                 ))}
               </tr>
               <tr className="border-b hover:bg-gray-50">
                 <td className={`p-2 sm:p-3 font-medium bg-gray-50 ${layout.needsScroll ? 'sticky left-0 z-10' : ''} border-r border-gray-200`}>寮</td>
                 {universities.map(university => (
                   <td key={university.id} className="p-2 sm:p-3 text-center">
-                    {university.soccer_club.dorm_available ? (
-                      <span className="bg-green-100 text-green-700 font-medium px-2 py-1 rounded-full inline-block text-xs">あり</span>
+                    {/* Firebase新形式対応: 詳細な寮情報がある場合 */}
+                    {university.soccer_club?.dorm_details ? (
+                      <div className="space-y-1">
+                        {university.soccer_club.dorm_details.university_dorm && (
+                          <span className="bg-green-100 text-green-700 font-medium px-2 py-1 rounded-full inline-block text-xs">大学寮</span>
+                        )}
+                        {university.soccer_club.dorm_details.soccer_club_dorm && (
+                          <span className="bg-blue-100 text-blue-700 font-medium px-2 py-1 rounded-full inline-block text-xs">部寮</span>
+                        )}
+                        {university.soccer_club.dorm_details.general_dorm && (
+                          <span className="bg-purple-100 text-purple-700 font-medium px-2 py-1 rounded-full inline-block text-xs">部員寮</span>
+                        )}
+                        {!university.soccer_club.dorm_details.university_dorm && 
+                        !university.soccer_club.dorm_details.soccer_club_dorm && 
+                        !university.soccer_club.dorm_details.general_dorm && (
+                          <span className="bg-red-100 text-red-600 px-2 py-1 rounded-full inline-block text-xs">なし</span>
+                        )}
+                      </div>
                     ) : (
-                      <span className="bg-red-100 text-red-600 px-2 py-1 rounded-full inline-block text-xs">なし</span>
+                      // 旧形式フォールバック
+                      university.soccer_club?.dorm_available ? (
+                        <span className="bg-green-100 text-green-700 font-medium px-2 py-1 rounded-full inline-block text-xs">あり</span>
+                      ) : (
+                        <span className="bg-red-100 text-red-600 px-2 py-1 rounded-full inline-block text-xs">なし</span>
+                      )
                     )}
                   </td>
                 ))}
