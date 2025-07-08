@@ -1,12 +1,12 @@
-// src/hooks/useAppState.js - Firebase対応版に修正
+// src/hooks/useAppState.js - URLナビゲーション対応版
 
 import { useState, useEffect } from 'react';
 import useUniversitySearch from './useUniversitySearch';
-import useFirebaseData from './useFirebaseData'; // 新しく追加
-import { userProfile } from '../data'; // userProfileのみローカルから取得
+import useFirebaseData from './useFirebaseData';
+import { userProfile } from '../data';
 
 /**
- * アプリケーション全体の状態管理フック（Firebase対応版）
+ * アプリケーション全体の状態管理フック（URLナビゲーション対応版）
  */
 export const useAppState = () => {
   // Firebaseからデータを取得
@@ -27,27 +27,55 @@ export const useAppState = () => {
   const [favoriteUniversities, setFavoriteUniversities] = useState([]);
   const [playerProfileData, setPlayerProfileData] = useState(userProfile);
 
-  // ===== URLパラメータ監視 =====
+  // ===== URLパラメータ監視・制御 =====
   useEffect(() => {
     const handleUrlParams = () => {
       const urlParams = new URLSearchParams(window.location.search);
+      const pageParam = urlParams.get('page');
       const universityId = urlParams.get('id');
       
+      // 大学詳細ページ（既存機能）
       if (universityId && universities.length > 0) {
-        // URLパラメータで大学IDが指定された場合
         const university = universities.find(uni => uni.id === parseInt(universityId));
         if (university) {
           setSelectedUniversity(university);
           setCurrentView('details');
+          return;
         } else {
           // 指定されたIDの大学が見つからない場合はリストページに戻る
           setCurrentView('list');
+          updateURL('search');
+          return;
         }
+      }
+      
+      // ページパラメータによる画面切り替え
+      if (pageParam) {
+        switch (pageParam) {
+          case 'search':
+            setCurrentView('list');
+            break;
+          case 'portfolio':
+            setCurrentView('portfolio');
+            break;
+          case 'compare':
+            setCurrentView('compare');
+            break;
+          default:
+            // 無効なページパラメータの場合は検索ページにリダイレクト
+            setCurrentView('list');
+            updateURL('search');
+            break;
+        }
+      } else if (!universityId) {
+        // パラメータがない場合はデフォルトで検索ページ
+        setCurrentView('list');
+        updateURL('search');
       }
     };
 
     // 大学データが読み込まれてから実行
-    if (!universitiesLoading && universities.length > 0) {
+    if (!universitiesLoading) {
       handleUrlParams();
     }
     
@@ -94,25 +122,86 @@ export const useAppState = () => {
     }
   }, [favoriteUniversities]);
 
+  // ===== URL更新関数 =====
+  
+  /**
+   * URLを更新する（ブラウザ履歴に追加）
+   * @param {string} page - ページ識別子 ('search', 'portfolio', 'compare')
+   * @param {number} universityId - 大学ID（詳細ページの場合）
+   */
+  const updateURL = (page, universityId = null) => {
+    const url = new URL(window.location);
+    
+    // パラメータをクリア
+    url.searchParams.delete('page');
+    url.searchParams.delete('id');
+    
+    if (universityId) {
+      // 大学詳細ページの場合
+      url.searchParams.set('id', universityId);
+    } else if (page) {
+      // 通常ページの場合
+      url.searchParams.set('page', page);
+    }
+    
+    // ブラウザ履歴に追加
+    window.history.pushState({}, '', url);
+  };
+
+  /**
+   * URL上書き（ブラウザ履歴に追加しない）
+   * @param {string} page - ページ識別子
+   * @param {number} universityId - 大学ID
+   */
+  const replaceURL = (page, universityId = null) => {
+    const url = new URL(window.location);
+    
+    url.searchParams.delete('page');
+    url.searchParams.delete('id');
+    
+    if (universityId) {
+      url.searchParams.set('id', universityId);
+    } else if (page) {
+      url.searchParams.set('page', page);
+    }
+    
+    // ブラウザ履歴を置き換え
+    window.history.replaceState({}, '', url);
+  };
+
   // ===== アクション関数 =====
   
   /**
-   * ビュー切り替え
+   * ビュー切り替え（URL更新付き）
    */
   const changeView = (viewName) => {
     setCurrentView(viewName);
+    
+    // URLパラメータマッピング
+    const pageMap = {
+      'list': 'search',
+      'portfolio': 'portfolio',
+      'compare': 'compare',
+      'details': null // 詳細ページは別途処理
+    };
+    
+    const pageParam = pageMap[viewName];
+    if (pageParam) {
+      updateURL(pageParam);
+    }
   };
 
   /**
-   * 大学詳細表示
+   * 大学詳細表示（URL更新付き）
    */
   const viewUniversityDetails = (university) => {
     setSelectedUniversity(university);
-    changeView('details');
+    setCurrentView('details');
+    updateURL(null, university.id);
   };
 
   /**
-   * 大学詳細表示（ID指定版）
+   * 大学詳細表示（ID指定版・URL更新付き）
    */
   const viewUniversityDetailsById = (universityId) => {
     const university = universities.find(uni => uni.id === parseInt(universityId));
@@ -167,6 +256,27 @@ export const useAppState = () => {
     setFavoriteUniversities(result);
   };
 
+  /**
+   * 検索ページに戻る（URL更新付き）
+   */
+  const goToSearch = () => {
+    changeView('list');
+  };
+
+  /**
+   * 進路ページに移動（URL更新付き）
+   */
+  const goToPortfolio = () => {
+    changeView('portfolio');
+  };
+
+  /**
+   * 比較ページに移動（URL更新付き）
+   */
+  const goToCompare = () => {
+    changeView('compare');
+  };
+
   // ===== 戻り値の構造化 =====
   
   // アクション関数をまとめたオブジェクト
@@ -179,7 +289,13 @@ export const useAppState = () => {
     addToFavorites,
     removeFromFavorites,
     reorderFavorites,
-    refetchUniversities // Firebase再取得機能を追加
+    refetchUniversities,
+    // URL操作関数を追加
+    updateURL,
+    replaceURL,
+    goToSearch,
+    goToPortfolio,
+    goToCompare
   };
 
   // 状態をまとめたオブジェクト（ViewManagerとの互換性を保つ）
@@ -191,7 +307,6 @@ export const useAppState = () => {
     playerProfileData,
     searchState,
     filteredUniversities: searchState.filteredUniversities,
-    // Firebase関連の状態を追加
     universitiesLoading,
     universitiesError
   };
@@ -205,7 +320,6 @@ export const useAppState = () => {
     playerProfileData,
     searchState,
     filteredUniversities: searchState.filteredUniversities,
-    // Firebase関連の状態を追加
     universitiesLoading,
     universitiesError
   };
