@@ -1,10 +1,8 @@
-// src/hooks/useUniversityImage.js - 詳細デバッグ版
+// src/hooks/useUniversityImage.js - CORS問題回避版
 import { useState, useEffect } from 'react';
 
 /**
- * 大学のロゴ画像を管理するカスタムフック（詳細デバッグ版）
- * @param {Object} university - 大学データオブジェクト
- * @returns {Object} - { imageUrl, isLoading, hasError, debugInfo }
+ * 大学のロゴ画像を管理するカスタムフック（CORS問題回避版）
  */
 export const useUniversityImage = (university) => {
   const [imageUrl, setImageUrl] = useState(null);
@@ -28,6 +26,7 @@ export const useUniversityImage = (university) => {
       try {
         // 環境変数の確認
         const storageUrl = process.env.REACT_APP_FIREBASE_STORAGE_URL;
+        const projectId = process.env.REACT_APP_FIREBASE_PROJECT_ID;
         const publicUrl = process.env.PUBLIC_URL;
         const nodeEnv = process.env.NODE_ENV;
         
@@ -35,13 +34,12 @@ export const useUniversityImage = (university) => {
           university_id: university.id,
           university_name: university.university_name,
           REACT_APP_FIREBASE_STORAGE_URL: storageUrl,
+          REACT_APP_FIREBASE_PROJECT_ID: projectId,
           PUBLIC_URL: publicUrl,
-          NODE_ENV: nodeEnv,
-          hostname: window.location.hostname,
-          origin: window.location.origin
+          NODE_ENV: nodeEnv
         });
 
-        // 画像ソースの優先順位を本番環境用に調整
+        // 画像ソースの優先順位を設定
         const imageSources = [];
         
         // 1. 大学データに直接logo_urlが含まれている場合（最優先）
@@ -49,40 +47,42 @@ export const useUniversityImage = (university) => {
           imageSources.push(university.logo_url);
         }
         
-        // 2. 本番環境では静的ファイルを優先、開発環境ではFirebaseを優先
-        if (nodeEnv === 'production') {
-          // GitHub Pages用: publicディレクトリの画像を優先
+        // 2. Firebase Storage - CORS問題を回避する複数の URL パターン
+        if (storageUrl && projectId) {
+          // パターン1: 通常の Firebase Storage URL
           imageSources.push(
-            `${publicUrl || ''}/images/logos/${university.id}.png`,
-            `${publicUrl || ''}/images/logos/${university.id}.jpg`,
-            `${publicUrl || ''}/images/default-logo.png`
+            `${storageUrl}/logos%2F${university.id}.png?alt=media`,
+            `${storageUrl}/logos%2F${university.id}.jpg?alt=media`
           );
           
-          // Firebase Storage（念のため試行）
-          if (storageUrl) {
-            imageSources.push(
-              `${storageUrl}/logos%2F${university.id}.png?alt=media`,
-              `${storageUrl}/logos%2F${university.id}.jpg?alt=media`
-            );
-          }
-        } else {
-          // 開発環境: Firebase Storage を優先
-          if (storageUrl) {
-            imageSources.push(
-              `${storageUrl}/logos%2F${university.id}.png?alt=media`,
-              `${storageUrl}/logos%2F${university.id}.jpg?alt=media`
-            );
-          }
-          
-          // ローカルファイル
+          // パターン2: 直接 Google Storage URL
           imageSources.push(
-            `${publicUrl || ''}/images/logos/${university.id}.png`,
-            `${publicUrl || ''}/images/logos/${university.id}.jpg`,
-            `${publicUrl || ''}/images/default-logo.png`,
-            `/images/logos/${university.id}.png`,
-            `/images/logos/${university.id}.jpg`
+            `https://storage.googleapis.com/${projectId}.appspot.com/logos/${university.id}.png`,
+            `https://storage.googleapis.com/${projectId}.appspot.com/logos/${university.id}.jpg`
+          );
+          
+          // パターン3: Firebase の CDN URL
+          imageSources.push(
+            `https://firebasestorage.googleapis.com/v0/b/${projectId}.appspot.com/o/logos%2F${university.id}.png?alt=media`,
+            `https://firebasestorage.googleapis.com/v0/b/${projectId}.appspot.com/o/logos%2F${university.id}.jpg?alt=media`
+          );
+        } else if (storageUrl) {
+          // 従来の設定（プロジェクトIDが設定されていない場合）
+          imageSources.push(
+            `${storageUrl}/logos%2F${university.id}.png?alt=media`,
+            `${storageUrl}/logos%2F${university.id}.jpg?alt=media`
           );
         }
+        
+        // 3. 静的ファイルをフォールバックとして追加
+        imageSources.push(
+          `${publicUrl || ''}/images/logos/${university.id}.png`,
+          `${publicUrl || ''}/images/logos/${university.id}.jpg`,
+          `${publicUrl || ''}/images/default-logo.png`,
+          `/images/logos/${university.id}.png`,
+          `/images/logos/${university.id}.jpg`,
+          `/images/default-logo.png`
+        );
 
         // 重複除去
         const uniqueSources = [...new Set(imageSources)].filter(Boolean);
@@ -95,6 +95,7 @@ export const useUniversityImage = (university) => {
           sourcesCount: uniqueSources.length,
           sources: uniqueSources,
           storageUrl,
+          projectId,
           publicUrl,
           nodeEnv,
           loadAttemptTime: new Date().toISOString()
@@ -136,27 +137,16 @@ export const useUniversityImage = (university) => {
           id: university.id,
           name: university.university_name,
           sources: uniqueSources,
-          environment: nodeEnv,
-          hostname: window.location.hostname
+          environment: nodeEnv
         });
         
         setImageUrl(null);
         setHasError(true);
-        setDebugInfo(prev => ({
-          ...prev,
-          allSourcesFailed: true,
-          failureReason: 'All image sources failed to load',
-          totalAttempts: uniqueSources.length
-        }));
 
       } catch (error) {
         console.error('💥 Image loading process error:', error);
         setImageUrl(null);
         setHasError(true);
-        setDebugInfo(prev => ({
-          ...prev,
-          processError: error.message
-        }));
       } finally {
         setIsLoading(false);
       }
@@ -169,43 +159,34 @@ export const useUniversityImage = (university) => {
 };
 
 /**
- * Image要素を使って画像の読み込みをテストする関数（詳細ログ版）
- * @param {string} src - 画像のURL
- * @returns {Promise<boolean>} - 読み込み成功時true
+ * Image要素を使って画像の読み込みをテストする関数（CORS対応版）
  */
 const testImageLoad = (src) => {
   return new Promise((resolve) => {
     const img = new Image();
     
-    // 本番環境でのタイムアウトを短く設定
-    const isProduction = process.env.NODE_ENV === 'production';
+    // タイムアウト設定
     const timeout = setTimeout(() => {
-      console.log(`⏰ Image load timeout (${isProduction ? '5s' : '8s'}) for: ${src}`);
+      console.log(`⏰ Image load timeout for: ${src}`);
       resolve(false);
-    }, isProduction ? 5000 : 8000);
+    }, 8000);
     
     img.onload = () => {
       clearTimeout(timeout);
-      console.log(`✅ Image onload success for: ${src}`, {
-        naturalWidth: img.naturalWidth,
-        naturalHeight: img.naturalHeight,
-        currentSrc: img.currentSrc
-      });
+      console.log(`✅ Image onload success for: ${src}`);
       resolve(true);
     };
     
     img.onerror = (error) => {
       clearTimeout(timeout);
-      console.log(`❌ Image onerror for: ${src}`, {
-        error: error,
-        type: error.type,
-        target: error.target
-      });
+      console.log(`❌ Image onerror for: ${src}`, error);
       resolve(false);
     };
     
-    // リクエスト開始
+    // CORS設定 - Firebase Storage によっては必要
+    // ただし、?alt=media を使用する場合は通常不要
     try {
+      // まず crossOrigin なしで試行
       img.src = src;
     } catch (error) {
       clearTimeout(timeout);
