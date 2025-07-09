@@ -104,6 +104,17 @@ const EnhancedUniversityDetails = ({
     return genres;
   };
 
+  // 練習場所の取得（Firebase新形式対応）
+  const getPracticeLocation = () => {
+    // Firebase新形式: facilities.ground_name を優先
+    if (university.facilities?.ground_name) {
+      return university.facilities.ground_name;
+    }
+    
+    // フォールバック
+    return university.soccer_club?.practice_location || '';
+  };
+
   // スクロール状態を監視
   useEffect(() => {
     const container = tabContainerRef.current;
@@ -218,10 +229,10 @@ const EnhancedUniversityDetails = ({
                   {university.soccer_club?.league || 'リーグ不明'}
                 </span>
                 
-                {university.soccer_club?.practice_location && (
+                {getPracticeLocation() && (
                   <span className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-gray-100 text-gray-700 border border-gray-200">
                     <MapPin size={14} className="mr-1" />
-                    {university.soccer_club.practice_location}
+                    {getPracticeLocation()}
                   </span>
                 )}
               </div>
