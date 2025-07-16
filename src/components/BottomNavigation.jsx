@@ -1,14 +1,26 @@
-// src/components/BottomNavigation.jsx - レスポンシブ改善版
+// src/components/BottomNavigation.jsx - プレミアム対応版
 import React from 'react';
-import { Search, UserCircle, BarChart2 } from 'lucide-react';
+import { Search, UserCircle, BarChart2, Lock } from 'lucide-react';
 
 const BottomNavigation = ({ 
   currentView,
   onChangeView,
   favoriteUniversities, 
-  compareList
+  compareList,
+  isPremium = false,
+  onUpgradeToPremium
 }) => {
   const handleNavClick = (viewName) => {
+    // 比較機能はプレミアム限定
+    if (viewName === 'compare' && !isPremium) {
+      if (onUpgradeToPremium) {
+        onUpgradeToPremium();
+      } else {
+        alert('比較機能はプレミアムプラン限定です。');
+      }
+      return;
+    }
+    
     onChangeView(viewName);
   };
 
@@ -19,7 +31,8 @@ const BottomNavigation = ({
       label: '大学検索',
       shortLabel: '検索', // 小画面用の短いラベル
       badge: null,
-      activeViews: ['list', 'details']
+      activeViews: ['list', 'details'],
+      disabled: false
     },
     {
       id: 'portfolio',
@@ -28,16 +41,18 @@ const BottomNavigation = ({
       shortLabel: '進路',
       badge: favoriteUniversities.length > 0 ? favoriteUniversities.length : null,
       badgeColor: 'bg-red-500',
-      activeViews: ['portfolio']
+      activeViews: ['portfolio'],
+      disabled: false
     },
     {
       id: 'compare',
-      icon: BarChart2,
-      label: '比較リスト',
-      shortLabel: '比較',
-      badge: compareList.length > 0 ? compareList.length : null,
+      icon: isPremium ? BarChart2 : Lock,
+      label: isPremium ? '比較リスト' : '比較機能',
+      shortLabel: isPremium ? '比較' : '比較',
+      badge: compareList.length > 0 && isPremium ? compareList.length : null,
       badgeColor: 'bg-green-500',
-      activeViews: ['compare']
+      activeViews: ['compare'],
+      disabled: !isPremium
     }
   ];
 
@@ -52,16 +67,19 @@ const BottomNavigation = ({
             <button
               key={tab.id}
               onClick={() => handleNavClick(tab.id)}
+              disabled={tab.disabled}
               className={`flex flex-col items-center justify-center py-1.5 px-2 rounded-lg transition-colors relative min-w-0 flex-1 ${
                 isActive 
                   ? 'text-green-600' 
-                  : 'text-gray-500 hover:text-gray-700'
+                  : tab.disabled
+                    ? 'text-gray-400 cursor-not-allowed'
+                    : 'text-gray-500 hover:text-gray-700'
               }`}
             >
               {/* アイコンとバッジ */}
               <div className="relative mb-1">
                 <Icon size={20} strokeWidth={isActive ? 2.5 : 2} />
-                {tab.badge && (
+                {tab.badge && !tab.disabled && (
                   <div className={`absolute -top-2 -right-2 ${tab.badgeColor} text-white text-xs rounded-full min-w-[16px] h-4 flex items-center justify-center font-medium px-1`}>
                     {tab.badge > 9 ? '9+' : tab.badge}
                   </div>
@@ -70,12 +88,23 @@ const BottomNavigation = ({
               
               {/* レスポンシブラベル */}
               <span className={`text-xs font-medium truncate w-full text-center leading-tight ${
-                isActive ? 'text-green-600' : 'text-gray-500'
+                isActive 
+                  ? 'text-green-600' 
+                  : tab.disabled
+                    ? 'text-gray-400'
+                    : 'text-gray-500'
               }`}>
                 {/* 小画面では短いラベル、大画面では通常のラベル */}
                 <span className="hidden xs:inline">{tab.label}</span>
                 <span className="xs:hidden">{tab.shortLabel}</span>
               </span>
+              
+              {/* プレミアム制限の比較機能の場合の追加表示 */}
+              {tab.id === 'compare' && !isPremium && (
+                <div className="absolute -top-1 -right-1 bg-yellow-500 text-white text-xs rounded-full w-3 h-3 flex items-center justify-center">
+                  <Lock size={8} />
+                </div>
+              )}
             </button>
           );
         })}

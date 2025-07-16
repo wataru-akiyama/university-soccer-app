@@ -12,9 +12,12 @@ import UniversityList from './UniversityList';
 const ViewManager = ({
   currentView,
   data,
-  handlers,
-  isPremium = false
+  handlers
 }) => {
+  // データからプレミアム状態を取得
+  const isPremium = data.isPremium || false;
+  const premiumUtils = handlers.premiumUtils || {};
+  
   // ===== HomeView の内容を直接統合 =====
   const renderHomeView = () => {
     return (
@@ -90,6 +93,7 @@ const ViewManager = ({
           onBack={() => handlers.changeView('list')} 
           onAddToCompare={handlers.addToCompare}
           onAddToFavorites={handlers.addToFavorites}
+          onApplyForPractice={handlers.applyForPractice}
           isInCompareList={data.compareList.some(uni => 
             uni && data.selectedUniversity && uni.id === data.selectedUniversity.id
           )}
@@ -97,6 +101,8 @@ const ViewManager = ({
             uni && data.selectedUniversity && uni.id === data.selectedUniversity.id
           )}
           isPremium={isPremium}
+          onUpgradeToPremium={handlers.upgradeToPremium}
+          premiumUtils={premiumUtils}
         />
       );
       
@@ -107,6 +113,8 @@ const ViewManager = ({
           onBack={() => handlers.changeView('list')} 
           onRemove={handlers.removeFromCompare}
           isPremium={isPremium}
+          onUpgradeToPremium={handlers.upgradeToPremium}
+          premiumUtils={premiumUtils}
         />
       );
       
