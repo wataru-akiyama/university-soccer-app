@@ -356,13 +356,13 @@ const SimpleUniversityCard = ({
               <button 
                 className={`${
                   !isPremium 
-                    ? 'bg-gray-100 text-gray-500 border border-gray-200' 
+                    ? 'bg-gray-100 text-gray-500 border border-gray-200 cursor-not-allowed' 
                     : isInCompareList 
-                      ? 'bg-gray-100 text-gray-500' 
+                      ? 'bg-gray-100 text-gray-500 cursor-not-allowed' 
                       : 'text-green-600 border border-green-200 hover:bg-green-50'
                 } px-3 py-1.5 rounded-lg text-sm font-medium flex items-center transition-colors`}
                 onClick={handleCompareClick}
-                disabled={!isPremium && !isInCompareList}
+                disabled={!isPremium || isInCompareList}
               >
                 {!isPremium ? (
                   <>
