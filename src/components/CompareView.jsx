@@ -1,15 +1,174 @@
+// src/components/CompareView.jsx - プレミアム限定化対応版
 import React from 'react';
-import { ChevronRight, X } from 'lucide-react';
-import UniversityLogo from './UniversityLogo'; // 追加
+import { ChevronRight, X, Crown, Lock } from 'lucide-react';
+import UniversityLogo from './UniversityLogo';
+import { MaskedBanner } from './MaskedContent';
 
-// 比較ビューコンポーネント - スマホ対応テーブル版
-const CompareView = ({ universities, onBack, onRemove }) => {
+// プレミアム限定の比較ビューコンポーネント
+const CompareView = ({ 
+  universities, 
+  onBack, 
+  onRemove,
+  // プレミアム関連のprops
+  isPremium = false,
+  onUpgradeToPremium,
+  premiumUtils
+}) => {
+  // プレミアムユーティリティのデフォルト値
+  const { 
+    trackPremiumAttempt = () => {}
+  } = premiumUtils || {};
+
+  // プレミアムでない場合は制限画面を表示
+  if (!isPremium) {
+    return (
+      <div className="bg-white rounded-xl shadow-lg overflow-hidden">
+        <div className="bg-gradient-to-r from-green-600 to-green-700 text-white p-3 sm:p-6">
+          <button 
+            className="bg-white text-green-700 px-3 py-1 rounded-lg mb-4 flex items-center text-sm shadow-sm hover:bg-gray-100 transition-colors"
+            onClick={onBack}
+          >
+            <ChevronRight className="transform rotate-180 mr-1" size={16} />
+            一覧に戻る
+          </button>
+          <h2 className="text-lg sm:text-2xl font-bold flex items-center">
+            <Lock size={24} className="mr-3" />
+            大学サッカー部比較
+          </h2>
+          <p className="text-sm sm:text-base opacity-90 mt-1">プレミアム限定機能</p>
+        </div>
+        
+        <div className="p-6 sm:p-8">
+          {/* プレミアム限定機能の説明 */}
+          <div className="text-center py-8">
+            <div className="w-24 h-24 mx-auto mb-6 bg-gradient-to-br from-yellow-100 to-orange-100 rounded-full flex items-center justify-center">
+              <Crown size={48} className="text-yellow-600" />
+            </div>
+            
+            <h3 className="text-xl font-semibold text-gray-800 mb-3">
+              比較機能はプレミアム限定です
+            </h3>
+            
+            <p className="text-gray-600 mb-6 leading-relaxed max-w-md mx-auto">
+              複数の大学を詳細に比較検討できる機能です。費用、入部条件、施設、進路情報などを
+              一覧で比較して、最適な進路選択をサポートします。
+            </p>
+            
+            {/* 比較機能の特徴 */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8 max-w-2xl mx-auto">
+              {[
+                {
+                  title: "詳細比較テーブル",
+                  description: "費用、入部条件、施設を一覧で比較"
+                },
+                {
+                  title: "スマホ対応",
+                  description: "横スクロールで快適に比較可能"
+                },
+                {
+                  title: "最大3校まで",
+                  description: "効率的な比較検討をサポート"
+                },
+                {
+                  title: "プリント対応",
+                  description: "比較表を印刷して保存可能"
+                }
+              ].map((feature, index) => (
+                <div key={index} className="bg-gray-50 p-4 rounded-lg border">
+                  <h4 className="font-medium text-gray-800 mb-1">{feature.title}</h4>
+                  <p className="text-sm text-gray-600">{feature.description}</p>
+                </div>
+              ))}
+            </div>
+            
+            {/* アップグレードボタン */}
+            <button 
+              onClick={() => {
+                trackPremiumAttempt('comparison', 'upgrade_from_compare_page');
+                if (onUpgradeToPremium) {
+                  onUpgradeToPremium();
+                }
+              }}
+              className="bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white px-8 py-3 rounded-lg font-medium text-lg transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105"
+            >
+              <Crown size={20} className="inline mr-2" />
+              プレミアムプランにアップグレード
+            </button>
+            
+            <p className="text-xs text-gray-500 mt-3">
+              今すぐ全機能をお試しいただけます
+            </p>
+          </div>
+          
+          {/* 比較のプレビュー（ブラー付き） */}
+          <div className="mt-8">
+            <h4 className="text-lg font-semibold text-gray-800 mb-4">
+              比較機能のプレビュー
+            </h4>
+            
+            <div className="relative">
+              {/* ブラー効果付きのプレビューテーブル */}
+              <div className="filter blur-sm opacity-50 pointer-events-none">
+                <div className="overflow-x-auto border border-gray-200 rounded-lg">
+                  <table className="w-full bg-white text-sm">
+                    <thead>
+                      <tr>
+                        <th className="p-3 text-left bg-gray-50 border-r border-gray-200"></th>
+                        <th className="p-3 bg-white min-w-[200px]">早稲田大学</th>
+                        <th className="p-3 bg-white min-w-[200px]">明治大学</th>
+                        <th className="p-3 bg-white min-w-[200px]">法政大学</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr className="border-b">
+                        <td className="p-3 font-medium bg-gray-50 border-r">リーグ</td>
+                        <td className="p-3 text-center">関東1部</td>
+                        <td className="p-3 text-center">関東1部</td>
+                        <td className="p-3 text-center">関東1部</td>
+                      </tr>
+                      <tr className="border-b">
+                        <td className="p-3 font-medium bg-gray-50 border-r">部員数</td>
+                        <td className="p-3 text-center">78名</td>
+                        <td className="p-3 text-center">65名</td>
+                        <td className="p-3 text-center">72名</td>
+                      </tr>
+                      <tr className="border-b">
+                        <td className="p-3 font-medium bg-gray-50 border-r">J内定者</td>
+                        <td className="p-3 text-center">12名</td>
+                        <td className="p-3 text-center">8名</td>
+                        <td className="p-3 text-center">6名</td>
+                      </tr>
+                      <tr>
+                        <td className="p-3 font-medium bg-gray-50 border-r">年間費用</td>
+                        <td className="p-3 text-center">約220万円</td>
+                        <td className="p-3 text-center">約200万円</td>
+                        <td className="p-3 text-center">約190万円</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+              
+              {/* オーバーレイ */}
+              <div className="absolute inset-0 bg-gradient-to-r from-yellow-50 to-orange-50 bg-opacity-90 flex items-center justify-center rounded-lg border-2 border-dashed border-yellow-300">
+                <div className="text-center">
+                  <Lock size={32} className="text-yellow-600 mx-auto mb-3" />
+                  <p className="font-medium text-yellow-800">プレミアムプランで表示</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // プレミアムユーザー向けの通常の比較機能
   // テーブルのレイアウトを学校数に応じて動的に調整
   const getTableLayout = () => {
     const universityCount = universities.length;
     
     if (universityCount <= 2) {
-      // 1-2校の場合：全幅表示、横スクロールなし
       return {
         containerClass: "w-full",
         tableStyle: { width: '100%' },
@@ -18,8 +177,7 @@ const CompareView = ({ universities, onBack, onRemove }) => {
         needsScroll: false
       };
     } else {
-      // 3校以上の場合：横スクロール対応
-      const tableMinWidth = universityCount * 220 + 120; // スマホ用に幅を狭く
+      const tableMinWidth = universityCount * 220 + 120;
       return {
         containerClass: "overflow-x-auto",
         tableStyle: { 
@@ -45,8 +203,18 @@ const CompareView = ({ universities, onBack, onRemove }) => {
           <ChevronRight className="transform rotate-180 mr-1" size={16} />
           一覧に戻る
         </button>
-        <h2 className="text-lg sm:text-2xl font-bold">大学サッカー部比較</h2>
-        <p className="text-sm sm:text-base opacity-90 mt-1">{universities.length}校を比較中</p>
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="text-lg sm:text-2xl font-bold flex items-center">
+              <Crown size={24} className="mr-3 text-yellow-300" />
+              大学サッカー部比較
+            </h2>
+            <p className="text-sm sm:text-base opacity-90 mt-1">{universities.length}校を比較中</p>
+          </div>
+          <div className="bg-yellow-400 text-yellow-900 px-3 py-1 rounded-full text-xs font-medium">
+            PREMIUM
+          </div>
+        </div>
       </div>
       
       <div className="p-3 sm:p-6">
@@ -138,7 +306,6 @@ const CompareView = ({ universities, onBack, onRemove }) => {
                     width: layout.universityColumnWidth 
                   }}>
                     <span className="bg-green-50 text-green-800 px-2 py-1 rounded-lg inline-block text-xs">
-                      {/* スマホでは省略表示 */}
                       <span className="sm:hidden">
                         {university.soccer_club.league.includes('1部') ? '1部' : 
                          university.soccer_club.league.includes('2部') ? '2部' : '他'}
@@ -208,7 +375,6 @@ const CompareView = ({ universities, onBack, onRemove }) => {
                 {universities.map(university => (
                   <td key={university.id} className="p-2 sm:p-3 text-center text-xs sm:text-sm">
                     <div className="truncate max-w-[120px] sm:max-w-none">
-                      {/* Firebase新形式対応: facilities.ground_name を優先 */}
                       {university.facilities?.ground_name || 
                       university.soccer_club?.practice_location || 
                       'グラウンド情報なし'}
@@ -223,7 +389,6 @@ const CompareView = ({ universities, onBack, onRemove }) => {
                 </td>
                 {universities.map(university => (
                   <td key={university.id} className="p-2 sm:p-3 text-center">
-                    {/* Firebase新形式対応: facilities.soccer_field_count を優先 */}
                     {university.facilities?.soccer_field_count || university.soccer_club?.soccer_field_count || 0}面
                   </td>
                 ))}
@@ -232,7 +397,6 @@ const CompareView = ({ universities, onBack, onRemove }) => {
                 <td className={`p-2 sm:p-3 font-medium bg-gray-50 ${layout.needsScroll ? 'sticky left-0 z-10' : ''} border-r border-gray-200`}>寮</td>
                 {universities.map(university => (
                   <td key={university.id} className="p-2 sm:p-3 text-center">
-                    {/* Firebase新形式対応: 詳細な寮情報がある場合 */}
                     {university.soccer_club?.dorm_details ? (
                       <div className="space-y-1">
                         {university.soccer_club.dorm_details.university_dorm && (
@@ -251,7 +415,6 @@ const CompareView = ({ universities, onBack, onRemove }) => {
                         )}
                       </div>
                     ) : (
-                      // 旧形式フォールバック
                       university.soccer_club?.dorm_available ? (
                         <span className="bg-green-100 text-green-700 font-medium px-2 py-1 rounded-full inline-block text-xs">あり</span>
                       ) : (
@@ -282,7 +445,6 @@ const CompareView = ({ universities, onBack, onRemove }) => {
                   <td key={university.id} className="p-2 sm:p-3">
                     <div className="flex flex-wrap gap-1 justify-center">
                       {layout.needsScroll ? (
-                        // 3校以上の場合：省略表示
                         <>
                           {university.soccer_club.qualifications?.slice(0, 1).map((qualification, index) => (
                             <span key={index} className="bg-blue-100 text-blue-800 px-1 py-1 rounded-full text-xs mb-1 block text-center">
@@ -294,7 +456,6 @@ const CompareView = ({ universities, onBack, onRemove }) => {
                           )}
                         </>
                       ) : (
-                        // 1-2校の場合：全表示
                         university.soccer_club.qualifications?.slice(0, 3).map((qualification, index) => (
                           <span key={index} className="bg-blue-100 text-blue-800 px-1 py-1 rounded-full text-xs mb-1 block text-center">
                             {qualification}

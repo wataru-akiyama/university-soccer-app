@@ -1,12 +1,13 @@
-// src/hooks/useAppState.js - URLナビゲーション対応版
+// src/hooks/useAppState.js - プレミアムプラン対応版
 
 import { useState, useEffect } from 'react';
 import useUniversitySearch from './useUniversitySearch';
 import useFirebaseData from './useFirebaseData';
+import usePremiumPlan from './usePremiumPlan';
 import { userProfile } from '../data';
 
 /**
- * アプリケーション全体の状態管理フック（URLナビゲーション対応版）
+ * アプリケーション全体の状態管理フック（プレミアムプラン対応版）
  */
 export const useAppState = () => {
   // Firebaseからデータを取得
@@ -16,6 +17,18 @@ export const useAppState = () => {
     error: universitiesError,
     refetch: refetchUniversities 
   } = useFirebaseData();
+  
+  // プレミアムプランの状態管理
+  const {
+    isPremium,
+    isLoading: planLoading,
+    togglePlan,
+    upgradeToPremium,
+    downgradeToFree,
+    canUsePremiumFeature,
+    shouldShowContent,
+    trackPremiumAttempt
+  } = usePremiumPlan();
   
   // 検索関連の状態（Firebaseデータを使用）
   const searchState = useUniversitySearch(universities);
@@ -59,7 +72,14 @@ export const useAppState = () => {
             setCurrentView('portfolio');
             break;
           case 'compare':
-            setCurrentView('compare');
+            // 比較ページはプレミアム限定
+            if (canUsePremiumFeature('comparison')) {
+              setCurrentView('compare');
+            } else {
+              trackPremiumAttempt('comparison', 'blocked_url_access');
+              setCurrentView('list');
+              updateURL('search');
+            }
             break;
           default:
             // 無効なページパラメータの場合は検索ページにリダイレクト
@@ -75,7 +95,7 @@ export const useAppState = () => {
     };
 
     // 大学データが読み込まれてから実行
-    if (!universitiesLoading) {
+    if (!universitiesLoading && !planLoading) {
       handleUrlParams();
     }
     
@@ -85,7 +105,7 @@ export const useAppState = () => {
     return () => {
       window.removeEventListener('popstate', handleUrlParams);
     };
-  }, [universities, universitiesLoading]);
+  }, [universities, universitiesLoading, planLoading, canUsePremiumFeature, trackPremiumAttempt]);
 
   // ローカルストレージからお気に入りを読み込む
   useEffect(() => {
@@ -126,8 +146,6 @@ export const useAppState = () => {
   
   /**
    * URLを更新する（ブラウザ履歴に追加）
-   * @param {string} page - ページ識別子 ('search', 'portfolio', 'compare')
-   * @param {number} universityId - 大学ID（詳細ページの場合）
    */
   const updateURL = (page, universityId = null) => {
     const url = new URL(window.location);
@@ -150,8 +168,6 @@ export const useAppState = () => {
 
   /**
    * URL上書き（ブラウザ履歴に追加しない）
-   * @param {string} page - ページ識別子
-   * @param {number} universityId - 大学ID
    */
   const replaceURL = (page, universityId = null) => {
     const url = new URL(window.location);
@@ -169,12 +185,18 @@ export const useAppState = () => {
     window.history.replaceState({}, '', url);
   };
 
-  // ===== アクション関数 =====
+  // ===== プレミアム制限付きアクション関数 =====
   
   /**
-   * ビュー切り替え（URL更新付き）
+   * ビュー切り替え（プレミアム制限付き）
    */
   const changeView = (viewName) => {
+    // 比較ページはプレミアム限定
+    if (viewName === 'compare' && !canUsePremiumFeature('comparison')) {
+      trackPremiumAttempt('comparison', 'blocked_navigation');
+      return false;
+    }
+
     setCurrentView(viewName);
     
     // URLパラメータマッピング
@@ -189,6 +211,8 @@ export const useAppState = () => {
     if (pageParam) {
       updateURL(pageParam);
     }
+    
+    return true;
   };
 
   /**
@@ -201,26 +225,24 @@ export const useAppState = () => {
   };
 
   /**
-   * 大学詳細表示（ID指定版・URL更新付き）
-   */
-  const viewUniversityDetailsById = (universityId) => {
-    const university = universities.find(uni => uni.id === parseInt(universityId));
-    if (university) {
-      viewUniversityDetails(university);
-    }
-  };
-
-  /**
-   * 比較リストに追加
+   * 比較リストに追加（プレミアム制限付き）
    */
   const addToCompare = (university) => {
+    if (!canUsePremiumFeature('comparison')) {
+      trackPremiumAttempt('comparison', 'blocked_add_to_compare');
+      return false;
+    }
+
     if (!compareList.some(uni => uni.id === university.id)) {
       if (compareList.length < 3) {
         setCompareList([...compareList, university]);
+        return true;
       } else {
         alert("比較は最大3校までです。");
+        return false;
       }
     }
+    return false;
   };
 
   /**
@@ -228,6 +250,20 @@ export const useAppState = () => {
    */
   const removeFromCompare = (universityId) => {
     setCompareList(compareList.filter(uni => uni.id !== universityId));
+  };
+
+  /**
+   * 練習体験申し込み（プレミアム制限付き）
+   */
+  const applyForPractice = (university) => {
+    if (!canUsePremiumFeature('practice_application')) {
+      trackPremiumAttempt('practice_application', 'blocked_application');
+      return false;
+    }
+
+    // 実際の申し込み処理
+    console.log(`${university.university_name}の練習体験に申し込みます`);
+    return true;
   };
 
   /**
@@ -257,48 +293,39 @@ export const useAppState = () => {
   };
 
   /**
-   * 検索ページに戻る（URL更新付き）
+   * プレミアムプランへのアップグレード処理
    */
-  const goToSearch = () => {
-    changeView('list');
-  };
-
-  /**
-   * 進路ページに移動（URL更新付き）
-   */
-  const goToPortfolio = () => {
-    changeView('portfolio');
-  };
-
-  /**
-   * 比較ページに移動（URL更新付き）
-   */
-  const goToCompare = () => {
-    changeView('compare');
+  const handleUpgradeToPremium = () => {
+    // 実際のアプリでは決済処理など
+    upgradeToPremium();
+    trackPremiumAttempt('upgrade', 'completed');
   };
 
   // ===== 戻り値の構造化 =====
   
   // アクション関数をまとめたオブジェクト
   const actions = {
+    // 既存のアクション
     changeView,
     viewUniversityDetails,
-    viewUniversityDetailsById,
     addToCompare,
     removeFromCompare,
     addToFavorites,
     removeFromFavorites,
     reorderFavorites,
     refetchUniversities,
-    // URL操作関数を追加
     updateURL,
     replaceURL,
-    goToSearch,
-    goToPortfolio,
-    goToCompare
+    
+    // プレミアム関連のアクション
+    applyForPractice,
+    togglePlan,
+    upgradeToPremium: handleUpgradeToPremium,
+    downgradeToFree,
+    trackPremiumAttempt
   };
 
-  // 状態をまとめたオブジェクト（ViewManagerとの互換性を保つ）
+  // 状態をまとめたオブジェクト
   const state = {
     currentView,
     selectedUniversity,
@@ -308,10 +335,14 @@ export const useAppState = () => {
     searchState,
     filteredUniversities: searchState.filteredUniversities,
     universitiesLoading,
-    universitiesError
+    universitiesError,
+    
+    // プレミアム関連の状態
+    isPremium,
+    planLoading
   };
 
-  // データをまとめたオブジェクト（ViewManagerとの互換性を保つ）
+  // データをまとめたオブジェクト
   const data = {
     universities,
     selectedUniversity,
@@ -321,7 +352,18 @@ export const useAppState = () => {
     searchState,
     filteredUniversities: searchState.filteredUniversities,
     universitiesLoading,
-    universitiesError
+    universitiesError,
+    
+    // プレミアム関連のデータ
+    isPremium,
+    planLoading
+  };
+
+  // プレミアムユーティリティ
+  const premiumUtils = {
+    canUsePremiumFeature,
+    shouldShowContent,
+    trackPremiumAttempt
   };
 
   return {
@@ -336,6 +378,11 @@ export const useAppState = () => {
     // Firebase関連の状態
     universitiesLoading,
     universitiesError,
+    universities,
+    
+    // プレミアム関連の状態
+    isPremium,
+    planLoading,
     
     // 計算済み状態
     filteredUniversities: searchState.filteredUniversities,
@@ -347,8 +394,8 @@ export const useAppState = () => {
     state,
     data,
     
-    // 基本データ
-    universities
+    // プレミアムユーティリティ
+    premiumUtils
   };
 };
 

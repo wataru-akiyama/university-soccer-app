@@ -1,9 +1,10 @@
-// src/App.js（デバッグコード削除版）
+// src/App.js - プレミアムプラン対応版
 import React from 'react';
 import ViewManager from './components/ViewManager';
 import ResponsiveHeader from './components/ResponsiveHeader';
 import BottomNavigation from './components/BottomNavigation';
 import DataSourceIndicator from './components/DataSourceIndicator';
+import PlanToggle from './components/PlanToggle';
 import { useAppState } from './hooks/useAppState';
 
 const App = () => {
@@ -20,8 +21,15 @@ const App = () => {
     universitiesError,
     universities,
     
+    // プレミアム関連の状態
+    isPremium,
+    planLoading,
+    
     // アクション関数
     actions,
+    
+    // プレミアムユーティリティ
+    premiumUtils,
     
     // ViewManager用の構造化データ
     state,
@@ -93,6 +101,15 @@ const App = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      {/* プラン切り替えスイッチ */}
+      {!planLoading && (
+        <PlanToggle 
+          isPremium={isPremium}
+          onToggle={actions.togglePlan}
+          position="fixed"
+        />
+      )}
+
       {/* ヘッダー */}
       <ResponsiveHeader 
         currentView={currentView}
@@ -114,8 +131,17 @@ const App = () => {
       <main className="container mx-auto p-4 pt-16 pb-20">
         <ViewManager 
           currentView={currentView}
-          data={data}
-          handlers={actions}
+          data={{
+            ...data,
+            // プレミアム関連のデータを追加
+            isPremium,
+            planLoading
+          }}
+          handlers={{
+            ...actions,
+            // プレミアムユーティリティを追加
+            premiumUtils
+          }}
         />
       </main>
       
@@ -125,6 +151,9 @@ const App = () => {
         onChangeView={actions.changeView}
         favoriteUniversities={favoriteUniversities}
         compareList={compareList}
+        // プレミアム状態を渡してボタンの有効/無効を制御
+        isPremium={isPremium}
+        onUpgradeToPremium={actions.upgradeToPremium}
       />
       
       {/* フッター */}
@@ -132,6 +161,22 @@ const App = () => {
         <div className="container mx-auto text-center">
           <p>© 2025 大学サッカー部お品書き</p>
           <p className="text-sm mt-2">このサイトは大学進学を検討する高校生やサッカー部関係者向けの情報提供を目的としています。</p>
+          
+          {/* プレミアムプラン案内 */}
+          {!isPremium && (
+            <div className="mt-4 p-4 bg-gray-700 rounded-lg">
+              <h3 className="font-semibold text-yellow-400 mb-2">🌟 プレミアムプランで全機能を体験</h3>
+              <p className="text-sm text-gray-300 mb-3">
+                詳細な費用情報、口コミ・評判、比較機能、練習体験申込みなど、進路選択に必要な全ての情報にアクセス
+              </p>
+              <button 
+                onClick={actions.upgradeToPremium}
+                className="bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white px-6 py-2 rounded-lg text-sm font-medium transition-all duration-200"
+              >
+                プレミアムプランを試す
+              </button>
+            </div>
+          )}
         </div>
       </footer>
     </div>

@@ -1,4 +1,4 @@
-// src/components/EnhancedUniversityDetails.jsx - UniversityLogo対応修正版
+// src/components/EnhancedUniversityDetails.jsx - プレミアム制限対応版
 import React, { useState, useRef, useEffect } from 'react';
 import { 
   ChevronLeft, 
@@ -23,23 +23,38 @@ import {
   Trophy, 
   Home, 
   User,
-  TrendingUp
+  TrendingUp,
+  Lock
 } from 'lucide-react';
 import UniversityLogo from './UniversityLogo';
+import PremiumBadge from './PremiumBadge';
+import MaskedContent, { MaskedBanner } from './MaskedContent';
 
 const EnhancedUniversityDetails = ({ 
   university, 
   onBack, 
   onAddToCompare, 
   onAddToFavorites, 
+  onApplyForPractice,
   isInCompareList,
-  isInFavorites 
+  isInFavorites,
+  // プレミアム関連のprops
+  isPremium = false,
+  onUpgradeToPremium,
+  premiumUtils
 }) => {
   const [activeTab, setActiveTab] = useState('overview');
   const [showScrollHint, setShowScrollHint] = useState(false);
   const tabContainerRef = useRef(null);
 
-  // バッジ色分け関数（大学カードと統一）
+  // プレミアムユーティリティのデフォルト値
+  const { 
+    canUsePremiumFeature = () => isPremium,
+    shouldShowContent = () => true,
+    trackPremiumAttempt = () => {}
+  } = premiumUtils || {};
+
+  // バッジ色分け関数（既存のまま）
   const getLeagueColor = (league) => {
     if (league?.includes('1部')) return 'bg-green-100 text-green-800 border-green-200';
     if (league?.includes('2部')) return 'bg-blue-100 text-blue-800 border-blue-200';
@@ -70,9 +85,9 @@ const EnhancedUniversityDetails = ({
     return 'bg-gray-50 text-gray-700 border-gray-200';
   };
 
+  // ヘルパー関数（既存のまま）
   const getShortGenre = (genre) => {
     if (!genre) return '';
-    
     const parts = genre.split('：');
     if (parts.length > 1) {
       const type = parts[0];
@@ -89,14 +104,11 @@ const EnhancedUniversityDetails = ({
     return rank.split('：')[0];
   };
 
-  // 志向性の取得（Firebase新形式対応）
   const getGenres = () => {
-    // Firebase新形式: genres配列を優先
     if (university.genres && Array.isArray(university.genres) && university.genres.length > 0) {
       return university.genres.filter(genre => genre && genre.trim() !== '');
     }
     
-    // 旧形式フォールバック（互換性のため）
     const genres = [];
     if (university.genre1 && university.genre1.trim()) genres.push(university.genre1);
     if (university.genre2 && university.genre2.trim()) genres.push(university.genre2);
@@ -104,18 +116,14 @@ const EnhancedUniversityDetails = ({
     return genres;
   };
 
-  // 練習場所の取得（Firebase新形式対応）
   const getPracticeLocation = () => {
-    // Firebase新形式: facilities.ground_name を優先
     if (university.facilities?.ground_name) {
       return university.facilities.ground_name;
     }
-    
-    // フォールバック
     return university.soccer_club?.practice_location || '';
   };
 
-  // スクロール状態を監視
+  // スクロール状態を監視（既存のまま）
   useEffect(() => {
     const container = tabContainerRef.current;
     if (!container) return;
@@ -148,9 +156,32 @@ const EnhancedUniversityDetails = ({
     { id: 'reviews', label: '口コミ・評判', shortLabel: '口コミ', icon: MessageSquare }
   ];
 
-  // 練習体験申し込みハンドラー
+  // プレミアム制限付きアクションハンドラー
+  const handleCompareClick = () => {
+    if (!canUsePremiumFeature('comparison')) {
+      trackPremiumAttempt('comparison', 'blocked_compare_button');
+      return;
+    }
+    
+    if (isInCompareList) {
+      // 既に比較リストにある場合は削除
+      // 実際の削除処理は親コンポーネントで行う
+    } else {
+      onAddToCompare(university);
+    }
+  };
+
   const handlePracticeApplication = () => {
-    alert(`${university.university_name}サッカー部の練習体験に申し込みます。`);
+    if (!canUsePremiumFeature('practice_application')) {
+      trackPremiumAttempt('practice_application', 'blocked_practice_button');
+      return;
+    }
+    
+    if (onApplyForPractice) {
+      onApplyForPractice(university);
+    } else {
+      alert(`${university.university_name}サッカー部の練習体験に申し込みます。`);
+    }
   };
 
   const genres = getGenres();
@@ -209,7 +240,6 @@ const EnhancedUniversityDetails = ({
           
           {/* メイン情報 */}
           <div className="flex flex-col lg:flex-row items-start lg:items-center space-y-6 lg:space-y-0 lg:space-x-8 mb-8">
-            {/* UniversityLogoコンポーネントを使用 */}
             <UniversityLogo 
               university={university}
               size="xl"
@@ -218,12 +248,10 @@ const EnhancedUniversityDetails = ({
             />
             
             <div className="flex-1 min-w-0 space-y-4">
-              {/* 大学名 */}
               <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900">
                 {university.university_name}
               </h1>
               
-              {/* 第1行: リーグバッジ + 練習場所バッジ */}
               <div className="flex flex-wrap gap-2">
                 <span className={`inline-block px-3 py-1 rounded-full text-sm font-medium border ${getLeagueColor(university.soccer_club?.league)}`}>
                   {university.soccer_club?.league || 'リーグ不明'}
@@ -237,7 +265,6 @@ const EnhancedUniversityDetails = ({
                 )}
               </div>
 
-              {/* 第2行: 学力ランクバッジ + 志向性バッジ */}
               <div className="flex flex-wrap gap-2">
                 {university.academic_rank && (
                   <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm border ${getAcademicRankColor(university.academic_rank)}`}>
@@ -264,19 +291,49 @@ const EnhancedUniversityDetails = ({
               <h2 className="text-lg font-semibold text-green-800 mb-4 flex items-center">
                 <div className="w-2 h-2 bg-green-500 rounded-full mr-3"></div>
                 PLAYMAKERコメント
+                {!isPremium && <PremiumBadge className="ml-2" />}
               </h2>
-              <p className="text-gray-700 leading-relaxed">
-                {university.extended_data.playmaker_comment}
-              </p>
+              
+              {isPremium ? (
+                <p className="text-gray-700 leading-relaxed">
+                  {university.extended_data.playmaker_comment}
+                </p>
+              ) : (
+                <div className="space-y-3">
+                  <p className="text-gray-700 leading-relaxed">
+                    {university.extended_data.playmaker_comment.split('。')[0]}。
+                  </p>
+                  <MaskedContent 
+                    reason="より詳細な専門評価"
+                    onUpgradeClick={onUpgradeToPremium}
+                  >
+                    <p className="text-gray-700 leading-relaxed">
+                      {university.extended_data.playmaker_comment}
+                    </p>
+                  </MaskedContent>
+                </div>
+              )}
             </div>
           )}
         </div>
       </div>
 
+      {/* 比較機能バナー（フリープランのみ） */}
+      {!isPremium && (
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <MaskedBanner 
+            title="比較機能はプレミアム限定"
+            description="複数の大学を詳細に比較検討できる機能は、プレミアムプランでご利用いただけます。"
+            onUpgradeClick={onUpgradeToPremium}
+            className="mb-6"
+          />
+        </div>
+      )}
+
       {/* メインコンテンツ */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
         <div className="space-y-6 lg:space-y-8">
-          {/* ナビゲーションタブ（スマホ対応 + スクロールヒント） */}
+          {/* ナビゲーションタブ */}
           <div className="bg-white rounded-xl shadow-sm overflow-hidden">
             <div className="relative">
               <div 
@@ -297,7 +354,6 @@ const EnhancedUniversityDetails = ({
                       onClick={() => setActiveTab(tab.id)}
                     >
                       <Icon size={18} className="mr-2" />
-                      {/* レスポンシブ表示 */}
                       <span className="hidden sm:inline">{tab.label}</span>
                       <span className="sm:hidden">{tab.shortLabel}</span>
                     </button>
@@ -305,12 +361,9 @@ const EnhancedUniversityDetails = ({
                 })}
               </div>
               
-              {/* 右端グラデーション + スクロールヒント */}
               {showScrollHint && (
                 <>
-                  <div 
-                    className="absolute top-0 right-0 h-full w-8 bg-gradient-to-l from-white via-white/80 to-transparent pointer-events-none z-10"
-                  />
+                  <div className="absolute top-0 right-0 h-full w-8 bg-gradient-to-l from-white via-white/80 to-transparent pointer-events-none z-10" />
                   <div className="absolute top-1/2 right-2 transform -translate-y-1/2 pointer-events-none z-20">
                     <div className="flex items-center text-xs text-gray-400">
                       <span className="mr-1">→</span>
@@ -321,12 +374,48 @@ const EnhancedUniversityDetails = ({
             </div>
             
             <div className="p-6 lg:p-8">
-              {activeTab === 'overview' && <OverviewTab university={university} />}
-              {activeTab === 'admission' && <AdmissionTab university={university} />}
-              {activeTab === 'costs' && <CostsTab university={university} />}
-              {activeTab === 'facilities' && <FacilitiesTab university={university} />}
-              {activeTab === 'careers' && <CareersTab university={university} />}
-              {activeTab === 'reviews' && <ReviewsTab university={university} />}
+              {activeTab === 'overview' && (
+                <OverviewTab 
+                  university={university} 
+                  isPremium={isPremium} 
+                  onUpgradeToPremium={onUpgradeToPremium}
+                />
+              )}
+              {activeTab === 'admission' && (
+                <AdmissionTab 
+                  university={university} 
+                  isPremium={isPremium} 
+                  onUpgradeToPremium={onUpgradeToPremium}
+                />
+              )}
+              {activeTab === 'costs' && (
+                <CostsTab 
+                  university={university} 
+                  isPremium={isPremium} 
+                  onUpgradeToPremium={onUpgradeToPremium}
+                />
+              )}
+              {activeTab === 'facilities' && (
+                <FacilitiesTab 
+                  university={university} 
+                  isPremium={isPremium} 
+                  onUpgradeToPremium={onUpgradeToPremium}
+                />
+              )}
+              {activeTab === 'careers' && (
+                <CareersTab 
+                  university={university} 
+                  isPremium={isPremium} 
+                  onUpgradeToPremium={onUpgradeToPremium}
+                />
+              )}
+              {activeTab === 'reviews' && (
+                <ReviewsTab 
+                  university={university} 
+                  isPremium={isPremium} 
+                  onUpgradeToPremium={onUpgradeToPremium}
+                />
+              )}
             </div>
           </div>
           
@@ -350,38 +439,62 @@ const EnhancedUniversityDetails = ({
                 </span>
               </button>
               
-              <button 
-                className={`flex items-center justify-center px-4 lg:px-6 py-3 rounded-lg font-medium transition-colors ${
-                  isInCompareList
-                    ? 'bg-gray-100 text-gray-500 cursor-not-allowed'
-                    : 'bg-green-600 text-white hover:bg-green-700'
-                }`}
-                disabled={isInCompareList}
-                onClick={() => !isInCompareList && onAddToCompare(university)}
-              >
-                {isInCompareList ? (
-                  <>
-                    <Check size={18} className="mr-2" />
-                    <span className="hidden sm:inline">比較リストに追加済み</span>
-                    <span className="sm:hidden">追加済み</span>
-                  </>
-                ) : (
-                  <>
-                    <Plus size={18} className="mr-2" />
-                    <span className="hidden sm:inline">比較リストに追加</span>
-                    <span className="sm:hidden">比較追加</span>
-                  </>
-                )}
-              </button>
+              {isPremium ? (
+                <button 
+                  className={`flex items-center justify-center px-4 lg:px-6 py-3 rounded-lg font-medium transition-colors ${
+                    isInCompareList
+                      ? 'bg-gray-100 text-gray-500 cursor-not-allowed'
+                      : 'bg-green-600 text-white hover:bg-green-700'
+                  }`}
+                  disabled={isInCompareList}
+                  onClick={handleCompareClick}
+                >
+                  {isInCompareList ? (
+                    <>
+                      <Check size={18} className="mr-2" />
+                      <span className="hidden sm:inline">比較リストに追加済み</span>
+                      <span className="sm:hidden">追加済み</span>
+                    </>
+                  ) : (
+                    <>
+                      <Plus size={18} className="mr-2" />
+                      <span className="hidden sm:inline">比較リストに追加</span>
+                      <span className="sm:hidden">比較追加</span>
+                    </>
+                  )}
+                </button>
+              ) : (
+                <button 
+                  className="bg-gray-100 text-gray-500 cursor-not-allowed px-4 lg:px-6 py-3 rounded-lg font-medium flex items-center justify-center"
+                  disabled
+                  onClick={() => trackPremiumAttempt('comparison', 'blocked_compare_button')}
+                >
+                  <Lock size={18} className="mr-2" />
+                  <span className="hidden sm:inline">比較リストに追加</span>
+                  <span className="sm:hidden">比較追加</span>
+                </button>
+              )}
               
-              <button 
-                className="bg-blue-600 text-white hover:bg-blue-700 px-4 lg:px-6 py-3 rounded-lg font-medium transition-colors flex items-center justify-center sm:col-span-2 lg:col-span-1"
-                onClick={handlePracticeApplication}
-              >
-                <Calendar size={18} className="mr-2" />
-                <span className="hidden sm:inline">練習体験に申し込む</span>
-                <span className="sm:hidden">練習体験</span>
-              </button>
+              {isPremium ? (
+                <button 
+                  className="bg-blue-600 text-white hover:bg-blue-700 px-4 lg:px-6 py-3 rounded-lg font-medium transition-colors flex items-center justify-center sm:col-span-2 lg:col-span-1"
+                  onClick={handlePracticeApplication}
+                >
+                  <Calendar size={18} className="mr-2" />
+                  <span className="hidden sm:inline">練習体験に申し込む</span>
+                  <span className="sm:hidden">練習体験</span>
+                </button>
+              ) : (
+                <button 
+                  className="bg-gray-100 text-gray-500 cursor-not-allowed px-4 lg:px-6 py-3 rounded-lg font-medium flex items-center justify-center sm:col-span-2 lg:col-span-1"
+                  disabled
+                  onClick={() => trackPremiumAttempt('practice_application', 'blocked_practice_button')}
+                >
+                  <Lock size={18} className="mr-2" />
+                  <span className="hidden sm:inline">練習体験に申し込む</span>
+                  <span className="sm:hidden">練習体験</span>
+                </button>
+              )}
             </div>
           </div>
         </div>
@@ -391,9 +504,8 @@ const EnhancedUniversityDetails = ({
 };
 
 
-// 概要タブコンポーネント - 整理済み版
-const OverviewTab = ({ university }) => {
-  // 基本データの取得（Firebase新形式対応）
+// 概要タブコンポーネント - プレミアム制限対応版
+const OverviewTab = ({ university, isPremium, onUpgradeToPremium }) => {
   const getBasicData = () => {
     const soccerClub = university.soccer_club || {};
     const facilities = university.facilities || {};
@@ -431,7 +543,7 @@ const OverviewTab = ({ university }) => {
 
   return (
     <div className="space-y-8">
-      {/* 1. 基本データ（3つの指標） */}
+      {/* 基本データ */}
       <div>
         <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
           <TrendingUp size={18} className="text-blue-600 mr-2" />
@@ -457,23 +569,41 @@ const OverviewTab = ({ university }) => {
         </div>
       </div>
 
-      {/* 2. 監督・指導体制 */}
+      {/* 監督・指導体制 */}
       <div>
         <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
           <User size={18} className="text-green-600 mr-2" />
           監督・指導体制
+          {!isPremium && <PremiumBadge className="ml-2" />}
         </h3>
-        <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
-          <div>
-            <p className="text-sm text-gray-600">監督</p>
-            <p className="font-medium text-gray-900 text-lg">
-              {university.soccer_club?.coach_name || "情報なし"}
-            </p>
+        
+        {isPremium ? (
+          <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
+            <div>
+              <p className="text-sm text-gray-600">監督</p>
+              <p className="font-medium text-gray-900 text-lg">
+                {university.soccer_club?.coach_name || "情報なし"}
+              </p>
+            </div>
           </div>
-        </div>
+        ) : (
+          <MaskedContent 
+            reason="監督情報と指導体制の詳細"
+            onUpgradeClick={onUpgradeToPremium}
+          >
+            <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
+              <div>
+                <p className="text-sm text-gray-600">監督</p>
+                <p className="font-medium text-gray-900 text-lg">
+                  {university.soccer_club?.coach_name || "情報なし"}
+                </p>
+              </div>
+            </div>
+          </MaskedContent>
+        )}
       </div>
 
-      {/* 3. 施設情報（Firebase新形式対応） */}
+      {/* 施設情報 - 基本情報は無料、詳細はプレミアム */}
       <div>
         <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
           <Building size={18} className="text-indigo-600 mr-2" />
@@ -497,8 +627,22 @@ const OverviewTab = ({ university }) => {
             </div>
           </div>
           
-          {/* グラウンド住所の表示 */}
-          {university.facilities?.ground_address && (
+          {!isPremium && university.facilities?.ground_address && (
+            <div className="mt-4 pt-4 border-t border-gray-200">
+              <MaskedContent 
+                reason="グラウンドの詳細住所"
+                onUpgradeClick={onUpgradeToPremium}
+                showPreview={false}
+              >
+                <div>
+                  <p className="text-sm text-gray-600 mb-1">所在地</p>
+                  <p className="text-gray-700 text-sm">{university.facilities.ground_address}</p>
+                </div>
+              </MaskedContent>
+            </div>
+          )}
+          
+          {isPremium && university.facilities?.ground_address && (
             <div className="mt-4 pt-4 border-t border-gray-200">
               <p className="text-sm text-gray-600 mb-1">所在地</p>
               <p className="text-gray-700 text-sm">{university.facilities.ground_address}</p>
@@ -507,7 +651,7 @@ const OverviewTab = ({ university }) => {
         </div>
       </div>
 
-      {/* 4. 寮情報（Firebase新形式対応） */}
+      {/* 寮情報 */}
       <div>
         <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
           <Home size={18} className="text-purple-600 mr-2" />
@@ -515,7 +659,6 @@ const OverviewTab = ({ university }) => {
         </h3>
         <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
           {university.soccer_club?.dorm_details ? (
-            // 新形式：詳細な寮情報
             <div className="space-y-3">
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <div className="flex items-center space-x-2">
@@ -562,14 +705,28 @@ const OverviewTab = ({ university }) => {
               </div>
               
               {university.soccer_club.dorm_details.dorm_notes && (
-                <div className="mt-3 pt-3 border-t border-gray-200">
-                  <p className="text-sm text-gray-600 mb-1">寮について</p>
-                  <p className="text-gray-700 text-sm">{university.soccer_club.dorm_details.dorm_notes}</p>
-                </div>
+                isPremium ? (
+                  <div className="mt-3 pt-3 border-t border-gray-200">
+                    <p className="text-sm text-gray-600 mb-1">寮について</p>
+                    <p className="text-gray-700 text-sm">{university.soccer_club.dorm_details.dorm_notes}</p>
+                  </div>
+                ) : (
+                  <div className="mt-3 pt-3 border-t border-gray-200">
+                    <MaskedContent 
+                      reason="寮の詳細情報"
+                      onUpgradeClick={onUpgradeToPremium}
+                      showPreview={false}
+                    >
+                      <div>
+                        <p className="text-sm text-gray-600 mb-1">寮について</p>
+                        <p className="text-gray-700 text-sm">{university.soccer_club.dorm_details.dorm_notes}</p>
+                      </div>
+                    </MaskedContent>
+                  </div>
+                )
               )}
             </div>
           ) : (
-            // 旧形式：基本的な寮情報
             <div className="flex items-center space-x-3">
               {university.soccer_club?.dorm_available ? (
                 <>
@@ -587,84 +744,127 @@ const OverviewTab = ({ university }) => {
         </div>
       </div>
 
-      {/* 5. 取得可能資格 */}
+      {/* 取得可能資格 */}
       <div>
         <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
           <BookOpen size={18} className="text-indigo-600 mr-2" />
           取得可能資格
+          {!isPremium && <PremiumBadge className="ml-2" />}
         </h3>
-        <div className="flex flex-wrap gap-2">
-          {university.soccer_club?.qualifications && university.soccer_club.qualifications.length > 0 ? (
-            university.soccer_club.qualifications.map((qualification, index) => (
-              <span key={index} className="bg-gray-100 text-gray-700 px-3 py-2 rounded-lg text-sm border border-gray-200">
-                {qualification}
-              </span>
-            ))
-          ) : (
-            <span className="text-gray-500 text-sm">資格情報は大学にお問い合わせください</span>
-          )}
-        </div>
+        
+        {isPremium ? (
+          <div className="flex flex-wrap gap-2">
+            {university.soccer_club?.qualifications && university.soccer_club.qualifications.length > 0 ? (
+              university.soccer_club.qualifications.map((qualification, index) => (
+                <span key={index} className="bg-gray-100 text-gray-700 px-3 py-2 rounded-lg text-sm border border-gray-200">
+                  {qualification}
+                </span>
+              ))
+            ) : (
+              <span className="text-gray-500 text-sm">資格情報は大学にお問い合わせください</span>
+            )}
+          </div>
+        ) : (
+          <MaskedContent 
+            reason="取得可能な資格一覧"
+            onUpgradeClick={onUpgradeToPremium}
+          >
+            <div className="flex flex-wrap gap-2">
+              {university.soccer_club?.qualifications && university.soccer_club.qualifications.length > 0 ? (
+                university.soccer_club.qualifications.map((qualification, index) => (
+                  <span key={index} className="bg-gray-100 text-gray-700 px-3 py-2 rounded-lg text-sm border border-gray-200">
+                    {qualification}
+                  </span>
+                ))
+              ) : (
+                <span className="text-gray-500 text-sm">資格情報は大学にお問い合わせください</span>
+              )}
+            </div>
+          </MaskedContent>
+        )}
       </div>
     </div>
   );
 };
 
-// 入部条件タブコンポーネント
-const AdmissionTab = ({ university }) => (
+// 入部条件タブコンポーネント - プレミアム制限対応版
+const AdmissionTab = ({ university, isPremium, onUpgradeToPremium }) => (
   <div className="space-y-8">
-    {/* 1. スポーツ推薦セクション */}
+    {/* スポーツ推薦セクション - プレミアム限定 */}
     <div>
       <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
         <Zap size={18} className="text-green-600 mr-2" />
         スポーツ推薦
+        {!isPremium && <PremiumBadge className="ml-2" />}
       </h3>
-      <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
-        {university.entry_conditions?.sports_recommend ? (
-          <div className="space-y-4">
-            <div className="flex items-center">
-              <span className="inline-block bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-medium">利用可能</span>
-            </div>
-            
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              <div>
-                <p className="text-sm text-gray-600">推薦率</p>
-                <p className="font-medium text-gray-900">
-                  {university.extended_data?.recommend_ratio || "約70%"}
-                </p>
+      
+      {isPremium ? (
+        <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
+          {university.entry_conditions?.sports_recommend ? (
+            <div className="space-y-4">
+              <div className="flex items-center">
+                <span className="inline-block bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-medium">利用可能</span>
               </div>
-              <div>
-                <p className="text-sm text-gray-600">受入人数</p>
-                <p className="font-medium text-gray-900">
-                  {university.entry_conditions?.recommend_people_count || "お問い合わせください"}
-                </p>
+              
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div>
+                  <p className="text-sm text-gray-600">推薦率</p>
+                  <p className="font-medium text-gray-900">
+                    {university.extended_data?.recommend_ratio || "約70%"}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-sm text-gray-600">受入人数</p>
+                  <p className="font-medium text-gray-900">
+                    {university.entry_conditions?.recommend_people_count || "お問い合わせください"}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-sm text-gray-600">基準</p>
+                  <p className="font-medium text-gray-900">
+                    {university.entry_conditions?.recommend_criteria || "実力・実績による"}
+                  </p>
+                </div>
               </div>
-              <div>
-                <p className="text-sm text-gray-600">基準</p>
-                <p className="font-medium text-gray-900">
-                  {university.entry_conditions?.recommend_criteria || "実力・実績による"}
-                </p>
-              </div>
-            </div>
 
-            {university.entry_conditions?.recommend_criteria_detail && (
-              <div>
-                <p className="text-sm text-gray-600 mb-2">詳細な推薦基準</p>
-                <p className="text-gray-700 text-sm leading-relaxed">
-                  {university.entry_conditions.recommend_criteria_detail}
-                </p>
+              {university.entry_conditions?.recommend_criteria_detail && (
+                <div>
+                  <p className="text-sm text-gray-600 mb-2">詳細な推薦基準</p>
+                  <p className="text-gray-700 text-sm leading-relaxed">
+                    {university.entry_conditions.recommend_criteria_detail}
+                  </p>
+                </div>
+              )}
+            </div>
+          ) : (
+            <div className="flex items-center">
+              <span className="inline-block bg-red-100 text-red-800 px-3 py-1 rounded-full text-sm font-medium">利用不可</span>
+              <p className="text-gray-600 text-sm ml-3">スポーツ推薦制度はありません</p>
+            </div>
+          )}
+        </div>
+      ) : (
+        <MaskedContent 
+          reason="スポーツ推薦の詳細条件"
+          onUpgradeClick={onUpgradeToPremium}
+        >
+          <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
+            <div className="space-y-4">
+              <div className="flex items-center">
+                <span className="inline-block bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-medium">
+                  {university.entry_conditions?.sports_recommend ? "利用可能" : "利用不可"}
+                </span>
               </div>
-            )}
+              <div className="text-sm text-gray-600">
+                スポーツ推薦の詳細条件はプレミアム限定情報です
+              </div>
+            </div>
           </div>
-        ) : (
-          <div className="flex items-center">
-            <span className="inline-block bg-red-100 text-red-800 px-3 py-1 rounded-full text-sm font-medium">利用不可</span>
-            <p className="text-gray-600 text-sm ml-3">スポーツ推薦制度はありません</p>
-          </div>
-        )}
-      </div>
+        </MaskedContent>
+      )}
     </div>
 
-    {/* 2. セレクションセクション */}
+    {/* セレクションセクション */}
     <div>
       <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
         <Calendar size={18} className="text-blue-600 mr-2" />
@@ -690,7 +890,22 @@ const AdmissionTab = ({ university }) => (
               </div>
             </div>
 
-            {university.extended_data?.selection_details && (
+            {!isPremium && university.extended_data?.selection_details && (
+              <MaskedContent 
+                reason="セレクションの詳細情報"
+                onUpgradeClick={onUpgradeToPremium}
+                showPreview={false}
+              >
+                <div>
+                  <p className="text-sm text-gray-600 mb-2">セレクション詳細</p>
+                  <p className="text-gray-700 text-sm leading-relaxed">
+                    {university.extended_data.selection_details}
+                  </p>
+                </div>
+              </MaskedContent>
+            )}
+            
+            {isPremium && university.extended_data?.selection_details && (
               <div>
                 <p className="text-sm text-gray-600 mb-2">セレクション詳細</p>
                 <p className="text-gray-700 text-sm leading-relaxed">
@@ -708,7 +923,7 @@ const AdmissionTab = ({ university }) => (
       </div>
     </div>
 
-    {/* 3. 一般入部セクション */}
+    {/* 一般入部セクション */}
     <div>
       <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
         <GraduationCap size={18} className="text-purple-600 mr-2" />
@@ -737,41 +952,63 @@ const AdmissionTab = ({ university }) => (
       </div>
     </div>
 
-    {/* 4. 奨学金制度セクション */}
+    {/* 奨学金制度セクション - プレミアム限定 */}
     <div>
       <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
         <DollarSign size={18} className="text-yellow-600 mr-2" />
         奨学金制度
+        {!isPremium && <PremiumBadge className="ml-2" />}
       </h3>
-      <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
-        {university.soccer_club?.sports_scholarship ? (
-          <div className="space-y-4">
-            <div className="flex items-center">
-              <span className="inline-block bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full text-sm font-medium">制度あり</span>
+      
+      {isPremium ? (
+        <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
+          {university.soccer_club?.sports_scholarship ? (
+            <div className="space-y-4">
+              <div className="flex items-center">
+                <span className="inline-block bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full text-sm font-medium">制度あり</span>
+              </div>
+              
+              {university.extended_data?.scholarship_details ? (
+                <div>
+                  <p className="text-sm text-gray-600 mb-2">制度詳細</p>
+                  <p className="text-gray-700 text-sm leading-relaxed">
+                    {university.extended_data.scholarship_details}
+                  </p>
+                </div>
+              ) : (
+                <div>
+                  <p className="text-gray-700 text-sm leading-relaxed">
+                    スポーツ奨学金制度を設けています。詳細については大学へお問い合わせください。
+                  </p>
+                </div>
+              )}
             </div>
-            
-            {university.extended_data?.scholarship_details ? (
-              <div>
-                <p className="text-sm text-gray-600 mb-2">制度詳細</p>
-                <p className="text-gray-700 text-sm leading-relaxed">
-                  {university.extended_data.scholarship_details}
-                </p>
+          ) : (
+            <div className="flex items-center">
+              <span className="inline-block bg-gray-100 text-gray-800 px-3 py-1 rounded-full text-sm font-medium">制度なし</span>
+              <p className="text-gray-600 text-sm ml-3">スポーツ特有の奨学金制度はありません</p>
+            </div>
+          )}
+        </div>
+      ) : (
+        <MaskedContent 
+          reason="奨学金制度の詳細"
+          onUpgradeClick={onUpgradeToPremium}
+        >
+          <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
+            <div className="space-y-4">
+              <div className="flex items-center">
+                <span className="inline-block bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full text-sm font-medium">
+                  {university.soccer_club?.sports_scholarship ? "制度あり" : "制度なし"}
+                </span>
               </div>
-            ) : (
-              <div>
-                <p className="text-gray-700 text-sm leading-relaxed">
-                  スポーツ奨学金制度を設けています。詳細については大学へお問い合わせください。
-                </p>
+              <div className="text-sm text-gray-600">
+                奨学金制度の詳細はプレミアム限定情報です
               </div>
-            )}
+            </div>
           </div>
-        ) : (
-          <div className="flex items-center">
-            <span className="inline-block bg-gray-100 text-gray-800 px-3 py-1 rounded-full text-sm font-medium">制度なし</span>
-            <p className="text-gray-600 text-sm ml-3">スポーツ特有の奨学金制度はありません</p>
-          </div>
-        )}
-      </div>
+        </MaskedContent>
+      )}
     </div>
 
     {/* 注意事項 */}
@@ -787,13 +1024,13 @@ const AdmissionTab = ({ university }) => (
   </div>
 );
 
-// 費用・お金タブコンポーネント
-const CostsTab = ({ university }) => {
+// 費用・お金タブコンポーネント - プレミアム制限対応版
+const CostsTab = ({ university, isPremium, onUpgradeToPremium }) => {
   const costs = university.costs || {};
   
   return (
     <div className="space-y-8">
-      {/* 1. 大学費用（年額） */}
+      {/* 大学費用（年額） - 基本情報は無料 */}
       <div>
         <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
           <GraduationCap size={18} className="text-blue-600 mr-2" />
@@ -826,58 +1063,83 @@ const CostsTab = ({ university }) => {
         </div>
       </div>
 
-      {/* 2. サッカー部費用（年額） */}
+      {/* サッカー部費用（年額） - プレミアム限定 */}
       <div>
         <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
           <Users size={18} className="text-green-600 mr-2" />
           サッカー部費用（年額）
+          {!isPremium && <PremiumBadge className="ml-2" />}
         </h3>
-        <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
-          <div className="space-y-4">
-            {/* 部費とチームウェア代 */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div>
-                <div className="text-sm text-gray-600 mb-1">部費</div>
-                <div className="text-lg font-semibold text-gray-900">
-                  月額{((costs.soccer_club_costs?.monthly_club_fee || 15000) / 10000).toFixed(1)}万円
-                </div>
-                <div className="text-xs text-gray-500 mt-1">年額約{(((costs.soccer_club_costs?.monthly_club_fee || 15000) * 12) / 10000).toFixed(0)}万円</div>
-              </div>
-              <div className="flex items-start">
-                <Target size={16} className="text-blue-600 mr-3 flex-shrink-0 mt-1" />
+        
+        {isPremium ? (
+          <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
+            <div className="space-y-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <div className="text-sm text-gray-600 mb-1">チームウェア代</div>
+                  <div className="text-sm text-gray-600 mb-1">部費</div>
                   <div className="text-lg font-semibold text-gray-900">
-                    年{((costs.soccer_club_costs?.equipment_cost || 80000) / 10000).toFixed(0)}万円
+                    月額{((costs.soccer_club_costs?.monthly_club_fee || 15000) / 10000).toFixed(1)}万円
                   </div>
-                  <div className="text-xs text-gray-500 mt-1">ユニフォーム・練習着等</div>
+                  <div className="text-xs text-gray-500 mt-1">年額約{(((costs.soccer_club_costs?.monthly_club_fee || 15000) * 12) / 10000).toFixed(0)}万円</div>
+                </div>
+                <div className="flex items-start">
+                  <Target size={16} className="text-blue-600 mr-3 flex-shrink-0 mt-1" />
+                  <div>
+                    <div className="text-sm text-gray-600 mb-1">チームウェア代</div>
+                    <div className="text-lg font-semibold text-gray-900">
+                      年{((costs.soccer_club_costs?.equipment_cost || 80000) / 10000).toFixed(0)}万円
+                    </div>
+                    <div className="text-xs text-gray-500 mt-1">ユニフォーム・練習着等</div>
+                  </div>
                 </div>
               </div>
-            </div>
-            
-            {/* 合宿・遠征費 */}
-            <div className="pt-4 border-t border-gray-200">
-              <div className="flex items-start mb-3">
-                <MapPin size={16} className="text-purple-600 mr-3 flex-shrink-0 mt-1" />
-                <div className="flex-1">
-                  <h4 className="font-medium text-gray-900 mb-2 flex items-center">
-                    合宿・遠征費
-                    <span className="ml-2 text-base font-semibold text-purple-700">
-                      年約{((costs.soccer_club_costs?.camp_cost || 200000) / 10000).toFixed(0)}万円
-                    </span>
-                  </h4>
-                  <p className="text-gray-700 text-sm leading-relaxed">
-                    {costs.soccer_club_costs?.camp_travel_description || 
-                     "年3回の合宿（春季・夏季・冬季）と関東リーグ戦での遠征があります。合宿費用は1回あたり約8-10万円、遠征費は月2-3回程度で交通費・宿泊費込みで年間約15万円程度を想定してください。"}
-                  </p>
+              
+              <div className="pt-4 border-t border-gray-200">
+                <div className="flex items-start mb-3">
+                  <MapPin size={16} className="text-purple-600 mr-3 flex-shrink-0 mt-1" />
+                  <div className="flex-1">
+                    <h4 className="font-medium text-gray-900 mb-2 flex items-center">
+                      合宿・遠征費
+                      <span className="ml-2 text-base font-semibold text-purple-700">
+                        年約{((costs.soccer_club_costs?.camp_cost || 200000) / 10000).toFixed(0)}万円
+                      </span>
+                    </h4>
+                    <p className="text-gray-700 text-sm leading-relaxed">
+                      {costs.soccer_club_costs?.camp_travel_description || 
+                       "年3回の合宿（春季・夏季・冬季）と関東リーグ戦での遠征があります。合宿費用は1回あたり約8-10万円、遠征費は月2-3回程度で交通費・宿泊費込みで年間約15万円程度を想定してください。"}
+                    </p>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
+        ) : (
+          <MaskedContent 
+            reason="サッカー部の詳細な費用情報"
+            onUpgradeClick={onUpgradeToPremium}
+          >
+            <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
+              <div className="space-y-4">
+                <div className="text-sm text-gray-600">
+                  月額部費、チームウェア代、合宿・遠征費の詳細はプレミアム限定情報です
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="bg-white p-3 rounded border">
+                    <div className="text-sm text-gray-500">部費・ウェア代</div>
+                    <div className="text-lg font-semibold text-gray-400">●●万円</div>
+                  </div>
+                  <div className="bg-white p-3 rounded border">
+                    <div className="text-sm text-gray-500">合宿・遠征費</div>
+                    <div className="text-lg font-semibold text-gray-400">●●万円</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </MaskedContent>
+        )}
       </div>
 
-      {/* 3. 奨学金・支援制度 */}
+      {/* 奨学金・支援制度 */}
       {university.soccer_club?.sports_scholarship && (
         <div>
           <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
@@ -899,7 +1161,7 @@ const CostsTab = ({ university }) => {
         </div>
       )}
 
-      {/* 4. 注意事項 */}
+      {/* 注意事項 */}
       <div className="bg-blue-50 p-4 rounded-lg border-l-4 border-blue-500">
         <h4 className="font-semibold text-gray-900 mb-2">ご注意</h4>
         <ul className="text-sm text-gray-700 space-y-1">
@@ -914,15 +1176,14 @@ const CostsTab = ({ university }) => {
   );
 };
 
-// 施設・環境タブコンポーネント
-const FacilitiesTab = ({ university }) => {
-  // Firebase新形式の施設データを取得
+// 施設・環境タブコンポーネント - プレミアム制限対応版
+const FacilitiesTab = ({ university, isPremium, onUpgradeToPremium }) => {
   const facilities = university.facilities || {};
   const soccerClub = university.soccer_club || {};
   
   return (
     <div className="space-y-8">
-      {/* 1. グラウンド・練習施設 */}
+      {/* グラウンド・練習施設 */}
       <div>
         <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
           <Building size={18} className="text-green-600 mr-2" />
@@ -930,7 +1191,6 @@ const FacilitiesTab = ({ university }) => {
         </h3>
         <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
           <div className="space-y-4">
-            {/* 基本情報 */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <p className="text-sm text-gray-600 mb-1">グラウンド名</p>
@@ -947,40 +1207,60 @@ const FacilitiesTab = ({ university }) => {
               </div>
             </div>
             
-            {/* グラウンド住所 */}
+            {/* グラウンド住所 - プレミアム限定 */}
             {facilities.ground_address && (
-              <div>
-                <p className="text-sm text-gray-600 mb-1">グラウンド住所</p>
-                <p className="text-gray-700 text-sm leading-relaxed">
-                  {facilities.ground_address}
-                </p>
-              </div>
+              isPremium ? (
+                <div>
+                  <p className="text-sm text-gray-600 mb-1">グラウンド住所</p>
+                  <p className="text-gray-700 text-sm leading-relaxed">
+                    {facilities.ground_address}
+                  </p>
+                </div>
+              ) : (
+                <MaskedContent 
+                  reason="グラウンドの詳細住所"
+                  onUpgradeClick={onUpgradeToPremium}
+                  showPreview={false}
+                >
+                  <div>
+                    <p className="text-sm text-gray-600 mb-1">グラウンド住所</p>
+                    <p className="text-gray-700 text-sm leading-relaxed">
+                      {facilities.ground_address}
+                    </p>
+                  </div>
+                </MaskedContent>
+              )
             )}
             
-            {/* グラウンド特記事項 */}
+            {/* グラウンド特記事項 - プレミアム限定 */}
             {facilities.ground_notes && (
-              <div>
-                <p className="text-sm text-gray-600 mb-2">グラウンド特記事項</p>
-                <p className="text-gray-700 text-sm leading-relaxed">
-                  {facilities.ground_notes}
-                </p>
-              </div>
-            )}
-            
-            {/* 施設特記事項（旧形式フォールバック） */}
-            {facilities.facility_note && (
-              <div>
-                <p className="text-sm text-gray-600 mb-2">施設特記事項</p>
-                <p className="text-gray-700 text-sm leading-relaxed">
-                  {facilities.facility_note}
-                </p>
-              </div>
+              isPremium ? (
+                <div>
+                  <p className="text-sm text-gray-600 mb-2">グラウンド特記事項</p>
+                  <p className="text-gray-700 text-sm leading-relaxed">
+                    {facilities.ground_notes}
+                  </p>
+                </div>
+              ) : (
+                <MaskedContent 
+                  reason="グラウンドの詳細情報"
+                  onUpgradeClick={onUpgradeToPremium}
+                  showPreview={false}
+                >
+                  <div>
+                    <p className="text-sm text-gray-600 mb-2">グラウンド特記事項</p>
+                    <p className="text-gray-700 text-sm leading-relaxed">
+                      {facilities.ground_notes}
+                    </p>
+                  </div>
+                </MaskedContent>
+              )
             )}
           </div>
         </div>
       </div>
 
-      {/* 2. 寮について - Firebase新形式対応 */}
+      {/* 寮について */}
       <div>
         <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
           <Home size={18} className="text-purple-600 mr-2" />
@@ -988,11 +1268,9 @@ const FacilitiesTab = ({ university }) => {
         </h3>
         <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
           <div className="space-y-4">
-            {/* 寮の有無 - 詳細表示 */}
             <div className="space-y-3">
               {soccerClub.dorm_details ? (
                 <>
-                  {/* 新形式：詳細な寮情報 */}
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                     <div className="flex items-center space-x-2">
                       {soccerClub.dorm_details.university_dorm ? (
@@ -1037,37 +1315,50 @@ const FacilitiesTab = ({ university }) => {
                     </div>
                   </div>
                   
-                  {/* 寮特記事項 */}
+                  {/* 寮特記事項 - プレミアム限定 */}
                   {soccerClub.dorm_details.dorm_notes && (
-                    <div className="mt-4 pt-4 border-t border-gray-200">
-                      <p className="text-sm text-gray-600 mb-2">寮特記事項</p>
-                      <p className="text-gray-700 text-sm leading-relaxed">
-                        {soccerClub.dorm_details.dorm_notes}
-                      </p>
-                    </div>
+                    isPremium ? (
+                      <div className="mt-4 pt-4 border-t border-gray-200">
+                        <p className="text-sm text-gray-600 mb-2">寮特記事項</p>
+                        <p className="text-gray-700 text-sm leading-relaxed">
+                          {soccerClub.dorm_details.dorm_notes}
+                        </p>
+                      </div>
+                    ) : (
+                      <div className="mt-4 pt-4 border-t border-gray-200">
+                        <MaskedContent 
+                          reason="寮の詳細情報"
+                          onUpgradeClick={onUpgradeToPremium}
+                          showPreview={false}
+                        >
+                          <div>
+                            <p className="text-sm text-gray-600 mb-2">寮特記事項</p>
+                            <p className="text-gray-700 text-sm leading-relaxed">
+                              {soccerClub.dorm_details.dorm_notes}
+                            </p>
+                          </div>
+                        </MaskedContent>
+                      </div>
+                    )
                   )}
                 </>
               ) : (
-                <>
-                  {/* 旧形式：基本的な寮情報 */}
-                  <div className="flex items-center space-x-3">
-                    {soccerClub.dorm_available ? (
-                      <>
-                        <Check size={20} className="text-green-600" />
-                        <span className="text-gray-700 font-medium">寮あり</span>
-                      </>
-                    ) : (
-                      <>
-                        <X size={20} className="text-red-500" />
-                        <span className="text-gray-700 font-medium">寮なし</span>
-                      </>
-                    )}
-                  </div>
-                </>
+                <div className="flex items-center space-x-3">
+                  {soccerClub.dorm_available ? (
+                    <>
+                      <Check size={20} className="text-green-600" />
+                      <span className="text-gray-700 font-medium">寮あり</span>
+                    </>
+                  ) : (
+                    <>
+                      <X size={20} className="text-red-500" />
+                      <span className="text-gray-700 font-medium">寮なし</span>
+                    </>
+                  )}
+                </div>
               )}
             </div>
             
-            {/* 寮がない場合の説明 */}
             {!soccerClub.dorm_available && !soccerClub.dorm_details?.university_dorm && 
              !soccerClub.dorm_details?.soccer_club_dorm && !soccerClub.dorm_details?.general_dorm && (
               <div>
@@ -1081,29 +1372,49 @@ const FacilitiesTab = ({ university }) => {
         </div>
       </div>
 
-      {/* 3. その他の施設情報 */}
+      {/* その他の施設情報 - プレミアム限定 */}
       {(facilities.ground_name || facilities.ground_address || facilities.ground_notes) && (
         <div>
           <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
             <Info size={18} className="text-blue-600 mr-2" />
             アクセス・その他
+            {!isPremium && <PremiumBadge className="ml-2" />}
           </h3>
-          <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
-            <div className="space-y-3">
-              {facilities.ground_address && (
-                <div>
-                  <p className="text-sm text-gray-600 mb-1">アクセス</p>
-                  <p className="text-gray-700 text-sm">
-                    最寄り駅や交通アクセスについては、大学公式サイトまたはサッカー部にお問い合わせください。
-                  </p>
-                </div>
-              )}
+          
+          {isPremium ? (
+            <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
+              <div className="space-y-3">
+                {facilities.ground_address && (
+                  <div>
+                    <p className="text-sm text-gray-600 mb-1">アクセス</p>
+                    <p className="text-gray-700 text-sm">
+                      最寄り駅や交通アクセスについては、大学公式サイトまたはサッカー部にお問い合わせください。
+                    </p>
+                  </div>
+                )}
+              </div>
             </div>
-          </div>
+          ) : (
+            <MaskedContent 
+              reason="詳細なアクセス情報"
+              onUpgradeClick={onUpgradeToPremium}
+            >
+              <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                <div className="space-y-3">
+                  <div>
+                    <p className="text-sm text-gray-600 mb-1">アクセス</p>
+                    <p className="text-gray-700 text-sm">
+                      最寄り駅や交通アクセスについては、大学公式サイトまたはサッカー部にお問い合わせください。
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </MaskedContent>
+          )}
         </div>
       )}
 
-      {/* 4. 注意事項 */}
+      {/* 注意事項 */}
       <div className="bg-blue-50 p-4 rounded-lg border-l-4 border-blue-500">
         <h4 className="font-semibold text-gray-900 mb-2">ご注意</h4>
         <ul className="text-sm text-gray-700 space-y-1">
@@ -1118,15 +1429,14 @@ const FacilitiesTab = ({ university }) => {
   );
 };
 
-// 進路・将来性タブコンポーネント
-const CareersTab = ({ university }) => {
-  // Firebase新形式の進路データを取得
+// 進路・将来性タブコンポーネント - プレミアム制限対応版
+const CareersTab = ({ university, isPremium, onUpgradeToPremium }) => {
   const careerInfo = university.career_info || {};
   const careerSupport = university.career_support || {};
   
   return (
     <div className="space-y-8">
-      {/* 1. 大学全体の卒業後の進路 */}
+      {/* 大学全体の卒業後の進路 */}
       <div>
         <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
           <GraduationCap size={18} className="text-blue-600 mr-2" />
@@ -1136,7 +1446,6 @@ const CareersTab = ({ university }) => {
           <div className="space-y-3">
             <p className="text-sm text-gray-600 mb-3">主な進路先</p>
             
-            {/* Firebase新形式: university_career_paths */}
             {careerInfo.university_career_paths ? (
               <div className="mb-4">
                 <p className="text-gray-700 text-sm leading-relaxed">
@@ -1145,7 +1454,6 @@ const CareersTab = ({ university }) => {
               </div>
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                {/* デフォルトの進路先 */}
                 {[
                   "一般企業（金融・商社・メーカー等）",
                   "公務員（国家・地方）",
@@ -1162,103 +1470,182 @@ const CareersTab = ({ university }) => {
               </div>
             )}
             
-            {/* 大学のキャリアサポート */}
             {careerSupport.university_support && (
-              <div className="mt-4 pt-4 border-t border-gray-200">
-                <p className="text-sm text-gray-600 mb-2">キャリアサポート</p>
-                <p className="text-gray-700 text-sm leading-relaxed">
-                  {careerSupport.university_support}
-                </p>
-              </div>
+              isPremium ? (
+                <div className="mt-4 pt-4 border-t border-gray-200">
+                  <p className="text-sm text-gray-600 mb-2">キャリアサポート</p>
+                  <p className="text-gray-700 text-sm leading-relaxed">
+                    {careerSupport.university_support}
+                  </p>
+                </div>
+              ) : (
+                <div className="mt-4 pt-4 border-t border-gray-200">
+                  <MaskedContent 
+                    reason="キャリアサポートの詳細"
+                    onUpgradeClick={onUpgradeToPremium}
+                    showPreview={false}
+                  >
+                    <div>
+                      <p className="text-sm text-gray-600 mb-2">キャリアサポート</p>
+                      <p className="text-gray-700 text-sm leading-relaxed">
+                        {careerSupport.university_support}
+                      </p>
+                    </div>
+                  </MaskedContent>
+                </div>
+              )
             )}
           </div>
         </div>
       </div>
 
-      {/* 2. サッカー部の卒業後の進路 */}
+      {/* サッカー部の卒業後の進路 - プレミアム限定 */}
       <div>
         <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
           <Users size={18} className="text-green-600 mr-2" />
           サッカー部の卒業後の進路
+          {!isPremium && <PremiumBadge className="ml-2" />}
         </h3>
-        <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
-          <div className="space-y-3">
-            <p className="text-sm text-gray-600 mb-3">主な進路先</p>
-            
-            {/* Firebase新形式: soccer_club_career_paths */}
-            {careerInfo.soccer_club_career_paths ? (
-              <div className="mb-4">
-                <p className="text-gray-700 text-sm leading-relaxed">
-                  {careerInfo.soccer_club_career_paths}
-                </p>
-              </div>
-            ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                {/* デフォルトの進路先 */}
-                {[
-                  "指導者（コーチ・監督）",
-                  "教員（保健体育）",
-                  "一般企業（営業・企画等）",
-                  "Jリーグ関連（クラブ職員・審判等）",
-                  "社会人チーム",
-                  "スポーツ関連企業",
-                  "その他"
-                ].map((path, index) => (
-                  <div key={index} className="flex items-center py-2">
-                    <div className="w-2 h-2 bg-green-500 rounded-full mr-3 flex-shrink-0"></div>
-                    <span className="text-gray-700 text-sm">{path}</span>
-                  </div>
-                ))}
-              </div>
-            )}
-            
-            {/* サッカー部独自のサポート */}
-            {careerSupport.soccer_club_support && (
-              <div className="mt-4 pt-4 border-t border-gray-200">
-                <p className="text-sm text-gray-600 mb-2">部独自のサポート</p>
-                <p className="text-gray-700 text-sm leading-relaxed">
-                  {careerSupport.soccer_club_support}
-                </p>
-              </div>
-            )}
+        
+        {isPremium ? (
+          <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
+            <div className="space-y-3">
+              <p className="text-sm text-gray-600 mb-3">主な進路先</p>
+              
+              {careerInfo.soccer_club_career_paths ? (
+                <div className="mb-4">
+                  <p className="text-gray-700 text-sm leading-relaxed">
+                    {careerInfo.soccer_club_career_paths}
+                  </p>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                  {[
+                    "指導者（コーチ・監督）",
+                    "教員（保健体育）",
+                    "一般企業（営業・企画等）",
+                    "Jリーグ関連（クラブ職員・審判等）",
+                    "社会人チーム",
+                    "スポーツ関連企業",
+                    "その他"
+                  ].map((path, index) => (
+                    <div key={index} className="flex items-center py-2">
+                      <div className="w-2 h-2 bg-green-500 rounded-full mr-3 flex-shrink-0"></div>
+                      <span className="text-gray-700 text-sm">{path}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+              
+              {careerSupport.soccer_club_support && (
+                <div className="mt-4 pt-4 border-t border-gray-200">
+                  <p className="text-sm text-gray-600 mb-2">部独自のサポート</p>
+                  <p className="text-gray-700 text-sm leading-relaxed">
+                    {careerSupport.soccer_club_support}
+                  </p>
+                </div>
+              )}
+            </div>
           </div>
-        </div>
+        ) : (
+          <MaskedContent 
+            reason="サッカー部の詳細な進路情報"
+            onUpgradeClick={onUpgradeToPremium}
+          >
+            <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
+              <div className="space-y-3">
+                <p className="text-sm text-gray-600 mb-3">主な進路先</p>
+                <div className="text-sm text-gray-600">
+                  サッカー部の詳細な進路情報はプレミアム限定です
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 opacity-50">
+                  {[
+                    "指導者（コーチ・監督）",
+                    "教員（保健体育）",
+                    "一般企業（営業・企画等）",
+                    "Jリーグ関連",
+                    "社会人チーム",
+                    "その他"
+                  ].map((path, index) => (
+                    <div key={index} className="flex items-center py-2">
+                      <div className="w-2 h-2 bg-gray-400 rounded-full mr-3 flex-shrink-0"></div>
+                      <span className="text-gray-400 text-sm">{path}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </MaskedContent>
+        )}
       </div>
 
-      {/* 3. Firebase新形式: 進路データ（percentage情報） */}
+      {/* 進路統計 - プレミアム限定 */}
       {careerInfo.career_paths && Array.isArray(careerInfo.career_paths) && careerInfo.career_paths.length > 0 && (
         <div>
           <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
             <TrendingUp size={18} className="text-purple-600 mr-2" />
             進路統計
+            {!isPremium && <PremiumBadge className="ml-2" />}
           </h3>
-          <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
-            <div className="space-y-3">
-              <p className="text-sm text-gray-600 mb-3">進路別の割合</p>
+          
+          {isPremium ? (
+            <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
               <div className="space-y-3">
-                {careerInfo.career_paths.map((path, index) => (
-                  <div key={index} className="flex justify-between items-center">
-                    <span className="text-gray-700 text-sm font-medium">{path.category}</span>
-                    <div className="flex items-center space-x-3">
-                      <div className="w-20 bg-gray-200 rounded-full h-2">
-                        <div 
-                          className="bg-green-600 h-2 rounded-full transition-all duration-300"
-                          style={{ width: `${path.percentage}%` }}
-                        ></div>
+                <p className="text-sm text-gray-600 mb-3">進路別の割合</p>
+                <div className="space-y-3">
+                  {careerInfo.career_paths.map((path, index) => (
+                    <div key={index} className="flex justify-between items-center">
+                      <span className="text-gray-700 text-sm font-medium">{path.category}</span>
+                      <div className="flex items-center space-x-3">
+                        <div className="w-20 bg-gray-200 rounded-full h-2">
+                          <div 
+                            className="bg-green-600 h-2 rounded-full transition-all duration-300"
+                            style={{ width: `${path.percentage}%` }}
+                          ></div>
+                        </div>
+                        <span className="text-gray-900 font-medium text-sm min-w-[40px] text-right">
+                          {path.percentage}%
+                        </span>
                       </div>
-                      <span className="text-gray-900 font-medium text-sm min-w-[40px] text-right">
-                        {path.percentage}%
-                      </span>
                     </div>
-                  </div>
-                ))}
+                  ))}
+                </div>
               </div>
             </div>
-          </div>
+          ) : (
+            <MaskedContent 
+              reason="詳細な進路統計データ"
+              onUpgradeClick={onUpgradeToPremium}
+            >
+              <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                <div className="space-y-3">
+                  <p className="text-sm text-gray-600 mb-3">進路別の割合</p>
+                  <div className="text-sm text-gray-600">
+                    詳細な進路統計はプレミアム限定情報です
+                  </div>
+                  <div className="space-y-3 opacity-50">
+                    {["一般企業", "指導者", "教員", "その他"].map((category, index) => (
+                      <div key={index} className="flex justify-between items-center">
+                        <span className="text-gray-400 text-sm font-medium">{category}</span>
+                        <div className="flex items-center space-x-3">
+                          <div className="w-20 bg-gray-200 rounded-full h-2">
+                            <div className="bg-gray-400 h-2 rounded-full w-1/2"></div>
+                          </div>
+                          <span className="text-gray-400 font-medium text-sm min-w-[40px] text-right">
+                            ●●%
+                          </span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </MaskedContent>
+          )}
         </div>
       )}
 
-      {/* 4. J内定実績と進路の関連性 */}
+      {/* J内定実績と進路の関連性 */}
       {university.soccer_club?.j_league_nominees_2022_24 > 0 && (
         <div>
           <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
@@ -1284,7 +1671,7 @@ const CareersTab = ({ university }) => {
         </div>
       )}
 
-      {/* 5. 注意事項 */}
+      {/* 注意事項 */}
       <div className="bg-blue-50 p-4 rounded-lg border-l-4 border-blue-500">
         <h4 className="font-semibold text-gray-900 mb-2">ご注意</h4>
         <ul className="text-sm text-gray-700 space-y-1">
@@ -1299,122 +1686,205 @@ const CareersTab = ({ university }) => {
   );
 };
 
-// 口コミ・評判タブコンポーネント
-const ReviewsTab = ({ university }) => {
+// 口コミ・評判タブコンポーネント - プレミアム制限対応版
+const ReviewsTab = ({ university, isPremium, onUpgradeToPremium }) => {
   const reviews = university.reviews || {};
   
   return (
     <div className="space-y-8">
-      {/* 1. 学生の口コミ */}
+      {/* 現役部員の声 - プレミアム限定 */}
       <div>
         <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
           <MessageSquare size={18} className="text-blue-600 mr-2" />
           現役部員の声
+          {!isPremium && <PremiumBadge className="ml-2" />}
         </h3>
-        <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
-          <div className="space-y-4">
-            {reviews.student_reviews?.map((review, index) => (
-              <div key={index} className="pb-4 border-b border-gray-200 last:border-b-0 last:pb-0">
-                <div className="flex justify-between items-start mb-2">
-                  <div className="flex items-center space-x-2">
-                    <span className="text-sm font-medium text-blue-800">{review.grade}</span>
-                    <span className="text-sm text-blue-600">{review.position}</span>
+        
+        {isPremium ? (
+          <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
+            <div className="space-y-4">
+              {reviews.student_reviews?.map((review, index) => (
+                <div key={index} className="pb-4 border-b border-gray-200 last:border-b-0 last:pb-0">
+                  <div className="flex justify-between items-start mb-2">
+                    <div className="flex items-center space-x-2">
+                      <span className="text-sm font-medium text-blue-800">{review.grade}</span>
+                      <span className="text-sm text-blue-600">{review.position}</span>
+                    </div>
+                    <div className="flex items-center">
+                      {[...Array(5)].map((_, i) => (
+                        <Star key={i} size={14} className={i < review.rating ? "text-yellow-500 fill-current" : "text-gray-300"} />
+                      ))}
+                    </div>
                   </div>
-                  <div className="flex items-center">
-                    {[...Array(5)].map((_, i) => (
-                      <Star key={i} size={14} className={i < review.rating ? "text-yellow-500 fill-current" : "text-gray-300"} />
-                    ))}
-                  </div>
+                  <p className="text-gray-700">{review.review}</p>
                 </div>
-                <p className="text-gray-700">{review.review}</p>
-              </div>
-            )) || (
-              <div>
-                <div className="flex justify-between items-start mb-2">
-                  <div className="flex items-center space-x-2">
-                    <span className="text-sm font-medium text-blue-800">3年生</span>
-                    <span className="text-sm text-blue-600">MF</span>
+              )) || (
+                <div>
+                  <div className="flex justify-between items-start mb-2">
+                    <div className="flex items-center space-x-2">
+                      <span className="text-sm font-medium text-blue-800">3年生</span>
+                      <span className="text-sm text-blue-600">MF</span>
+                    </div>
+                    <div className="flex items-center">
+                      {[...Array(5)].map((_, i) => (
+                        <Star key={i} size={14} className={i < 4 ? "text-yellow-500 fill-current" : "text-gray-300"} />
+                      ))}
+                    </div>
                   </div>
-                  <div className="flex items-center">
-                    {[...Array(5)].map((_, i) => (
-                      <Star key={i} size={14} className={i < 4 ? "text-yellow-500 fill-current" : "text-gray-300"} />
-                    ))}
-                  </div>
+                  <p className="text-gray-700">監督の指導が的確で技術的に成長できました。寮生活でチームワークも向上し、人間的にも大きく成長できています。</p>
                 </div>
-                <p className="text-gray-700">監督の指導が的確で技術的に成長できました。寮生活でチームワークも向上し、人間的にも大きく成長できています。</p>
-              </div>
-            )}
+              )}
+            </div>
           </div>
-        </div>
+        ) : (
+          <MaskedContent 
+            reason="現役部員の詳細な口コミ"
+            onUpgradeClick={onUpgradeToPremium}
+          >
+            <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
+              <div className="space-y-4">
+                <div className="text-sm text-gray-600 mb-3">
+                  現役部員からの詳細な評価や体験談はプレミアム限定です
+                </div>
+                <div className="pb-4 border-b border-gray-200 opacity-50">
+                  <div className="flex justify-between items-start mb-2">
+                    <div className="flex items-center space-x-2">
+                      <span className="text-sm font-medium text-gray-400">●年生</span>
+                      <span className="text-sm text-gray-400">●●</span>
+                    </div>
+                    <div className="flex items-center">
+                      {[...Array(5)].map((_, i) => (
+                        <Star key={i} size={14} className="text-gray-300" />
+                      ))}
+                    </div>
+                  </div>
+                  <p className="text-gray-400">実際の部員からの生の声をお聞きいただけます...</p>
+                </div>
+              </div>
+            </div>
+          </MaskedContent>
+        )}
       </div>
 
-      {/* 2. 保護者の声 */}
+      {/* 保護者の声 - プレミアム限定 */}
       <div>
         <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
           <Users size={18} className="text-green-600 mr-2" />
           保護者の声
+          {!isPremium && <PremiumBadge className="ml-2" />}
         </h3>
-        <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
-          <div className="space-y-4">
-            {reviews.parent_reviews?.map((review, index) => (
-              <div key={index} className="pb-4 border-b border-gray-200 last:border-b-0 last:pb-0">
-                <div className="flex justify-between items-start mb-2">
-                  <span className="text-sm font-medium text-green-800">保護者</span>
-                  <div className="flex items-center">
-                    {[...Array(5)].map((_, i) => (
-                      <Star key={i} size={14} className={i < review.rating ? "text-yellow-500 fill-current" : "text-gray-300"} />
-                    ))}
+        
+        {isPremium ? (
+          <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
+            <div className="space-y-4">
+              {reviews.parent_reviews?.map((review, index) => (
+                <div key={index} className="pb-4 border-b border-gray-200 last:border-b-0 last:pb-0">
+                  <div className="flex justify-between items-start mb-2">
+                    <span className="text-sm font-medium text-green-800">保護者</span>
+                    <div className="flex items-center">
+                      {[...Array(5)].map((_, i) => (
+                        <Star key={i} size={14} className={i < review.rating ? "text-yellow-500 fill-current" : "text-gray-300"} />
+                      ))}
+                    </div>
                   </div>
+                  <p className="text-gray-700">{review.review}</p>
                 </div>
-                <p className="text-gray-700">{review.review}</p>
-              </div>
-            )) || (
-              <div>
-                <div className="flex justify-between items-start mb-2">
-                  <span className="text-sm font-medium text-green-800">保護者</span>
-                  <div className="flex items-center">
-                    {[...Array(5)].map((_, i) => (
-                      <Star key={i} size={14} className={i < 4 ? "text-yellow-500 fill-current" : "text-gray-300"} />
-                    ))}
+              )) || (
+                <div>
+                  <div className="flex justify-between items-start mb-2">
+                    <span className="text-sm font-medium text-green-800">保護者</span>
+                    <div className="flex items-center">
+                      {[...Array(5)].map((_, i) => (
+                        <Star key={i} size={14} className={i < 4 ? "text-yellow-500 fill-current" : "text-gray-300"} />
+                      ))}
+                    </div>
                   </div>
+                  <p className="text-gray-700">費用は決して安くありませんが、子供の成長を考えると納得できます。コーチの方々も親身に相談に乗ってくれて、とても信頼しています。</p>
                 </div>
-                <p className="text-gray-700">費用は決して安くありませんが、子供の成長を考えると納得できます。コーチの方々も親身に相談に乗ってくれて、とても信頼しています。</p>
-              </div>
-            )}
+              )}
+            </div>
           </div>
-        </div>
+        ) : (
+          <MaskedContent 
+            reason="保護者からの詳細な評価"
+            onUpgradeClick={onUpgradeToPremium}
+          >
+            <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
+              <div className="space-y-4">
+                <div className="text-sm text-gray-600 mb-3">
+                  保護者からの詳細な評価はプレミアム限定です
+                </div>
+                <div className="pb-4 border-b border-gray-200 opacity-50">
+                  <div className="flex justify-between items-start mb-2">
+                    <span className="text-sm font-medium text-gray-400">保護者</span>
+                    <div className="flex items-center">
+                      {[...Array(5)].map((_, i) => (
+                        <Star key={i} size={14} className="text-gray-300" />
+                      ))}
+                    </div>
+                  </div>
+                  <p className="text-gray-400">保護者目線での大学評価をご確認いただけます...</p>
+                </div>
+              </div>
+            </div>
+          </MaskedContent>
+        )}
       </div>
 
-      {/* 3. 卒業生の声 */}
+      {/* 卒業生の声 - プレミアム限定 */}
       <div>
         <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
           <GraduationCap size={18} className="text-purple-600 mr-2" />
           卒業生の声
+          {!isPremium && <PremiumBadge className="ml-2" />}
         </h3>
-        <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
-          <div className="space-y-4">
-            {reviews.graduate_reviews?.map((review, index) => (
-              <div key={index} className="pb-4 border-b border-gray-200 last:border-b-0 last:pb-0">
-                <div className="flex justify-between items-start mb-2">
-                  <span className="text-sm font-medium text-purple-800">{review.graduation_year}年卒</span>
-                  <span className="text-sm text-purple-600">{review.current_status}</span>
+        
+        {isPremium ? (
+          <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
+            <div className="space-y-4">
+              {reviews.graduate_reviews?.map((review, index) => (
+                <div key={index} className="pb-4 border-b border-gray-200 last:border-b-0 last:pb-0">
+                  <div className="flex justify-between items-start mb-2">
+                    <span className="text-sm font-medium text-purple-800">{review.graduation_year}年卒</span>
+                    <span className="text-sm text-purple-600">{review.current_status}</span>
+                  </div>
+                  <p className="text-gray-700">{review.review}</p>
                 </div>
-                <p className="text-gray-700">{review.review}</p>
-              </div>
-            )) || (
-              <div>
-                <div className="flex justify-between items-start mb-2">
-                  <span className="text-sm font-medium text-purple-800">2023年卒</span>
-                  <span className="text-sm text-purple-600">社会人チーム所属</span>
+              )) || (
+                <div>
+                  <div className="flex justify-between items-start mb-2">
+                    <span className="text-sm font-medium text-purple-800">2023年卒</span>
+                    <span className="text-sm text-purple-600">社会人チーム所属</span>
+                  </div>
+                  <p className="text-gray-700">4年間で人間的にも競技的にも大きく成長できました。社会人になった今でも、大学で学んだチームワークや規律が役立っています。</p>
                 </div>
-                <p className="text-gray-700">4年間で人間的にも競技的にも大きく成長できました。社会人になった今でも、大学で学んだチームワークや規律が役立っています。</p>
-              </div>
-            )}
+              )}
+            </div>
           </div>
-        </div>
+        ) : (
+          <MaskedContent 
+            reason="卒業生の体験談"
+            onUpgradeClick={onUpgradeToPremium}
+          >
+            <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
+              <div className="space-y-4">
+                <div className="text-sm text-gray-600 mb-3">
+                  卒業生の体験談はプレミアム限定です
+                </div>
+                <div className="pb-4 border-b border-gray-200 opacity-50">
+                  <div className="flex justify-between items-start mb-2">
+                    <span className="text-sm font-medium text-gray-400">●●年卒</span>
+                    <span className="text-sm text-gray-400">●●●</span>
+                  </div>
+                  <p className="text-gray-400">卒業後の進路や大学生活の振り返りをお聞きいただけます...</p>
+                </div>
+              </div>
+            </div>
+          </MaskedContent>
+        )}
       </div>
 
-      {/* 4. 口コミ投稿の案内 */}
+      {/* 口コミ投稿の案内 */}
       <div>
         <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
           <Plus size={18} className="text-orange-600 mr-2" />
@@ -1428,7 +1898,7 @@ const ReviewsTab = ({ university }) => {
         </div>
       </div>
 
-      {/* 5. 注意事項 */}
+      {/* 注意事項 */}
       <div className="bg-blue-50 p-4 rounded-lg border-l-4 border-blue-500">
         <h4 className="font-semibold text-gray-900 mb-2">ご注意</h4>
         <ul className="text-sm text-gray-700 space-y-1">
@@ -1441,7 +1911,5 @@ const ReviewsTab = ({ university }) => {
     </div>
   );
 };
-
-
 
 export default EnhancedUniversityDetails;
