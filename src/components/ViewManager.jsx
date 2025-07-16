@@ -1,4 +1,4 @@
-// src/components/ViewManager.jsx（学部フィルター削除版）
+// src/components/ViewManager.jsx - プレミアム対応版
 import React from 'react';
 import EnhancedPlayerPortfolio from './EnhancedPlayerPortfolio';
 import EnhancedUniversityDetails from './EnhancedUniversityDetails';
@@ -7,18 +7,19 @@ import MultiSelectSearchForm from './MultiSelectSearchForm';
 import UniversityList from './UniversityList';
 
 /**
- * ViewManager - アプリケーションの現在のビューを管理するコンポーネント（学部フィルター削除版）
+ * ViewManager - アプリケーションの現在のビューを管理するコンポーネント（プレミアム対応版）
  */
 const ViewManager = ({
   currentView,
   data,
-  handlers
+  handlers,
+  isPremium = false
 }) => {
   // ===== HomeView の内容を直接統合 =====
   const renderHomeView = () => {
     return (
       <>
-        {/* 検索フォーム - 学部フィルターを削除 */}
+        {/* 検索フォーム */}
         <MultiSelectSearchForm
           searchQuery={data.searchState.searchQuery}
           setSearchQuery={data.searchState.setSearchQuery}
@@ -44,7 +45,7 @@ const ViewManager = ({
           setPrivateUniversity={data.searchState.setPrivateUniversity}
         />
         
-        {/* 大学リスト - 並べ替え関連propsを含む */}
+        {/* 大学リスト */}
         <UniversityList
           filteredUniversities={data.filteredUniversities}
           allUniversities={data.universities}
@@ -59,6 +60,7 @@ const ViewManager = ({
           favoriteUniversities={data.favoriteUniversities}
           onAddToFavorites={handlers.addToFavorites}
           onRemoveFromFavorites={handlers.removeFromFavorites}
+          isPremium={isPremium}
         />
       </>
     );
@@ -77,6 +79,7 @@ const ViewManager = ({
           onRemoveFromFavorites={handlers.removeFromFavorites}
           onReorderFavorites={handlers.reorderFavorites}
           onViewDetails={handlers.viewUniversityDetails}
+          isPremium={isPremium}
         />
       );
       
@@ -93,6 +96,7 @@ const ViewManager = ({
           isInFavorites={data.favoriteUniversities.some(uni => 
             uni && data.selectedUniversity && uni.id === data.selectedUniversity.id
           )}
+          isPremium={isPremium}
         />
       );
       
@@ -101,13 +105,14 @@ const ViewManager = ({
         <CompareView 
           universities={data.compareList} 
           onBack={() => handlers.changeView('list')} 
-          onRemove={handlers.removeFromCompare} 
+          onRemove={handlers.removeFromCompare}
+          isPremium={isPremium}
         />
       );
       
     case 'list':
     default:
-      return renderHomeView(); // 統合されたHomeViewロジック
+      return renderHomeView();
   }
 };
 

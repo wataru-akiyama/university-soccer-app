@@ -1,8 +1,9 @@
-// src/components/SimpleUniversityCard.jsx - Firebase新形式対応版（志向性表示部分の修正）
+// src/components/SimpleUniversityCard.jsx - プレミアム対応版
 
 import React from 'react';
-import { Heart, Plus, Check, MapPin, ChevronUp, ChevronDown, X, Info, Star, Target } from 'lucide-react';
+import { Heart, Plus, Check, MapPin, ChevronUp, ChevronDown, X, Info, Star, Target, Lock } from 'lucide-react';
 import UniversityLogo from './UniversityLogo';
+import PremiumBadge from './PremiumBadge';
 
 const SimpleUniversityCard = ({ 
   university, 
@@ -13,14 +14,16 @@ const SimpleUniversityCard = ({
   onAddToFavorites,
   onRemoveFromFavorites,
   isInFavorites,
-  // 進路プラン用の新しいprops
+  // 進路プラン用のprops
   isPortfolioMode = false,
   portfolioRank = null,
   onMoveUp = null,
   onMoveDown = null,
   canMoveUp = true,
   canMoveDown = true,
-  onRemoveFromPortfolio = null
+  onRemoveFromPortfolio = null,
+  // プレミアム関連のprops
+  isPremium = false
 }) => {
   // リーグバッジの色分け
   const getLeagueColor = (league) => {
@@ -73,23 +76,34 @@ const SimpleUniversityCard = ({
   // 学力ランクテキストの短縮
   const getShortAcademicRank = (rank) => {
     if (!rank) return '';
-    return rank.split('：')[0]; // 「A」「B」などの部分のみ
+    return rank.split('：')[0];
   };
 
-  // PLAYMAKERコメントの取得
+  // PLAYMAKERコメントの取得とマスク処理
   const getPlaymakerComment = () => {
-    return university.extended_data?.playmaker_comment || 
-           "この大学の詳細な評価情報は準備中です。";
+    const fullComment = university.extended_data?.playmaker_comment || 
+                       "この大学の詳細な評価情報は準備中です。";
+    
+    if (!isPremium && fullComment.length > 120) {
+      // フリープランでは120文字で切り詰め
+      return fullComment.substring(0, 120) + "...";
+    }
+    
+    return fullComment;
+  };
+
+  // プレミアム限定情報かどうかの判定
+  const isPremiumContent = () => {
+    const comment = university.extended_data?.playmaker_comment || "";
+    return !isPremium && comment.length > 120;
   };
 
   // 志向性の取得（Firebase新形式対応）
   const getGenres = () => {
-    // Firebase新形式: genres配列を優先
     if (university.genres && Array.isArray(university.genres) && university.genres.length > 0) {
       return university.genres.filter(genre => genre && genre.trim() !== '');
     }
     
-    // 旧形式フォールバック（互換性のため）
     const genres = [];
     if (university.genre1 && university.genre1.trim()) genres.push(university.genre1);
     if (university.genre2 && university.genre2.trim()) genres.push(university.genre2);
@@ -99,12 +113,10 @@ const SimpleUniversityCard = ({
 
   // 練習場所の取得（Firebase新形式対応）
   const getPracticeLocation = () => {
-    // Firebase新形式: facilities.ground_name を優先
     if (university.facilities?.ground_name) {
       return university.facilities.ground_name;
     }
     
-    // フォールバック
     return university.soccer_club?.practice_location || '';
   };
   
@@ -119,6 +131,13 @@ const SimpleUniversityCard = ({
   
   const handleCompareClick = (e) => {
     e.stopPropagation();
+    
+    if (!isPremium) {
+      // フリープランでは比較機能を制限
+      alert('比較機能はプレミアムプラン限定です。プレミアムプランにアップグレードしてください。');
+      return;
+    }
+    
     if (isInCompareList) {
       onRemoveFromCompare(university.id);
     } else {
@@ -146,6 +165,7 @@ const SimpleUniversityCard = ({
   const academicRank = university.academic_rank || '';
   const practiceLocation = getPracticeLocation();
   const playmakerComment = getPlaymakerComment();
+  const hasPremiumContent = isPremiumContent();
   
   return (
     <div 
@@ -267,16 +287,26 @@ const SimpleUniversityCard = ({
       
       {/* カード本体 */}
       <div className="p-3 sm:p-4">
-        {/* PLAYMAKERコメント */}
+        {/* PLAYMAKERコメント（プレミアム制限付き） */}
         <div className="mb-3 sm:mb-4">
-          <div className="bg-green-50 p-3 rounded-lg border-l-4 border-green-500">
+          <div className="bg-green-50 p-3 rounded-lg border-l-4 border-green-500 relative">
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-sm font-medium text-green-800">PLAYMAKERコメント</span>
+              {hasPremiumContent && <PremiumBadge />}
+            </div>
             <p className="text-sm text-gray-700 leading-relaxed line-clamp-3">
               {playmakerComment}
             </p>
+            {hasPremiumContent && (
+              <div className="mt-2 flex items-center text-xs text-orange-600">
+                <Lock size={12} className="mr-1" />
+                <span>続きはプレミアムプランで</span>
+              </div>
+            )}
           </div>
         </div>
         
-        {/* 特徴タグ - Firebase新形式対応 */}
+        {/* 特徴タグ */}
         <div className="flex flex-wrap gap-1 mb-3 sm:mb-4">
           {university.entry_conditions?.sports_recommend && (
             <span className="bg-green-50 text-green-700 text-xs px-2 py-1 rounded-full border border-green-100">
@@ -320,17 +350,27 @@ const SimpleUniversityCard = ({
             </button>
           )}
 
-          {/* 比較リストに追加ボタン */}
+          {/* 比較リストに追加ボタン（プレミアム制限付き） */}
           {!isPortfolioMode && (
             <div className="flex justify-end w-full">
               <button 
-                className={`${isInCompareList 
-                  ? 'bg-gray-100 text-gray-500' 
-                  : 'text-green-600 border border-green-200 hover:bg-green-50'
+                className={`${
+                  !isPremium 
+                    ? 'bg-gray-100 text-gray-500 border border-gray-200' 
+                    : isInCompareList 
+                      ? 'bg-gray-100 text-gray-500' 
+                      : 'text-green-600 border border-green-200 hover:bg-green-50'
                 } px-3 py-1.5 rounded-lg text-sm font-medium flex items-center transition-colors`}
                 onClick={handleCompareClick}
+                disabled={!isPremium && !isInCompareList}
               >
-                {isInCompareList ? (
+                {!isPremium ? (
+                  <>
+                    <Lock size={16} className="mr-1" />
+                    <span className="hidden xs:inline">比較機能</span>
+                    <span className="xs:hidden">比較</span>
+                  </>
+                ) : isInCompareList ? (
                   <>
                     <Check size={16} className="mr-1" />
                     <span className="hidden xs:inline">比較中</span>
