@@ -1,4 +1,4 @@
-// src/components/ViewManager.jsx - プレミアム対応版
+// src/components/ViewManager.jsx - 職業フィルター対応版
 import React from 'react';
 import EnhancedPlayerPortfolio from './EnhancedPlayerPortfolio';
 import EnhancedUniversityDetails from './EnhancedUniversityDetails';
@@ -7,7 +7,7 @@ import MultiSelectSearchForm from './MultiSelectSearchForm';
 import UniversityList from './UniversityList';
 
 /**
- * ViewManager - アプリケーションの現在のビューを管理するコンポーネント（プレミアム対応版）
+ * ViewManager - アプリケーションの現在のビューを管理するコンポーネント（職業フィルター対応版）
  */
 const ViewManager = ({
   currentView,
@@ -28,24 +28,20 @@ const ViewManager = ({
           setSearchQuery={data.searchState.setSearchQuery}
           selectedRegions={data.searchState.selectedRegions}
           setSelectedRegions={data.searchState.setSelectedRegions}
-          selectedLeagues={data.searchState.selectedLeagues}
-          setSelectedLeagues={data.searchState.setSelectedLeagues}
           selectedAcademicRanks={data.searchState.selectedAcademicRanks}
           setSelectedAcademicRanks={data.searchState.setSelectedAcademicRanks}
           selectedPlayerAspirations={data.searchState.selectedPlayerAspirations}
           setSelectedPlayerAspirations={data.searchState.setSelectedPlayerAspirations}
-          sportsRecommend={data.searchState.sportsRecommend}
-          setSportsRecommend={data.searchState.setSportsRecommend}
-          selectionAvailable={data.searchState.selectionAvailable}
-          setSelectionAvailable={data.searchState.setSelectionAvailable}
-          dormAvailable={data.searchState.dormAvailable}
-          setDormAvailable={data.searchState.setDormAvailable}
-          generalAdmissionAvailable={data.searchState.generalAdmissionAvailable}
-          setGeneralAdmissionAvailable={data.searchState.setGeneralAdmissionAvailable}
+          selectedCareers={data.searchState.selectedCareers}
+          setSelectedCareers={data.searchState.setSelectedCareers}
           publicUniversity={data.searchState.publicUniversity}
           setPublicUniversity={data.searchState.setPublicUniversity}
           privateUniversity={data.searchState.privateUniversity}
           setPrivateUniversity={data.searchState.setPrivateUniversity}
+          sportsRecommend={data.searchState.sportsRecommend}
+          setSportsRecommend={data.searchState.setSportsRecommend}
+          generalAdmissionAvailable={data.searchState.generalAdmissionAvailable}
+          setGeneralAdmissionAvailable={data.searchState.setGeneralAdmissionAvailable}
         />
         
         {/* 大学リスト */}
