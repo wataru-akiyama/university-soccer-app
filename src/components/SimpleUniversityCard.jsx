@@ -1,4 +1,4 @@
-// src/components/SimpleUniversityCard.jsx - プレミアム対応版
+// src/components/SimpleUniversityCard.jsx - 順序番号デザイン改善版
 
 import React from 'react';
 import { Heart, Plus, Check, MapPin, ChevronUp, ChevronDown, X, Info, Star, Target, Lock } from 'lucide-react';
@@ -25,6 +25,16 @@ const SimpleUniversityCard = ({
   // プレミアム関連のprops
   isPremium = false
 }) => {
+  // 早期リターン: universityがnullまたはundefinedの場合
+  if (!university) {
+    return (
+      <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
+        <div className="text-center py-8">
+          <p className="text-gray-500">大学データを読み込み中...</p>
+        </div>
+      </div>
+    );
+  }
   // リーグバッジの色分け
   const getLeagueColor = (league) => {
     if (league?.includes('1部')) return 'bg-green-100 text-green-800 border-green-200';
@@ -81,6 +91,8 @@ const SimpleUniversityCard = ({
 
   // PLAYMAKERコメントの取得とマスク処理
   const getPlaymakerComment = () => {
+    if (!university) return "大学データが読み込み中です。";
+    
     const fullComment = university.extended_data?.playmaker_comment || 
                        "この大学の詳細な評価情報は準備中です。";
     
@@ -94,12 +106,16 @@ const SimpleUniversityCard = ({
 
   // プレミアム限定情報かどうかの判定
   const isPremiumContent = () => {
+    if (!university) return false;
+    
     const comment = university.extended_data?.playmaker_comment || "";
     return !isPremium && comment.length > 120;
   };
 
   // 志向性の取得（Firebase新形式対応）
   const getGenres = () => {
+    if (!university) return [];
+    
     if (university.genres && Array.isArray(university.genres) && university.genres.length > 0) {
       return university.genres.filter(genre => genre && genre.trim() !== '');
     }
@@ -113,6 +129,8 @@ const SimpleUniversityCard = ({
 
   // 練習場所の取得（Firebase新形式対応）
   const getPracticeLocation = () => {
+    if (!university) return '';
+    
     if (university.facilities?.ground_name) {
       return university.facilities.ground_name;
     }
@@ -162,7 +180,7 @@ const SimpleUniversityCard = ({
 
   // データ取得
   const genres = getGenres();
-  const academicRank = university.academic_rank || '';
+  const academicRank = university?.academic_rank || '';
   const practiceLocation = getPracticeLocation();
   const playmakerComment = getPlaymakerComment();
   const hasPremiumContent = isPremiumContent();
@@ -172,10 +190,12 @@ const SimpleUniversityCard = ({
       className="bg-white rounded-xl shadow-sm hover:shadow-lg transition-all border border-gray-200 cursor-pointer overflow-hidden relative"
       onClick={() => onViewDetails(university)}
     >
-      {/* 進路プラン用の志望順位バッジ */}
+      {/* 進路プラン用の順位番号 - コンパクトなデザイン */}
       {isPortfolioMode && portfolioRank && (
-        <div className="absolute top-3 left-3 bg-green-600 text-white rounded-full w-8 h-8 flex items-center justify-center shadow-md font-bold text-sm z-10">
-          {portfolioRank}
+        <div className="absolute top-2 left-2 z-10">
+          <div className="bg-blue-600 text-white rounded-full w-8 h-8 flex items-center justify-center shadow-lg font-bold text-sm">
+            {portfolioRank}
+          </div>
         </div>
       )}
 
@@ -208,7 +228,7 @@ const SimpleUniversityCard = ({
           <button
             className="p-2 rounded-full bg-white bg-opacity-90 text-red-500 hover:text-red-700 shadow-sm transition-colors"
             onClick={handleRemoveFromPortfolio}
-            title="進路プランから削除"
+            title="お気に入りから削除"
           >
             <X size={16} />
           </button>
@@ -220,7 +240,7 @@ const SimpleUniversityCard = ({
                 : 'bg-white bg-opacity-90 text-gray-400 hover:text-red-500'
             } shadow-sm transition-colors`}
             onClick={handleFavoriteClick}
-            title={isInFavorites ? "私の進路プランから削除" : "私の進路プランに追加"}
+            title={isInFavorites ? "お気に入りから削除" : "お気に入りに追加"}
           >
             <Heart size={18} fill={isInFavorites ? "currentColor" : "none"} />
           </button>
@@ -228,7 +248,7 @@ const SimpleUniversityCard = ({
       </div>
       
       {/* カードヘッダー - 大学名とバッジ */}
-      <div className="p-3 sm:p-4 border-b border-gray-100 bg-gradient-to-r from-gray-50 to-white">
+      <div className={`p-3 sm:p-4 border-b border-gray-100 bg-gradient-to-r from-gray-50 to-white ${isPortfolioMode ? 'pt-16' : ''}`}>
         <div className="flex">
           {/* 大学ロゴ */}
           <UniversityLogo 
