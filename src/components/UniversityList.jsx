@@ -86,24 +86,15 @@ const UniversityList = ({
     );
   };
 
-  // 高度なソート機能の制限
+  // 並べ替えオプション（フリープランでも利用可能）
   const getSortOptions = () => {
-    const basicOptions = [
+    return [
       { value: '', label: 'デフォルト' },
-      { value: 'name', label: '大学名順' }
-    ];
-    
-    const premiumOptions = [
       { value: 'j_league', label: 'Jリーグ内定者数順' },
       { value: 'members', label: '部員数順' },
-      { value: 'academic_rank', label: '学力ランク順' }
+      { value: 'university_cost', label: '大学費用順' },
+      { value: 'soccer_club_cost', label: 'サッカー部費用順' }
     ];
-    
-    if (isPremium) {
-      return [...basicOptions, ...premiumOptions];
-    }
-    
-    return basicOptions;
   };
 
   return (
@@ -131,36 +122,16 @@ const UniversityList = ({
             <span className="text-sm text-gray-700 font-medium">並べ替え:</span>
             <div className="relative">
               <select 
-                className={`p-2 border rounded-md text-sm bg-white focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 ${
-                  !isPremium ? 'pr-8' : ''
-                }`}
+                className="p-2 border rounded-md text-sm bg-white focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500"
                 value={sortOption}
-                onChange={(e) => {
-                  const newValue = e.target.value;
-                  if (!isPremium && ['j_league', 'members', 'academic_rank'].includes(newValue)) {
-                    alert('高度なソート機能はプレミアムプラン限定です。');
-                    return;
-                  }
-                  setSortOption(newValue);
-                }}
+                onChange={(e) => setSortOption(e.target.value)}
               >
                 {getSortOptions().map(option => (
                   <option key={option.value} value={option.value}>
                     {option.label}
                   </option>
                 ))}
-                {!isPremium && (
-                  <>
-                    <option disabled>── プレミアム限定 ──</option>
-                    <option disabled>Jリーグ内定者数順</option>
-                    <option disabled>部員数順</option>
-                    <option disabled>学力ランク順</option>
-                  </>
-                )}
               </select>
-              {!isPremium && (
-                <Lock size={14} className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400" />
-              )}
             </div>
             
             {/* 並び替え順序ボタン - ソートオプションが選択されている時のみ表示 */}
@@ -200,36 +171,16 @@ const UniversityList = ({
           <div className="flex items-center gap-2">
             <div className="flex-1 relative">
               <select 
-                className={`w-full p-2 border rounded-md text-sm bg-white focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 ${
-                  !isPremium ? 'pr-8' : ''
-                }`}
+                className="w-full p-2 border rounded-md text-sm bg-white focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500"
                 value={sortOption}
-                onChange={(e) => {
-                  const newValue = e.target.value;
-                  if (!isPremium && ['j_league', 'members', 'academic_rank'].includes(newValue)) {
-                    alert('高度なソート機能はプレミアムプラン限定です。');
-                    return;
-                  }
-                  setSortOption(newValue);
-                }}
+                onChange={(e) => setSortOption(e.target.value)}
               >
                 {getSortOptions().map(option => (
                   <option key={option.value} value={option.value}>
                     {`並び替え: ${option.label}`}
                   </option>
                 ))}
-                {!isPremium && (
-                  <>
-                    <option disabled>── プレミアム限定 ──</option>
-                    <option disabled>Jリーグ内定者数順</option>
-                    <option disabled>部員数順</option>
-                    <option disabled>学力ランク順</option>
-                  </>
-                )}
               </select>
-              {!isPremium && (
-                <Lock size={14} className="absolute right-8 top-1/2 transform -translate-y-1/2 text-gray-400" />
-              )}
             </div>
             
             {/* 並び替え順序ボタン */}

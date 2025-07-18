@@ -155,22 +155,35 @@ const useUniversitySearch = (universities) => {
                 return multiplier * (getMemberCount(a) - getMemberCount(b));
               }
               
-              case 'name': {
-                // Firebase新形式の大学名
-                const nameA = a.university_name || '';
-                const nameB = b.university_name || '';
-                return multiplier * nameA.localeCompare(nameB);
+              case 'university_cost': {
+                // Firebase新形式の大学費用（年額合計）
+                const getUniversityCost = (uni) => {
+                  // total_annual_costがある場合はそれを使用
+                  if (uni.costs?.total_annual_cost) {
+                    return parseInt(uni.costs.total_annual_cost);
+                  }
+                  
+                  // ない場合は主要費用を合計
+                  const tuition = parseInt(uni.costs?.university_costs?.annual_tuition || 0);
+                  const entrance = parseInt(uni.costs?.university_costs?.entrance_fee || 0);
+                  const facility = parseInt(uni.costs?.university_costs?.facility_fee || 0);
+                  
+                  return tuition + facility; // 入学金は年額ではないので除外
+                };
+                return multiplier * (getUniversityCost(a) - getUniversityCost(b));
               }
               
-              case 'academic_rank': {
-                // Firebase新形式の学力ランク
-                const rankOrder = { 'A': 1, 'B': 2, 'C': 3, 'D': 4, 'E': 5, 'F': 6 };
-                const getRankOrder = (uni) => {
-                  const rank = uni.academic_rank || '';
-                  const rankLetter = rank.split('：')[0];
-                  return rankOrder[rankLetter] || 999;
+              case 'soccer_club_cost': {
+                // Firebase新形式のサッカー部費用（年額合計）
+                const getSoccerClubCost = (uni) => {
+                  const monthlyFee = parseInt(uni.costs?.soccer_club_costs?.monthly_club_fee || 0);
+                  const equipment = parseInt(uni.costs?.soccer_club_costs?.equipment_cost || 0);
+                  const camp = parseInt(uni.costs?.soccer_club_costs?.camp_cost || 0);
+                  const travel = parseInt(uni.costs?.soccer_club_costs?.travel_cost || 0);
+                  
+                  return (monthlyFee * 12) + equipment + camp + travel;
                 };
-                return multiplier * (getRankOrder(a) - getRankOrder(b));
+                return multiplier * (getSoccerClubCost(a) - getSoccerClubCost(b));
               }
               
               default:
