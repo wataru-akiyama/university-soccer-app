@@ -1,32 +1,28 @@
-// src/components/MultiSelectSearchForm.jsx - 本番向けクリーン版
+// src/components/MultiSelectSearchForm.jsx - 職業フィルター対応版
 import React, { useState } from 'react';
-import { Search, ChevronDown, X, Filter, Trophy, ChevronUp, Star, Users, School } from 'lucide-react';
+import { Search, ChevronDown, X, Filter, Users, ChevronUp, Star, Briefcase, School, Target } from 'lucide-react';
 import MultiSelectDropdown from './MultiSelectDropdown';
-import { regions, leagues, academicRanks, playerAspirations } from '../data';
+import { regions, academicRanks, playerAspirations, careers } from '../data';
 
 const MultiSelectSearchForm = ({
   searchQuery,
   setSearchQuery,
   selectedRegions,
   setSelectedRegions,
-  selectedLeagues,
-  setSelectedLeagues,
   selectedAcademicRanks,
   setSelectedAcademicRanks,
   selectedPlayerAspirations, 
   setSelectedPlayerAspirations,
-  sportsRecommend,
-  setSportsRecommend,
-  selectionAvailable,
-  setSelectionAvailable,
-  dormAvailable,
-  setDormAvailable,
-  generalAdmissionAvailable,
-  setGeneralAdmissionAvailable,
+  selectedCareers,
+  setSelectedCareers,
   publicUniversity,
   setPublicUniversity,
   privateUniversity,
-  setPrivateUniversity
+  setPrivateUniversity,
+  sportsRecommend,
+  setSportsRecommend,
+  generalAdmissionAvailable,
+  setGeneralAdmissionAvailable
 }) => {
   
   const [showAllFilters, setShowAllFilters] = useState(false);
@@ -36,15 +32,13 @@ const MultiSelectSearchForm = ({
   const clearAllFilters = () => {
     setSearchQuery('');
     setSelectedRegions([]);
-    setSelectedLeagues([]);
     setSelectedAcademicRanks([]);
     setSelectedPlayerAspirations([]);
-    setSportsRecommend(false);
-    setSelectionAvailable(false);
-    setDormAvailable(false);
-    setGeneralAdmissionAvailable(false);
+    setSelectedCareers([]);
     setPublicUniversity(false);
     setPrivateUniversity(false);
+    setSportsRecommend(false);
+    setGeneralAdmissionAvailable(false);
   };
   
   // 選択中のフィルター数を計算
@@ -52,15 +46,13 @@ const MultiSelectSearchForm = ({
     let count = 0;
     if (searchQuery) count++;
     count += selectedRegions.length;
-    count += selectedLeagues.length;
     count += selectedAcademicRanks.length;
     count += selectedPlayerAspirations.length;
-    if (sportsRecommend) count++;
-    if (selectionAvailable) count++;
-    if (dormAvailable) count++;
-    if (generalAdmissionAvailable) count++;
+    count += selectedCareers.length;
     if (publicUniversity) count++;
     if (privateUniversity) count++;
+    if (sportsRecommend) count++;
+    if (generalAdmissionAvailable) count++;
     return count;
   };
   
@@ -78,14 +70,14 @@ const MultiSelectSearchForm = ({
       });
     });
     
-    selectedLeagues.forEach(league => {
-      const shortLeague = league.replace(/リーグ|大学サッカー/g, '').trim();
+    selectedPlayerAspirations.forEach(aspiration => {
+      const shortAspiration = aspiration.split('：')[1]?.substring(0, 8) + '...' || aspiration.split('：')[0];
       tags.push({
-        id: `league-${league}`,
-        label: shortLeague,
-        type: 'league',
-        value: league,
-        color: 'bg-green-100 text-green-800'
+        id: `aspiration-${aspiration}`,
+        label: shortAspiration,
+        type: 'playerAspiration',
+        value: aspiration,
+        color: 'bg-indigo-100 text-indigo-800'
       });
     });
     
@@ -100,52 +92,16 @@ const MultiSelectSearchForm = ({
       });
     });
     
-    selectedPlayerAspirations.forEach(aspiration => {
-      const shortAspiration = aspiration.split('：')[1]?.substring(0, 8) + '...' || aspiration.split('：')[0];
+    selectedCareers.forEach(career => {
+      const shortCareer = career.length > 10 ? career.substring(0, 10) + '...' : career;
       tags.push({
-        id: `aspiration-${aspiration}`,
-        label: shortAspiration,
-        type: 'playerAspiration',
-        value: aspiration,
-        color: 'bg-indigo-100 text-indigo-800'
-      });
-    });
-    
-    if (sportsRecommend) {
-      tags.push({
-        id: 'sports-recommend',
-        label: 'スポーツ推薦あり',
-        type: 'sportsRecommend',
-        color: 'bg-green-100 text-green-800'
-      });
-    }
-    
-    if (selectionAvailable) {
-      tags.push({
-        id: 'selection-available',
-        label: 'セレクションあり',
-        type: 'selectionAvailable',
-        color: 'bg-blue-100 text-blue-800'
-      });
-    }
-    
-    if (dormAvailable) {
-      tags.push({
-        id: 'dorm-available',
-        label: '寮あり',
-        type: 'dormAvailable',
+        id: `career-${career}`,
+        label: shortCareer,
+        type: 'career',
+        value: career,
         color: 'bg-purple-100 text-purple-800'
       });
-    }
-    
-    if (generalAdmissionAvailable) {
-      tags.push({
-        id: 'general-admission',
-        label: '一般入部可',
-        type: 'generalAdmissionAvailable',
-        color: 'bg-gray-100 text-gray-800'
-      });
-    }
+    });
     
     if (publicUniversity) {
       tags.push({
@@ -165,6 +121,24 @@ const MultiSelectSearchForm = ({
       });
     }
     
+    if (sportsRecommend) {
+      tags.push({
+        id: 'sports-recommend',
+        label: 'スポーツ推薦あり',
+        type: 'sportsRecommend',
+        color: 'bg-green-100 text-green-800'
+      });
+    }
+    
+    if (generalAdmissionAvailable) {
+      tags.push({
+        id: 'general-admission',
+        label: '一般入部可',
+        type: 'generalAdmissionAvailable',
+        color: 'bg-gray-100 text-gray-800'
+      });
+    }
+    
     return tags;
   };
   
@@ -174,32 +148,26 @@ const MultiSelectSearchForm = ({
       case 'region':
         setSelectedRegions(selectedRegions.filter(r => r !== tag.value));
         break;
-      case 'league':
-        setSelectedLeagues(selectedLeagues.filter(l => l !== tag.value));
+      case 'playerAspiration':
+        setSelectedPlayerAspirations(selectedPlayerAspirations.filter(a => a !== tag.value));
         break;
       case 'academicRank':
         setSelectedAcademicRanks(selectedAcademicRanks.filter(r => r !== tag.value));
         break;
-      case 'playerAspiration':
-        setSelectedPlayerAspirations(selectedPlayerAspirations.filter(a => a !== tag.value));
-        break;
-      case 'sportsRecommend':
-        setSportsRecommend(false);
-        break;
-      case 'selectionAvailable':
-        setSelectionAvailable(false);
-        break;
-      case 'dormAvailable':
-        setDormAvailable(false);
-        break;
-      case 'generalAdmissionAvailable':
-        setGeneralAdmissionAvailable(false);
+      case 'career':
+        setSelectedCareers(selectedCareers.filter(c => c !== tag.value));
         break;
       case 'publicUniversity':
         setPublicUniversity(false);
         break;
       case 'privateUniversity':
         setPrivateUniversity(false);
+        break;
+      case 'sportsRecommend':
+        setSportsRecommend(false);
+        break;
+      case 'generalAdmissionAvailable':
+        setGeneralAdmissionAvailable(false);
         break;
       default:
         break;
@@ -238,7 +206,7 @@ const MultiSelectSearchForm = ({
       
       {/* ドロップダウンフィルター */}
       <div className={`${showAllFilters ? 'block' : 'hidden'} md:block mb-4`}>
-        {/* メインフィルター */}
+        {/* メインフィルター - 新しい順序：地域、志向性、学力ランク、職業 */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-4">
           <MultiSelectDropdown
             label="地域を選択"
@@ -249,11 +217,11 @@ const MultiSelectSearchForm = ({
           />
           
           <MultiSelectDropdown
-            label="リーグを選択"
-            icon={<Trophy className="text-green-600" size={16} />}
-            options={leagues}
-            selectedValues={selectedLeagues}
-            onChange={setSelectedLeagues}
+            label="あなたの志向性"
+            icon={<Target className="text-indigo-600" size={16} />}
+            options={playerAspirations}
+            selectedValues={selectedPlayerAspirations}
+            onChange={setSelectedPlayerAspirations}
           />
           
           <MultiSelectDropdown
@@ -265,56 +233,16 @@ const MultiSelectSearchForm = ({
           />
           
           <MultiSelectDropdown
-            label="あなたの志向性"
-            icon={<Users className="text-indigo-600" size={16} />}
-            options={playerAspirations}
-            selectedValues={selectedPlayerAspirations}
-            onChange={setSelectedPlayerAspirations}
+            label="将来の職業"
+            icon={<Briefcase className="text-purple-600" size={16} />}
+            options={careers}
+            selectedValues={selectedCareers}
+            onChange={setSelectedCareers}
           />
         </div>
         
-        {/* チェックボックスフィルター */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
-          <label className="flex items-center cursor-pointer">
-            <input 
-              type="checkbox" 
-              className="mr-2 h-4 w-4 sm:h-5 sm:w-5"
-              checked={sportsRecommend}
-              onChange={() => setSportsRecommend(!sportsRecommend)}
-            />
-            <span className="text-sm sm:text-base">スポーツ推薦あり</span>
-          </label>
-          
-          <label className="flex items-center cursor-pointer">
-            <input 
-              type="checkbox" 
-              className="mr-2 h-4 w-4 sm:h-5 sm:w-5"
-              checked={selectionAvailable}
-              onChange={() => setSelectionAvailable(!selectionAvailable)}
-            />
-            <span className="text-sm sm:text-base">セレクションあり</span>
-          </label>
-          
-          <label className="flex items-center cursor-pointer">
-            <input 
-              type="checkbox" 
-              className="mr-2 h-4 w-4 sm:h-5 sm:w-5"
-              checked={dormAvailable}
-              onChange={() => setDormAvailable(!dormAvailable)}
-            />
-            <span className="text-sm sm:text-base">寮あり</span>
-          </label>
-          
-          <label className="flex items-center cursor-pointer">
-            <input 
-              type="checkbox" 
-              className="mr-2 h-4 w-4 sm:h-5 sm:w-5"
-              checked={generalAdmissionAvailable}
-              onChange={() => setGeneralAdmissionAvailable(!generalAdmissionAvailable)}
-            />
-            <span className="text-sm sm:text-base">一般入部可</span>
-          </label>
-
+        {/* チェックボックスフィルター - 新しい順序：国公立、私立、スポーツ推薦、一般入部 */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
           <label className="flex items-center cursor-pointer">
             <input 
               type="checkbox" 
@@ -339,6 +267,26 @@ const MultiSelectSearchForm = ({
               <School size={16} className="mr-1 text-red-600" />
               <span className="text-sm sm:text-base">私立大学</span>
             </div>
+          </label>
+          
+          <label className="flex items-center cursor-pointer">
+            <input 
+              type="checkbox" 
+              className="mr-2 h-4 w-4 sm:h-5 sm:w-5"
+              checked={sportsRecommend}
+              onChange={() => setSportsRecommend(!sportsRecommend)}
+            />
+            <span className="text-sm sm:text-base">スポーツ推薦あり</span>
+          </label>
+          
+          <label className="flex items-center cursor-pointer">
+            <input 
+              type="checkbox" 
+              className="mr-2 h-4 w-4 sm:h-5 sm:w-5"
+              checked={generalAdmissionAvailable}
+              onChange={() => setGeneralAdmissionAvailable(!generalAdmissionAvailable)}
+            />
+            <span className="text-sm sm:text-base">一般入部可</span>
           </label>
         </div>
       </div>

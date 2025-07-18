@@ -1,4 +1,4 @@
-// src/hooks/useUniversitySearch.js - Firebase新形式対応版
+// src/hooks/useUniversitySearch.js - 職業フィルター対応版
 
 import { useState, useMemo } from 'react';
 import { searchHelpers } from '../data';
@@ -7,17 +7,15 @@ const useUniversitySearch = (universities) => {
   // 検索状態
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedRegions, setSelectedRegions] = useState([]);
-  const [selectedLeagues, setSelectedLeagues] = useState([]);
   const [selectedAcademicRanks, setSelectedAcademicRanks] = useState([]);
   const [selectedPlayerAspirations, setSelectedPlayerAspirations] = useState([]);
+  const [selectedCareers, setSelectedCareers] = useState([]); // 新規追加
   
-  // チェックボックスフィルター
-  const [sportsRecommend, setSportsRecommend] = useState(false);
-  const [selectionAvailable, setSelectionAvailable] = useState(false);
-  const [dormAvailable, setDormAvailable] = useState(false);
-  const [generalAdmissionAvailable, setGeneralAdmissionAvailable] = useState(false);
+  // チェックボックスフィルター - 削除: selectionAvailable, dormAvailable
   const [publicUniversity, setPublicUniversity] = useState(false);
   const [privateUniversity, setPrivateUniversity] = useState(false);
+  const [sportsRecommend, setSportsRecommend] = useState(false);
+  const [generalAdmissionAvailable, setGeneralAdmissionAvailable] = useState(false);
   
   // ソート設定
   const [sortOption, setSortOption] = useState('');
@@ -45,8 +43,8 @@ const useUniversitySearch = (universities) => {
         
         // 地域フィルター（Firebase新形式対応）
         if (selectedRegions.length > 0) {
-          const universityArea = university.area || ''; // Firebase形式
-          const universityLocation = university.location || ''; // Firebase形式
+          const universityArea = university.area || '';
+          const universityLocation = university.location || '';
           
           const matchesRegion = selectedRegions.some(region => {
             // 直接一致チェック
@@ -59,19 +57,9 @@ const useUniversitySearch = (universities) => {
           if (!matchesRegion) return false;
         }
         
-        // リーグフィルター（Firebase新形式対応）
-        if (selectedLeagues.length > 0) {
-          const universityLeague = (university.soccer_club?.league || '').trim(); // Firebase形式のみ
-          const matchesLeague = selectedLeagues.some(league => 
-            universityLeague === league.trim()
-          );
-          
-          if (!matchesLeague) return false;
-        }
-        
         // 学力ランクフィルター（Firebase新形式対応）
         if (selectedAcademicRanks.length > 0) {
-          const universityRank = university.academic_rank || ''; // Firebase形式のみ
+          const universityRank = university.academic_rank || '';
           const matchesRank = selectedAcademicRanks.includes(universityRank);
           
           if (!matchesRank) return false;
@@ -97,9 +85,18 @@ const useUniversitySearch = (universities) => {
           if (!matchesAspiration) return false;
         }
         
+        // 職業フィルター（新規追加）
+        if (selectedCareers.length > 0) {
+          const matchesCareer = selectedCareers.some(career => 
+            searchHelpers.hasCareerPath(university, career)
+          );
+          
+          if (!matchesCareer) return false;
+        }
+        
         // 国公立・私立フィルター（Firebase新形式対応）
         let isPublic = false;
-        const academicRank = university.academic_rank || ''; // Firebase形式のみ
+        const academicRank = university.academic_rank || '';
         
         if (academicRank === 'F：国公立') {
           isPublic = true;
@@ -112,25 +109,13 @@ const useUniversitySearch = (universities) => {
         
         // スポーツ推薦フィルター（Firebase新形式対応）
         if (sportsRecommend) {
-          const hasRecommend = university.entry_conditions?.sports_recommend; // Firebase形式のみ
+          const hasRecommend = university.entry_conditions?.sports_recommend;
           if (!hasRecommend) return false;
-        }
-        
-        // セレクションフィルター（Firebase新形式対応）
-        if (selectionAvailable) {
-          const hasSelection = university.entry_conditions?.selection; // Firebase形式のみ
-          if (!hasSelection) return false;
-        }
-        
-        // 寮フィルター（Firebase新形式対応）
-        if (dormAvailable) {
-          const hasDorm = university.soccer_club?.dorm_available; // Firebase形式のみ
-          if (!hasDorm) return false;
         }
         
         // 一般入部フィルター（Firebase新形式対応）
         if (generalAdmissionAvailable) {
-          const allowsGeneral = university.entry_conditions?.general_admission; // Firebase形式のみ
+          const allowsGeneral = university.entry_conditions?.general_admission;
           if (!allowsGeneral) return false;
         }
         
@@ -208,17 +193,16 @@ const useUniversitySearch = (universities) => {
     universities,
     searchQuery,
     selectedRegions,
-    selectedLeagues,
     selectedAcademicRanks,
     selectedPlayerAspirations,
-    sportsRecommend,
-    selectionAvailable,
-    dormAvailable,
-    generalAdmissionAvailable,
+    selectedCareers, // 新規追加
     publicUniversity,
     privateUniversity,
+    sportsRecommend,
+    generalAdmissionAvailable,
     sortOption,
     sortDirection
+    // 削除: selectedLeagues, selectionAvailable, dormAvailable
   ]);
   
   return {
@@ -227,26 +211,23 @@ const useUniversitySearch = (universities) => {
     setSearchQuery,
     selectedRegions,
     setSelectedRegions,
-    selectedLeagues,
-    setSelectedLeagues,
     selectedAcademicRanks,
     setSelectedAcademicRanks,
     selectedPlayerAspirations,
     setSelectedPlayerAspirations,
+    selectedCareers, // 新規追加
+    setSelectedCareers, // 新規追加
     
     // チェックボックスフィルター
-    sportsRecommend,
-    setSportsRecommend,
-    selectionAvailable,
-    setSelectionAvailable,
-    dormAvailable,
-    setDormAvailable,
-    generalAdmissionAvailable,
-    setGeneralAdmissionAvailable,
     publicUniversity,
     setPublicUniversity,
     privateUniversity,
     setPrivateUniversity,
+    sportsRecommend,
+    setSportsRecommend,
+    generalAdmissionAvailable,
+    setGeneralAdmissionAvailable,
+    // 削除: selectionAvailable, setSelectionAvailable, dormAvailable, setDormAvailable
     
     // ソート
     sortOption,
