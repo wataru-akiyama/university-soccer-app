@@ -315,11 +315,11 @@ export const searchOptions = {
   careerMapping, // 新規追加
   certifications: availableCertifications,
   sortOptions: [
-    { value: '', label: '並び替えなし' },
+    { value: '', label: 'デフォルト' },
     { value: 'j_league', label: 'Jリーグ内定者数順' },
     { value: 'members', label: '部員数順' },
-    { value: 'name', label: '大学名順' },
-    { value: 'academic_rank', label: '学力ランク順' }
+    { value: 'university_cost', label: '大学費用順' },
+    { value: 'soccer_club_cost', label: 'サッカー部費用順' }
   ]
 };
 
