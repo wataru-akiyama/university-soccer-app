@@ -1,4 +1,4 @@
-// src/components/UniversityList.jsx - プレミアム対応版
+// src/components/UniversityList.jsx - スマホ最適化版
 import React, { useState, useMemo } from 'react';
 import SimpleUniversityCard from './SimpleUniversityCard';
 import { ChevronLeft, ChevronRight, ArrowDown, ArrowUp, Lock } from 'lucide-react';
@@ -68,7 +68,7 @@ const UniversityList = ({
     if (isPremium || filteredUniversities.length <= 20) return null;
     
     return (
-      <div className="mb-4 bg-gradient-to-r from-yellow-100 to-orange-100 border-l-4 border-yellow-500 p-4 rounded-lg">
+      <div className="mb-4 bg-gradient-to-r from-yellow-100 to-orange-100 border-l-4 border-yellow-500 p-4 rounded-lg mx-4">
         <div className="flex items-center">
           <Lock size={20} className="text-yellow-600 mr-3" />
           <div>
@@ -98,14 +98,14 @@ const UniversityList = ({
   };
 
   return (
-    <div className="bg-white p-6 rounded-lg shadow-md">
+    <div>
       {/* フリープラン制限バナー */}
       <FreePlanLimitBanner />
       
-      {/* ヘッダー部分 - レスポンシブ対応 */}
-      <div className="mb-6">
+      {/* ヘッダー部分 - 独立したコンテナ（レスポンシブ対応） */}
+      <div className="bg-white mx-4 p-4 rounded-lg shadow-sm mb-4">
         {/* デスクトップ版 - 横並び */}
-        <div className="hidden md:flex justify-between items-center mb-4">
+        <div className="hidden md:flex justify-between items-center">
           <div className="flex items-center">
             <h2 className="text-xl font-semibold">検索結果</h2>
             <span className="bg-green-100 text-green-800 text-sm px-3 py-1 rounded-full ml-3">
@@ -148,7 +148,7 @@ const UniversityList = ({
         </div>
 
         {/* モバイル版 - 縦並び */}
-        <div className="md:hidden space-y-3 mb-4">
+        <div className="md:hidden space-y-3">
           {/* タイトルと件数 */}
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
             <h2 className="text-lg font-semibold mb-2 sm:mb-0">検索結果</h2>
@@ -197,8 +197,8 @@ const UniversityList = ({
         </div>
       </div>
       
-      {/* 大学リスト - レスポンシブ2列表示 */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+      {/* 大学リスト - カードを画面端まで拡張（スマホは1列、PC以上は2列） */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 px-4 mb-6">
         {currentUniversities.map(university => (
           <SimpleUniversityCard
             key={university.id}
@@ -217,7 +217,7 @@ const UniversityList = ({
       
       {/* 結果がない場合 */}
       {limitedUniversities.length === 0 && (
-        <div className="text-center py-8 text-gray-500">
+        <div className="text-center py-8 text-gray-500 mx-4">
           <p>検索条件に一致する大学が見つかりませんでした。</p>
           <p>条件を変更して再度検索してください。</p>
         </div>
@@ -225,10 +225,10 @@ const UniversityList = ({
       
       {/* ページネーションコントロール */}
       {limitedUniversities.length > universitiesPerPage && (
-        <div className="flex justify-center mt-8">
+        <div className="flex justify-center mt-8 px-4">
           <nav className="flex items-center space-x-1">
             <button 
-              className="px-3 py-2 rounded border text-gray-600 hover:bg-gray-100 disabled:opacity-50 disabled:pointer-events-none"
+              className="px-3 py-2 rounded border text-gray-600 hover:bg-gray-100 disabled:opacity-50 disabled:pointer-events-none bg-white shadow-sm"
               onClick={() => handlePageChange(currentPage - 1)}
               disabled={currentPage === 1}
             >
@@ -238,10 +238,10 @@ const UniversityList = ({
             {getPageNumbers().map(number => (
               <button
                 key={number}
-                className={`w-10 h-10 flex items-center justify-center rounded ${
+                className={`w-10 h-10 flex items-center justify-center rounded shadow-sm ${
                   currentPage === number 
                     ? 'bg-green-600 text-white' 
-                    : 'border text-gray-700 hover:bg-gray-100'
+                    : 'border text-gray-700 hover:bg-gray-100 bg-white'
                 }`}
                 onClick={() => handlePageChange(number)}
               >
@@ -250,7 +250,7 @@ const UniversityList = ({
             ))}
             
             <button
-              className="px-3 py-2 rounded border text-gray-600 hover:bg-gray-100 disabled:opacity-50 disabled:pointer-events-none"
+              className="px-3 py-2 rounded border text-gray-600 hover:bg-gray-100 disabled:opacity-50 disabled:pointer-events-none bg-white shadow-sm"
               onClick={() => handlePageChange(currentPage + 1)}
               disabled={currentPage === totalPages}
             >
@@ -262,7 +262,7 @@ const UniversityList = ({
       
       {/* ページ情報 */}
       {limitedUniversities.length > universitiesPerPage && (
-        <div className="text-center mt-2 text-sm text-gray-500">
+        <div className="text-center mt-2 text-sm text-gray-500 px-4">
           {indexOfFirstUniversity + 1}-{Math.min(indexOfLastUniversity, limitedUniversities.length)} / {limitedUniversities.length}件
           {!isPremium && filteredUniversities.length > 20 && (
             <span className="text-yellow-600 ml-2">
@@ -274,7 +274,7 @@ const UniversityList = ({
       
       {/* フリープラン向けアップグレード促進バナー */}
       {!isPremium && (
-        <div className="mt-6 bg-gradient-to-r from-green-50 to-blue-50 border border-green-200 p-4 rounded-lg text-center">
+        <div className="mt-6 mx-4 bg-gradient-to-r from-green-50 to-blue-50 border border-green-200 p-4 rounded-lg text-center">
           <h3 className="font-semibold text-gray-800 mb-2">より詳細な検索をお求めですか？</h3>
           <p className="text-sm text-gray-600 mb-3">
             プレミアムプランで全ての検索結果表示、高度なソート機能、比較機能をご利用いただけます。
