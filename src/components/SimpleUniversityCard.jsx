@@ -1,4 +1,4 @@
-// src/components/SimpleUniversityCard.jsx - 順序番号デザイン改善版
+// src/components/SimpleUniversityCard.jsx - バッジレイアウト改善版
 
 import React from 'react';
 import { Heart, Plus, Check, MapPin, ChevronUp, ChevronDown, X, Info, Star, Target, Lock } from 'lucide-react';
@@ -35,6 +35,7 @@ const SimpleUniversityCard = ({
       </div>
     );
   }
+
   // リーグバッジの色分け
   const getLeagueColor = (league) => {
     if (league?.includes('1部')) return 'bg-green-100 text-green-800 border-green-200';
@@ -66,27 +67,6 @@ const SimpleUniversityCard = ({
     if (genre.startsWith('E：')) return 'bg-blue-50 text-blue-700 border-blue-200';
     if (genre.startsWith('F：')) return 'bg-purple-50 text-purple-700 border-purple-200';
     return 'bg-gray-50 text-gray-700 border-gray-200';
-  };
-
-  // 志向性テキストの短縮
-  const getShortGenre = (genre) => {
-    if (!genre) return '';
-    
-    const parts = genre.split('：');
-    if (parts.length > 1) {
-      const type = parts[0];
-      const description = parts[1];
-      if (description.length > 15) {
-        return `${type}：${description.substring(0, 15)}...`;
-      }
-    }
-    return genre;
-  };
-
-  // 学力ランクテキストの短縮
-  const getShortAcademicRank = (rank) => {
-    if (!rank) return '';
-    return rank.split('：')[0];
   };
 
   // PLAYMAKERコメントの取得とマスク処理
@@ -127,15 +107,27 @@ const SimpleUniversityCard = ({
     return genres;
   };
 
-  // 練習場所の取得（Firebase新形式対応）
-  const getPracticeLocation = () => {
+  // 練習場所の取得（都道府県+市形式）
+  const getPracticeLocationWithArea = () => {
     if (!university) return '';
     
+    // 基本の練習場所を取得
+    let practiceLocation = '';
     if (university.facilities?.ground_name) {
-      return university.facilities.ground_name;
+      practiceLocation = university.facilities.ground_name;
+    } else if (university.soccer_club?.practice_location) {
+      practiceLocation = university.soccer_club.practice_location;
     }
     
-    return university.soccer_club?.practice_location || '';
+    // 大学の所在地情報を取得（都道府県+市の形式で表示）
+    const area = university.area || university.location || '';
+    
+    // 練習場所が大学所在地と異なる場合はそれを表示、同じ場合は大学所在地を表示
+    if (practiceLocation && practiceLocation !== area && !practiceLocation.includes(area)) {
+      return practiceLocation;
+    }
+    
+    return area;
   };
   
   const handleFavoriteClick = (e) => {
@@ -181,9 +173,10 @@ const SimpleUniversityCard = ({
   // データ取得
   const genres = getGenres();
   const academicRank = university?.academic_rank || '';
-  const practiceLocation = getPracticeLocation();
+  const practiceLocationWithArea = getPracticeLocationWithArea();
   const playmakerComment = getPlaymakerComment();
   const hasPremiumContent = isPremiumContent();
+  const league = university.soccer_club?.league || '';
   
   return (
     <div 
@@ -264,42 +257,85 @@ const SimpleUniversityCard = ({
               {university.university_name || '大学名不明'}
             </h3>
             
-            {/* 第1行: リーグバッジ + 練習場所バッジ */}
-            <div className="flex flex-wrap gap-1">
-              <span className={`inline-block px-2 py-0.5 rounded-full text-xs border ${getLeagueColor(university.soccer_club?.league || '')}`}>
-                <span className="hidden sm:inline">{university.soccer_club?.league || 'リーグ不明'}</span>
-                <span className="sm:hidden">
-                  {(university.soccer_club?.league || '').includes('1部') ? '1部' : 
-                   (university.soccer_club?.league || '').includes('2部') ? '2部' : '他'}
-                </span>
-              </span>
-              
-              {practiceLocation && (
-                <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs bg-gray-100 text-gray-700 border border-gray-200">
-                  <MapPin size={10} className="mr-1" />
-                  <span className="hidden sm:inline">{practiceLocation}</span>
-                  <span className="sm:hidden">{practiceLocation.length > 8 ? practiceLocation.substring(0, 8) + '...' : practiceLocation}</span>
-                </span>
-              )}
-            </div>
+            {/* バッジエリア - スマホは縦並び、PC以上は2行横並び */}
+            <div className="space-y-1">
+              {/* デスクトップ表示（2行横並び） */}
+              <div className="hidden sm:block space-y-1">
+                {/* 第1行: リーグバッジ + 練習場所バッジ */}
+                <div className="flex flex-wrap gap-1">
+                  {league && (
+                    <span className={`inline-block px-2 py-0.5 rounded-full text-xs border ${getLeagueColor(league)}`}>
+                      {league}
+                    </span>
+                  )}
+                  
+                  {practiceLocationWithArea && (
+                    <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs bg-gray-100 text-gray-700 border border-gray-200">
+                      <MapPin size={10} className="mr-1" />
+                      {practiceLocationWithArea}
+                    </span>
+                  )}
+                </div>
 
-            {/* 第2行: 学力ランクバッジ + 志向性バッジ */}
-            <div className="flex flex-wrap gap-1">
-              {academicRank && (
-                <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs border ${getAcademicRankColor(academicRank)}`}>
-                  <Star size={10} className="mr-1" />
-                  <span className="hidden sm:inline">{academicRank}</span>
-                  <span className="sm:hidden">{getShortAcademicRank(academicRank)}</span>
-                </span>
-              )}
-              
-              {genres.length > 0 && (
-                <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs border ${getGenreColor(genres[0])}`}>
-                  <Target size={10} className="mr-1" />
-                  <span className="hidden sm:inline">{getShortGenre(genres[0])}</span>
-                  <span className="sm:hidden">{genres[0].split('：')[0]}</span>
-                </span>
-              )}
+                {/* 第2行: 志向性バッジ + 学力ランクバッジ（順序変更） */}
+                <div className="flex flex-wrap gap-1">
+                  {genres.length > 0 && (
+                    <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs border ${getGenreColor(genres[0])}`}>
+                      <Target size={10} className="mr-1" />
+                      {genres[0]}
+                    </span>
+                  )}
+                  
+                  {academicRank && (
+                    <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs border ${getAcademicRankColor(academicRank)}`}>
+                      <Star size={10} className="mr-1" />
+                      {academicRank}
+                    </span>
+                  )}
+                </div>
+              </div>
+
+              {/* モバイル表示（縦並び） */}
+              <div className="sm:hidden space-y-1">
+                {/* リーグバッジ */}
+                {league && (
+                  <div className="flex">
+                    <span className={`inline-block px-2 py-0.5 rounded-full text-xs border ${getLeagueColor(league)}`}>
+                      {league}
+                    </span>
+                  </div>
+                )}
+                
+                {/* 練習場所バッジ */}
+                {practiceLocationWithArea && (
+                  <div className="flex">
+                    <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs bg-gray-100 text-gray-700 border border-gray-200">
+                      <MapPin size={10} className="mr-1" />
+                      {practiceLocationWithArea}
+                    </span>
+                  </div>
+                )}
+
+                {/* 志向性バッジ */}
+                {genres.length > 0 && (
+                  <div className="flex">
+                    <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs border ${getGenreColor(genres[0])}`}>
+                      <Target size={10} className="mr-1" />
+                      {genres[0]}
+                    </span>
+                  </div>
+                )}
+                
+                {/* 学力ランクバッジ */}
+                {academicRank && (
+                  <div className="flex">
+                    <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs border ${getAcademicRankColor(academicRank)}`}>
+                      <Star size={10} className="mr-1" />
+                      {academicRank}
+                    </span>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </div>
@@ -330,26 +366,13 @@ const SimpleUniversityCard = ({
         <div className="flex flex-wrap gap-1 mb-3 sm:mb-4">
           {university.entry_conditions?.sports_recommend && (
             <span className="bg-green-50 text-green-700 text-xs px-2 py-1 rounded-full border border-green-100">
-              <span className="hidden sm:inline">スポーツ推薦</span>
-              <span className="sm:hidden">推薦</span>
+              スポーツ推薦あり
             </span>
           )}
           
-          {university.soccer_club?.dorm_available && (
-            <span className="bg-purple-50 text-purple-700 text-xs px-2 py-1 rounded-full border border-purple-100">
-              寮あり
-            </span>
-          )}
-          
-          {university.entry_conditions?.selection && (
-            <span className="hidden sm:inline-block bg-blue-50 text-blue-700 text-xs px-2 py-1 rounded-full border border-blue-100">
-              セレクション
-            </span>
-          )}
-          
-          {university.soccer_club?.sports_scholarship && (
-            <span className="hidden sm:inline-block bg-yellow-50 text-yellow-700 text-xs px-2 py-1 rounded-full border border-yellow-100">
-              奨学金あり
+          {(university.entry_conditions?.general_admission || !university.entry_conditions?.sports_recommend) && (
+            <span className="bg-blue-50 text-blue-700 text-xs px-2 py-1 rounded-full border border-blue-100">
+              一般入部可
             </span>
           )}
         </div>
