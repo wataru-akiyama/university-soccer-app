@@ -1,10 +1,8 @@
-// src/components/EnhancedUniversityDetails.jsx - プレミアム制限対応版
+// src/components/EnhancedUniversityDetails.jsx - 修正版
 import React, { useState, useRef, useEffect } from 'react';
 import { 
   ChevronLeft, 
   Heart, 
-  Calendar, 
-  ArrowUpRight, 
   Check, 
   Info,
   Briefcase,
@@ -24,7 +22,9 @@ import {
   Home, 
   User,
   TrendingUp,
-  Lock
+  Lock,
+  Globe,
+  Calendar
 } from 'lucide-react';
 import UniversityLogo from './UniversityLogo';
 import PremiumBadge from './PremiumBadge';
@@ -35,7 +35,6 @@ const EnhancedUniversityDetails = ({
   onBack, 
   onAddToCompare, 
   onAddToFavorites, 
-  onApplyForPractice,
   isInCompareList,
   isInFavorites,
   // プレミアム関連のprops
@@ -54,7 +53,7 @@ const EnhancedUniversityDetails = ({
     trackPremiumAttempt = () => {}
   } = premiumUtils || {};
 
-  // バッジ色分け関数（既存のまま）
+  // バッジ色分け関数
   const getLeagueColor = (league) => {
     if (league?.includes('1部')) return 'bg-green-100 text-green-800 border-green-200';
     if (league?.includes('2部')) return 'bg-blue-100 text-blue-800 border-blue-200';
@@ -85,7 +84,7 @@ const EnhancedUniversityDetails = ({
     return 'bg-gray-50 text-gray-700 border-gray-200';
   };
 
-  // ヘルパー関数（既存のまま）
+  // ヘルパー関数
   const getShortGenre = (genre) => {
     if (!genre) return '';
     const parts = genre.split('：');
@@ -123,7 +122,7 @@ const EnhancedUniversityDetails = ({
     return university.soccer_club?.practice_location || '';
   };
 
-  // スクロール状態を監視（既存のまま）
+  // スクロール状態を監視
   useEffect(() => {
     const container = tabContainerRef.current;
     if (!container) return;
@@ -146,14 +145,14 @@ const EnhancedUniversityDetails = ({
   
   if (!university) return null;
 
-  // タブ構成
+  // タブ構成（修正：共通ラベル）
   const tabs = [
-    { id: 'overview', label: '概要・方針', shortLabel: '概要', icon: Info },
-    { id: 'admission', label: '入部条件', shortLabel: '入部', icon: GraduationCap },
-    { id: 'costs', label: '費用・お金', shortLabel: '費用', icon: DollarSign },
-    { id: 'facilities', label: '施設・環境', shortLabel: '施設', icon: Building },
-    { id: 'careers', label: '進路・将来性', shortLabel: '進路', icon: Briefcase },
-    { id: 'reviews', label: '口コミ・評判', shortLabel: '口コミ', icon: MessageSquare }
+    { id: 'overview', label: '概要', icon: Info },
+    { id: 'admission', label: '入部', icon: GraduationCap },
+    { id: 'costs', label: '費用', icon: DollarSign },
+    { id: 'facilities', label: '施設', icon: Building },
+    { id: 'careers', label: '進路', icon: Briefcase },
+    { id: 'reviews', label: '口コミ', icon: MessageSquare }
   ];
 
   // プレミアム制限付きアクションハンドラー
@@ -168,19 +167,6 @@ const EnhancedUniversityDetails = ({
       // 実際の削除処理は親コンポーネントで行う
     } else {
       onAddToCompare(university);
-    }
-  };
-
-  const handlePracticeApplication = () => {
-    if (!canUsePremiumFeature('practice_application')) {
-      trackPremiumAttempt('practice_application', 'blocked_practice_button');
-      return;
-    }
-    
-    if (onApplyForPractice) {
-      onApplyForPractice(university);
-    } else {
-      alert(`${university.university_name}サッカー部の練習体験に申し込みます。`);
     }
   };
 
@@ -224,15 +210,17 @@ const EnhancedUniversityDetails = ({
                 <Heart size={20} fill={isInFavorites ? "currentColor" : "none"} />
               </button>
               
+              {/* 修正：より目立つホームページボタン */}
               {university.homepage_url && (
                 <a 
                   href={university.homepage_url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="bg-white text-gray-600 hover:text-green-600 hover:shadow-lg p-3 rounded-full transition-colors shadow-md border border-gray-200"
-                  title="公式サイトを開く"
+                  className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors shadow-md flex items-center space-x-2"
+                  title="大学公式サイトを開く"
                 >
-                  <ArrowUpRight size={20} />
+                  <Globe size={18} />
+                  <span className="hidden sm:inline text-sm font-medium">公式サイト</span>
                 </a>
               )}
             </div>
@@ -354,8 +342,7 @@ const EnhancedUniversityDetails = ({
                       onClick={() => setActiveTab(tab.id)}
                     >
                       <Icon size={18} className="mr-2" />
-                      <span className="hidden sm:inline">{tab.label}</span>
-                      <span className="sm:hidden">{tab.shortLabel}</span>
+                      <span>{tab.label}</span>
                     </button>
                   );
                 })}
@@ -419,9 +406,9 @@ const EnhancedUniversityDetails = ({
             </div>
           </div>
           
-          {/* アクションエリア */}
+          {/* アクションエリア（修正：練習体験ボタンを削除） */}
           <div className="bg-white rounded-xl shadow-sm p-4 lg:p-6">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <button 
                 className={`flex items-center justify-center px-4 lg:px-6 py-3 rounded-lg font-medium transition-colors ${
                   isInFavorites
@@ -474,27 +461,6 @@ const EnhancedUniversityDetails = ({
                   <span className="sm:hidden">比較追加</span>
                 </button>
               )}
-              
-              {isPremium ? (
-                <button 
-                  className="bg-blue-600 text-white hover:bg-blue-700 px-4 lg:px-6 py-3 rounded-lg font-medium transition-colors flex items-center justify-center sm:col-span-2 lg:col-span-1"
-                  onClick={handlePracticeApplication}
-                >
-                  <Calendar size={18} className="mr-2" />
-                  <span className="hidden sm:inline">練習体験に申し込む</span>
-                  <span className="sm:hidden">練習体験</span>
-                </button>
-              ) : (
-                <button 
-                  className="bg-gray-100 text-gray-500 cursor-not-allowed px-4 lg:px-6 py-3 rounded-lg font-medium flex items-center justify-center sm:col-span-2 lg:col-span-1"
-                  disabled
-                  onClick={() => trackPremiumAttempt('practice_application', 'blocked_practice_button')}
-                >
-                  <Lock size={18} className="mr-2" />
-                  <span className="hidden sm:inline">練習体験に申し込む</span>
-                  <span className="sm:hidden">練習体験</span>
-                </button>
-              )}
             </div>
           </div>
         </div>
@@ -503,8 +469,7 @@ const EnhancedUniversityDetails = ({
   );
 };
 
-
-// 概要タブコンポーネント - プレミアム制限対応版
+// 概要タブコンポーネント
 const OverviewTab = ({ university, isPremium, onUpgradeToPremium }) => {
   const getBasicData = () => {
     const soccerClub = university.soccer_club || {};
@@ -603,7 +568,7 @@ const OverviewTab = ({ university, isPremium, onUpgradeToPremium }) => {
         )}
       </div>
 
-      {/* 施設情報 - 基本情報は無料、詳細はプレミアム */}
+      {/* 施設情報 */}
       <div>
         <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
           <Building size={18} className="text-indigo-600 mr-2" />
@@ -787,7 +752,7 @@ const OverviewTab = ({ university, isPremium, onUpgradeToPremium }) => {
   );
 };
 
-// 入部条件タブコンポーネント - プレミアム制限対応版
+// 入部タブコンポーネント
 const AdmissionTab = ({ university, isPremium, onUpgradeToPremium }) => (
   <div className="space-y-8">
     {/* スポーツ推薦セクション - プレミアム限定 */}
