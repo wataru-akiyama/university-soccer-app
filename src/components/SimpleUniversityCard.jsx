@@ -1,4 +1,4 @@
-// src/components/SimpleUniversityCard.jsx - バッジレイアウト改善版
+// src/components/SimpleUniversityCard.jsx - 統一スタイル版
 
 import React from 'react';
 import { Heart, Plus, Check, MapPin, ChevronUp, ChevronDown, X, Info, Star, Target, Lock } from 'lucide-react';
@@ -28,7 +28,7 @@ const SimpleUniversityCard = ({
   // 早期リターン: universityがnullまたはundefinedの場合
   if (!university) {
     return (
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
+      <div className="bg-white p-4 sm:p-6 rounded-lg shadow-md">
         <div className="text-center py-8">
           <p className="text-gray-500">大学データを読み込み中...</p>
         </div>
@@ -198,7 +198,7 @@ const SimpleUniversityCard = ({
   
   return (
     <div 
-      className="bg-white rounded-xl shadow-sm hover:shadow-lg transition-all border border-gray-200 cursor-pointer overflow-hidden relative"
+      className="bg-white p-4 sm:p-6 rounded-lg shadow-md hover:shadow-lg transition-all cursor-pointer overflow-hidden relative"
       onClick={() => onViewDetails(university)}
     >
       {/* 進路プラン用の順位番号 - コンパクトなデザイン */}
@@ -259,7 +259,7 @@ const SimpleUniversityCard = ({
       </div>
       
       {/* カードヘッダー - 大学名とバッジ */}
-      <div className={`p-3 sm:p-4 border-b border-gray-100 bg-gradient-to-r from-gray-50 to-white ${isPortfolioMode ? 'pt-16' : ''}`}>
+      <div className={`pb-4 border-b border-gray-100 ${isPortfolioMode ? 'pt-12' : ''}`}>
         <div className="flex">
           {/* 大学ロゴ */}
           <UniversityLogo 
@@ -360,9 +360,9 @@ const SimpleUniversityCard = ({
       </div>
       
       {/* カード本体 */}
-      <div className="p-3 sm:p-4">
+      <div className="pt-4">
         {/* PLAYMAKERコメント（プレミアム制限付き） */}
-        <div className="mb-3 sm:mb-4">
+        <div className="mb-4">
           <div className="bg-green-50 p-3 rounded-lg border-l-4 border-green-500 relative">
             <div className="flex items-center justify-between mb-2">
               <span className="text-sm font-medium text-green-800">PLAYMAKERコメント</span>
@@ -381,7 +381,7 @@ const SimpleUniversityCard = ({
         </div>
         
         {/* 特徴タグ */}
-        <div className="flex flex-wrap gap-1 mb-3 sm:mb-4">
+        <div className="flex flex-wrap gap-1 mb-4">
           {university.entry_conditions?.sports_recommend && (
             <span className="bg-green-50 text-green-700 text-xs px-2 py-1 rounded-full border border-green-100">
               スポーツ推薦あり
