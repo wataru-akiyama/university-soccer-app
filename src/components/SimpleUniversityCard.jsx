@@ -107,27 +107,45 @@ const SimpleUniversityCard = ({
     return genres;
   };
 
-  // 練習場所の取得（都道府県+市形式）
+  // 練習場所の取得（グラウンド住所から都道府県+市を抽出）
   const getPracticeLocationWithArea = () => {
     if (!university) return '';
     
-    // 基本の練習場所を取得
-    let practiceLocation = '';
-    if (university.facilities?.ground_name) {
-      practiceLocation = university.facilities.ground_name;
-    } else if (university.soccer_club?.practice_location) {
-      practiceLocation = university.soccer_club.practice_location;
+    // グラウンド住所から都道府県+市を抽出
+    const groundAddress = university.facilities?.ground_address || 
+                         university.soccer_club?.ground_address || 
+                         university.facilities?.address || '';
+    
+    if (groundAddress) {
+      // 住所から都道府県+市を抽出する正規表現
+      const addressMatch = groundAddress.match(/^(.*?[都道府県])(.*?[市区町村])/);
+      
+      if (addressMatch) {
+        const prefecture = addressMatch[1]; // 都道府県
+        const city = addressMatch[2]; // 市区町村
+        return `${prefecture}${city}`;
+      }
+      
+      // 正規表現でマッチしない場合は、住所の最初の部分を返す
+      const addressParts = groundAddress.split(/\s+/);
+      if (addressParts.length > 0) {
+        return addressParts[0];
+      }
     }
     
-    // 大学の所在地情報を取得（都道府県+市の形式で表示）
-    const area = university.area || university.location || '';
+    // グラウンド住所がない場合は、大学の所在地情報をフォールバック
+    const universityArea = university.area || university.location || '';
     
-    // 練習場所が大学所在地と異なる場合はそれを表示、同じ場合は大学所在地を表示
-    if (practiceLocation && practiceLocation !== area && !practiceLocation.includes(area)) {
-      return practiceLocation;
+    // 大学所在地も都道府県+市形式に変換
+    if (universityArea) {
+      const areaMatch = universityArea.match(/^(.*?[都道府県])(.*?[市区町村])/);
+      if (areaMatch) {
+        return `${areaMatch[1]}${areaMatch[2]}`;
+      }
+      return universityArea;
     }
     
-    return area;
+    return '';
   };
   
   const handleFavoriteClick = (e) => {
