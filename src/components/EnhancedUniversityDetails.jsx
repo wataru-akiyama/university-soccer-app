@@ -728,23 +728,18 @@ const AdmissionTab = ({ university, isPremium, onUpgradeToPremium }) => (
                 <span className="inline-block bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-medium">利用可能</span>
               </div>
               
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <div>
-                  <p className="text-sm text-gray-600">推薦率</p>
-                  <p className="font-medium text-gray-900">
-                    {university.extended_data?.recommend_ratio || "約70%"}
-                  </p>
-                </div>
+              {/* 受入人数と基準評定の2列表示（スマホでも2列） */}
+              <div className="grid grid-cols-2 gap-4">
                 <div>
                   <p className="text-sm text-gray-600">受入人数</p>
                   <p className="font-medium text-gray-900">
-                    {university.entry_conditions?.recommend_people_count || "お問い合わせください"}
+                    {university.entry_conditions?.recommend_people_count || "現在準備中"}
                   </p>
                 </div>
                 <div>
-                  <p className="text-sm text-gray-600">基準</p>
+                  <p className="text-sm text-gray-600">基準評定</p>
                   <p className="font-medium text-gray-900">
-                    {university.entry_conditions?.recommend_criteria || "実力・実績による"}
+                    {university.entry_conditions?.recommend_criteria || "現在準備中"}
                   </p>
                 </div>
               </div>
@@ -803,7 +798,7 @@ const AdmissionTab = ({ university, isPremium, onUpgradeToPremium }) => (
               <div>
                 <p className="text-sm text-gray-600">実施時期</p>
                 <p className="font-medium text-gray-900">
-                  {university.entry_conditions?.selection_period || "お問い合わせください"}
+                  {university.entry_conditions?.selection_period || "現在準備中"}
                 </p>
               </div>
               <div>
@@ -839,7 +834,7 @@ const AdmissionTab = ({ university, isPremium, onUpgradeToPremium }) => (
         ) : (
           <div className="flex items-center">
             <span className="inline-block bg-red-100 text-red-800 px-3 py-1 rounded-full text-sm font-medium">実施なし</span>
-            <p className="text-gray-600 text-sm ml-3">一般的なセレクションは実施していません</p>
+            <p className="text-gray-600 text-sm ml-3">セレクションは実施していません</p>
           </div>
         )}
       </div>
@@ -861,7 +856,7 @@ const AdmissionTab = ({ university, isPremium, onUpgradeToPremium }) => (
             <div>
               <p className="text-sm text-gray-600 mb-2">入部条件</p>
               <p className="text-gray-700 text-sm leading-relaxed">
-                {university.entry_conditions?.general_conditions || "大学入学後に入部希望届を提出し、体力テスト・面接を経て入部決定"}
+                {university.entry_conditions?.general_conditions || "現在準備中"}
               </p>
             </div>
           </div>
@@ -874,65 +869,6 @@ const AdmissionTab = ({ university, isPremium, onUpgradeToPremium }) => (
       </div>
     </div>
 
-    {/* 奨学金制度セクション - プレミアム限定 */}
-    <div>
-      <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
-        <DollarSign size={18} className="text-yellow-600 mr-2" />
-        奨学金制度
-        {!isPremium && <PremiumBadge className="ml-2" />}
-      </h3>
-      
-      {isPremium ? (
-        <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
-          {university.soccer_club?.sports_scholarship ? (
-            <div className="space-y-4">
-              <div className="flex items-center">
-                <span className="inline-block bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full text-sm font-medium">制度あり</span>
-              </div>
-              
-              {university.extended_data?.scholarship_details ? (
-                <div>
-                  <p className="text-sm text-gray-600 mb-2">制度詳細</p>
-                  <p className="text-gray-700 text-sm leading-relaxed">
-                    {university.extended_data.scholarship_details}
-                  </p>
-                </div>
-              ) : (
-                <div>
-                  <p className="text-gray-700 text-sm leading-relaxed">
-                    スポーツ奨学金制度を設けています。詳細については大学へお問い合わせください。
-                  </p>
-                </div>
-              )}
-            </div>
-          ) : (
-            <div className="flex items-center">
-              <span className="inline-block bg-gray-100 text-gray-800 px-3 py-1 rounded-full text-sm font-medium">制度なし</span>
-              <p className="text-gray-600 text-sm ml-3">スポーツ特有の奨学金制度はありません</p>
-            </div>
-          )}
-        </div>
-      ) : (
-        <MaskedContent 
-          reason="奨学金制度の詳細"
-          onUpgradeClick={onUpgradeToPremium}
-        >
-          <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
-            <div className="space-y-4">
-              <div className="flex items-center">
-                <span className="inline-block bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full text-sm font-medium">
-                  {university.soccer_club?.sports_scholarship ? "制度あり" : "制度なし"}
-                </span>
-              </div>
-              <div className="text-sm text-gray-600">
-                奨学金制度の詳細はプレミアム限定情報です
-              </div>
-            </div>
-          </div>
-        </MaskedContent>
-      )}
-    </div>
-
     {/* 注意事項 */}
     <div className="bg-blue-50 p-4 rounded-lg border-l-4 border-blue-500">
       <h4 className="font-semibold text-gray-900 mb-2">ご注意</h4>
@@ -940,11 +876,12 @@ const AdmissionTab = ({ university, isPremium, onUpgradeToPremium }) => (
         <li>• 入部条件は年度により変更される場合があります</li>
         <li>• 詳細な条件や手続きについては、必ず大学に直接お問い合わせください</li>
         <li>• 推薦やセレクションの実施時期は前年度を参考にしています</li>
-        <li>• 奨学金制度の詳細は大学の学生課またはサッカー部にお問い合わせください</li>
+        <li>• スポーツ推薦の詳細条件はプレミアムプランでご確認いただけます</li>
       </ul>
     </div>
   </div>
 );
+
 
 // 費用・お金タブコンポーネント - プレミアム制限対応版
 const CostsTab = ({ university, isPremium, onUpgradeToPremium }) => {
