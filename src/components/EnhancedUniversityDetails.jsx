@@ -710,6 +710,7 @@ const OverviewTab = ({ university, isPremium, onUpgradeToPremium }) => {
 
 
 // 入部タブコンポーネント
+// 入部タブコンポーネント - 修正版
 const AdmissionTab = ({ university, isPremium, onUpgradeToPremium }) => (
   <div className="space-y-8">
     {/* スポーツ推薦セクション - プレミアム限定 */}
@@ -724,9 +725,9 @@ const AdmissionTab = ({ university, isPremium, onUpgradeToPremium }) => (
         <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
           {university.entry_conditions?.sports_recommend ? (
             <div className="space-y-4">
-              <div className="flex items-center">
-                <span className="inline-block bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-medium">利用可能</span>
-              </div>
+            <div className="space-y-2 sm:space-y-0 sm:flex sm:items-center">
+              <span className="inline-block bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-medium">利用可能</span>
+            </div>
               
               {/* 受入人数と基準評定の2列表示（スマホでも2列） */}
               <div className="grid grid-cols-2 gap-4">
@@ -754,9 +755,9 @@ const AdmissionTab = ({ university, isPremium, onUpgradeToPremium }) => (
               )}
             </div>
           ) : (
-            <div className="flex items-center">
+            <div className="space-y-2 sm:space-y-0 sm:flex sm:items-center">
               <span className="inline-block bg-red-100 text-red-800 px-3 py-1 rounded-full text-sm font-medium">利用不可</span>
-              <p className="text-gray-600 text-sm ml-3">スポーツ推薦制度はありません</p>
+              <p className="text-gray-600 text-sm sm:ml-3">スポーツ推薦制度はありません</p>
             </div>
           )}
         </div>
@@ -767,11 +768,11 @@ const AdmissionTab = ({ university, isPremium, onUpgradeToPremium }) => (
         >
           <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
             <div className="space-y-4">
-              <div className="flex items-center">
-                <span className="inline-block bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-medium">
-                  {university.entry_conditions?.sports_recommend ? "利用可能" : "利用不可"}
-                </span>
-              </div>
+                <div className="space-y-2 sm:space-y-0 sm:flex sm:items-center">
+                  <span className="inline-block bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-medium">
+                    {university.entry_conditions?.sports_recommend ? "利用可能" : "利用不可"}
+                  </span>
+                </div>
               <div className="text-sm text-gray-600">
                 スポーツ推薦の詳細条件はプレミアム限定情報です
               </div>
@@ -790,7 +791,7 @@ const AdmissionTab = ({ university, isPremium, onUpgradeToPremium }) => (
       <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
         {university.entry_conditions?.selection ? (
           <div className="space-y-4">
-            <div className="flex items-center">
+            <div className="space-y-2 sm:space-y-0 sm:flex sm:items-center">
               <span className="inline-block bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">実施あり</span>
             </div>
             
@@ -832,9 +833,9 @@ const AdmissionTab = ({ university, isPremium, onUpgradeToPremium }) => (
             )}
           </div>
         ) : (
-          <div className="flex items-center">
+          <div className="space-y-2 sm:space-y-0 sm:flex sm:items-center">
             <span className="inline-block bg-red-100 text-red-800 px-3 py-1 rounded-full text-sm font-medium">実施なし</span>
-            <p className="text-gray-600 text-sm ml-3">セレクションは実施していません</p>
+            <p className="text-gray-600 text-sm sm:ml-3">セレクションは実施していません</p>
           </div>
         )}
       </div>
@@ -849,7 +850,7 @@ const AdmissionTab = ({ university, isPremium, onUpgradeToPremium }) => (
       <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
         {university.entry_conditions?.general_admission ? (
           <div className="space-y-4">
-            <div className="flex items-center">
+            <div className="space-y-2 sm:space-y-0 sm:flex sm:items-center">
               <span className="inline-block bg-purple-100 text-purple-800 px-3 py-1 rounded-full text-sm font-medium">入部可能</span>
             </div>
             
@@ -861,9 +862,9 @@ const AdmissionTab = ({ university, isPremium, onUpgradeToPremium }) => (
             </div>
           </div>
         ) : (
-          <div className="flex items-center">
+          <div className="space-y-2 sm:space-y-0 sm:flex sm:items-center">
             <span className="inline-block bg-red-100 text-red-800 px-3 py-1 rounded-full text-sm font-medium">入部不可</span>
-            <p className="text-gray-600 text-sm ml-3">一般入部は受け付けていません</p>
+            <p className="text-gray-600 text-sm sm:ml-3">一般入部は受け付けていません</p>
           </div>
         )}
       </div>
