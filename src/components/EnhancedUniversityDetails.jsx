@@ -1074,13 +1074,14 @@ const FacilitiesTab = ({ university, isPremium, onUpgradeToPremium }) => {
                 <p className="text-sm text-gray-600 mb-1">グラウンド名</p>
                 <p className="font-medium text-gray-900 flex items-center">
                   <MapPin size={16} className="text-blue-600 mr-2" />
-                  {facilities.ground_name || soccerClub.practice_location || "情報なし"}
+                  {facilities.ground_name || soccerClub.practice_location || "現在準備中"}
                 </p>
               </div>
               <div>
                 <p className="text-sm text-gray-600 mb-1">サッカーコート数</p>
                 <p className="font-medium text-gray-900">
-                  {facilities.soccer_field_count || soccerClub.soccer_field_count || 0}面
+                  {facilities.soccer_field_count || soccerClub.soccer_field_count || "現在準備中"}
+                  {(facilities.soccer_field_count || soccerClub.soccer_field_count) && "面"}
                 </p>
               </div>
             </div>
@@ -1138,159 +1139,144 @@ const FacilitiesTab = ({ university, isPremium, onUpgradeToPremium }) => {
         </div>
       </div>
 
-      {/* 寮について */}
+      {/* サッカー部寮 */}
       <div>
         <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
           <Home size={18} className="text-purple-600 mr-2" />
-          寮について
+          サッカー部寮
         </h3>
         <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
           <div className="space-y-4">
-            <div className="space-y-3">
-              {soccerClub.dorm_details ? (
-                <>
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                    <div className="flex items-center space-x-2">
-                      {soccerClub.dorm_details.university_dorm ? (
-                        <>
-                          <Check size={16} className="text-green-600" />
-                          <span className="text-gray-700 text-sm font-medium">大学寮あり</span>
-                        </>
-                      ) : (
-                        <>
-                          <X size={16} className="text-red-500" />
-                          <span className="text-gray-500 text-sm">大学寮なし</span>
-                        </>
-                      )}
+            {/* 寮の有無を判定 */}
+            {(() => {
+              // 寮の情報を判定
+              const hasDorm = soccerClub.dorm_available || 
+                             soccerClub.dorm_details?.university_dorm || 
+                             soccerClub.dorm_details?.soccer_club_dorm || 
+                             soccerClub.dorm_details?.general_dorm;
+              
+              if (hasDorm) {
+                return (
+                  <div className="space-y-4">
+                    {/* 寮あり */}
+                    <div className="flex items-center space-x-3">
+                      <Check size={20} className="text-green-600" />
+                      <span className="text-gray-700 font-medium text-lg">サッカー部寮あり</span>
                     </div>
-                    
-                    <div className="flex items-center space-x-2">
-                      {soccerClub.dorm_details.soccer_club_dorm ? (
-                        <>
-                          <Check size={16} className="text-green-600" />
-                          <span className="text-gray-700 text-sm font-medium">サッカー部寮あり</span>
-                        </>
-                      ) : (
-                        <>
-                          <X size={16} className="text-red-500" />
-                          <span className="text-gray-500 text-sm">サッカー部寮なし</span>
-                        </>
-                      )}
-                    </div>
-                    
-                    <div className="flex items-center space-x-2">
-                      {soccerClub.dorm_details.general_dorm ? (
-                        <>
-                          <Check size={16} className="text-green-600" />
-                          <span className="text-gray-700 text-sm font-medium">部員寮あり</span>
-                        </>
-                      ) : (
-                        <>
-                          <X size={16} className="text-red-500" />
-                          <span className="text-gray-500 text-sm">部員寮なし</span>
-                        </>
-                      )}
-                    </div>
-                  </div>
-                  
-                  {/* 寮特記事項 - プレミアム限定 */}
-                  {soccerClub.dorm_details.dorm_notes && (
-                    isPremium ? (
-                      <div className="mt-4 pt-4 border-t border-gray-200">
-                        <p className="text-sm text-gray-600 mb-2">寮特記事項</p>
-                        <p className="text-gray-700 text-sm leading-relaxed">
-                          {soccerClub.dorm_details.dorm_notes}
-                        </p>
+
+                    {/* 詳細な寮情報 */}
+                    {soccerClub.dorm_details ? (
+                      <div className="space-y-3">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                          {/* 大学寮 */}
+                          <div className="flex items-center space-x-2">
+                            {soccerClub.dorm_details.university_dorm ? (
+                              <>
+                                <Check size={16} className="text-green-600" />
+                                <span className="text-gray-700 text-sm font-medium">大学寮利用可</span>
+                              </>
+                            ) : (
+                              <>
+                                <X size={16} className="text-red-500" />
+                                <span className="text-gray-500 text-sm">大学寮利用不可</span>
+                              </>
+                            )}
+                          </div>
+                          
+                          {/* サッカー部専用寮 */}
+                          <div className="flex items-center space-x-2">
+                            {soccerClub.dorm_details.soccer_club_dorm ? (
+                              <>
+                                <Check size={16} className="text-green-600" />
+                                <span className="text-gray-700 text-sm font-medium">部専用寮あり</span>
+                              </>
+                            ) : (
+                              <>
+                                <X size={16} className="text-red-500" />
+                                <span className="text-gray-500 text-sm">部専用寮なし</span>
+                              </>
+                            )}
+                          </div>
+                        </div>
+
+                        {/* 全寮制かどうか */}
+                        <div className="pt-3 border-t border-gray-200">
+                          <p className="text-sm text-gray-600 mb-2">寮制度</p>
+                          <p className="text-gray-700 text-sm">
+                            {soccerClub.dorm_details.mandatory_dorm ? 
+                              "全寮制（入寮必須）" : 
+                              soccerClub.dorm_details.optional_dorm ? 
+                                "希望者のみ入寮可能" : 
+                                "現在準備中"
+                            }
+                          </p>
+                        </div>
+                        
+                        {/* 寮特記事項 - プレミアム限定 */}
+                        {soccerClub.dorm_details.dorm_notes && (
+                          isPremium ? (
+                            <div className="pt-3 border-t border-gray-200">
+                              <p className="text-sm text-gray-600 mb-2">寮特記事項</p>
+                              <p className="text-gray-700 text-sm leading-relaxed">
+                                {soccerClub.dorm_details.dorm_notes}
+                              </p>
+                            </div>
+                          ) : (
+                            <div className="pt-3 border-t border-gray-200">
+                              <MaskedContent 
+                                reason="寮の詳細情報"
+                                onUpgradeClick={onUpgradeToPremium}
+                                showPreview={false}
+                              >
+                                <div>
+                                  <p className="text-sm text-gray-600 mb-2">寮特記事項</p>
+                                  <p className="text-gray-700 text-sm leading-relaxed">
+                                    {soccerClub.dorm_details.dorm_notes}
+                                  </p>
+                                </div>
+                              </MaskedContent>
+                            </div>
+                          )
+                        )}
                       </div>
                     ) : (
-                      <div className="mt-4 pt-4 border-t border-gray-200">
-                        <MaskedContent 
-                          reason="寮の詳細情報"
-                          onUpgradeClick={onUpgradeToPremium}
-                          showPreview={false}
-                        >
-                          <div>
-                            <p className="text-sm text-gray-600 mb-2">寮特記事項</p>
-                            <p className="text-gray-700 text-sm leading-relaxed">
-                              {soccerClub.dorm_details.dorm_notes}
-                            </p>
-                          </div>
-                        </MaskedContent>
+                      // 詳細情報がない場合の表示
+                      <div className="space-y-3">
+                        <div className="pt-3 border-t border-gray-200">
+                          <p className="text-sm text-gray-600 mb-2">寮制度</p>
+                          <p className="text-gray-700 text-sm">現在準備中</p>
+                        </div>
+                        <div>
+                          <p className="text-sm text-gray-600 mb-2">詳細情報</p>
+                          <p className="text-gray-700 text-sm">現在準備中</p>
+                        </div>
                       </div>
-                    )
-                  )}
-                </>
-              ) : (
-                <div className="flex items-center space-x-3">
-                  {soccerClub.dorm_available ? (
-                    <>
-                      <Check size={20} className="text-green-600" />
-                      <span className="text-gray-700 font-medium">寮あり</span>
-                    </>
-                  ) : (
-                    <>
+                    )}
+                  </div>
+                );
+              } else {
+                // 寮なし
+                return (
+                  <div className="space-y-4">
+                    <div className="flex items-center space-x-3">
                       <X size={20} className="text-red-500" />
-                      <span className="text-gray-700 font-medium">寮なし</span>
-                    </>
-                  )}
-                </div>
-              )}
-            </div>
-            
-            {!soccerClub.dorm_available && !soccerClub.dorm_details?.university_dorm && 
-             !soccerClub.dorm_details?.soccer_club_dorm && !soccerClub.dorm_details?.general_dorm && (
-              <div>
-                <p className="text-gray-600 text-sm">
-                  部員寮はありませんが、大学近辺には学生向けアパートや下宿が充実しています。
-                  住環境についてはサッカー部または学生課にお問い合わせください。
-                </p>
-              </div>
-            )}
+                      <span className="text-gray-700 font-medium text-lg">サッカー部寮なし</span>
+                    </div>
+                    
+                    <div className="bg-blue-50 p-3 rounded-lg">
+                      <p className="text-blue-800 text-sm font-medium mb-1">住環境について</p>
+                      <p className="text-blue-700 text-sm">
+                        部員寮はありませんが、大学近辺には学生向けアパートや下宿が充実しています。
+                        住環境についてはサッカー部または学生課にお問い合わせください。
+                      </p>
+                    </div>
+                  </div>
+                );
+              }
+            })()}
           </div>
         </div>
       </div>
-
-      {/* その他の施設情報 - プレミアム限定 */}
-      {(facilities.ground_name || facilities.ground_address || facilities.ground_notes) && (
-        <div>
-          <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
-            <Info size={18} className="text-blue-600 mr-2" />
-            アクセス・その他
-            {!isPremium && <PremiumBadge className="ml-2" />}
-          </h3>
-          
-          {isPremium ? (
-            <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
-              <div className="space-y-3">
-                {facilities.ground_address && (
-                  <div>
-                    <p className="text-sm text-gray-600 mb-1">アクセス</p>
-                    <p className="text-gray-700 text-sm">
-                      最寄り駅や交通アクセスについては、大学公式サイトまたはサッカー部にお問い合わせください。
-                    </p>
-                  </div>
-                )}
-              </div>
-            </div>
-          ) : (
-            <MaskedContent 
-              reason="詳細なアクセス情報"
-              onUpgradeClick={onUpgradeToPremium}
-            >
-              <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
-                <div className="space-y-3">
-                  <div>
-                    <p className="text-sm text-gray-600 mb-1">アクセス</p>
-                    <p className="text-gray-700 text-sm">
-                      最寄り駅や交通アクセスについては、大学公式サイトまたはサッカー部にお問い合わせください。
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </MaskedContent>
-          )}
-        </div>
-      )}
 
       {/* 注意事項 */}
       <div className="bg-blue-50 p-4 rounded-lg border-l-4 border-blue-500">
@@ -1306,6 +1292,7 @@ const FacilitiesTab = ({ university, isPremium, onUpgradeToPremium }) => {
     </div>
   );
 };
+
 
 // 進路・将来性タブコンポーネント - プレミアム制限対応版
 const CareersTab = ({ university, isPremium, onUpgradeToPremium }) => {
