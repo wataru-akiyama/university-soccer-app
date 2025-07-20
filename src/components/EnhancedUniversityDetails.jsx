@@ -1318,20 +1318,10 @@ const CareersTab = ({ university, isPremium, onUpgradeToPremium }) => {
                 </p>
               </div>
             ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                {[
-                  "一般企業（金融・商社・メーカー等）",
-                  "公務員（国家・地方）",
-                  "教員（中学・高校）",
-                  "大学院進学",
-                  "起業・独立",
-                  "その他"
-                ].map((path, index) => (
-                  <div key={index} className="flex items-center py-2">
-                    <div className="w-2 h-2 bg-blue-500 rounded-full mr-3 flex-shrink-0"></div>
-                    <span className="text-gray-700 text-sm">{path}</span>
-                  </div>
-                ))}
+              <div className="mb-4">
+                <p className="text-gray-700 text-sm leading-relaxed">
+                  現在準備中
+                </p>
               </div>
             )}
             
@@ -1384,29 +1374,25 @@ const CareersTab = ({ university, isPremium, onUpgradeToPremium }) => {
                   </p>
                 </div>
               ) : (
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                  {[
-                    "指導者（コーチ・監督）",
-                    "教員（保健体育）",
-                    "一般企業（営業・企画等）",
-                    "Jリーグ関連（クラブ職員・審判等）",
-                    "社会人チーム",
-                    "スポーツ関連企業",
-                    "その他"
-                  ].map((path, index) => (
-                    <div key={index} className="flex items-center py-2">
-                      <div className="w-2 h-2 bg-green-500 rounded-full mr-3 flex-shrink-0"></div>
-                      <span className="text-gray-700 text-sm">{path}</span>
-                    </div>
-                  ))}
+                <div className="mb-4">
+                  <p className="text-gray-700 text-sm leading-relaxed">
+                    現在準備中
+                  </p>
                 </div>
               )}
               
-              {careerSupport.soccer_club_support && (
+              {careerSupport.soccer_club_support ? (
                 <div className="mt-4 pt-4 border-t border-gray-200">
                   <p className="text-sm text-gray-600 mb-2">部独自のサポート</p>
                   <p className="text-gray-700 text-sm leading-relaxed">
                     {careerSupport.soccer_club_support}
+                  </p>
+                </div>
+              ) : (
+                <div className="mt-4 pt-4 border-t border-gray-200">
+                  <p className="text-sm text-gray-600 mb-2">部独自のサポート</p>
+                  <p className="text-gray-700 text-sm leading-relaxed">
+                    現在準備中
                   </p>
                 </div>
               )}
@@ -1444,97 +1430,7 @@ const CareersTab = ({ university, isPremium, onUpgradeToPremium }) => {
         )}
       </div>
 
-      {/* 進路統計 - プレミアム限定 */}
-      {careerInfo.career_paths && Array.isArray(careerInfo.career_paths) && careerInfo.career_paths.length > 0 && (
-        <div>
-          <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
-            <TrendingUp size={18} className="text-purple-600 mr-2" />
-            進路統計
-            {!isPremium && <PremiumBadge className="ml-2" />}
-          </h3>
-          
-          {isPremium ? (
-            <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
-              <div className="space-y-3">
-                <p className="text-sm text-gray-600 mb-3">進路別の割合</p>
-                <div className="space-y-3">
-                  {careerInfo.career_paths.map((path, index) => (
-                    <div key={index} className="flex justify-between items-center">
-                      <span className="text-gray-700 text-sm font-medium">{path.category}</span>
-                      <div className="flex items-center space-x-3">
-                        <div className="w-20 bg-gray-200 rounded-full h-2">
-                          <div 
-                            className="bg-green-600 h-2 rounded-full transition-all duration-300"
-                            style={{ width: `${path.percentage}%` }}
-                          ></div>
-                        </div>
-                        <span className="text-gray-900 font-medium text-sm min-w-[40px] text-right">
-                          {path.percentage}%
-                        </span>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-          ) : (
-            <MaskedContent 
-              reason="詳細な進路統計データ"
-              onUpgradeClick={onUpgradeToPremium}
-            >
-              <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
-                <div className="space-y-3">
-                  <p className="text-sm text-gray-600 mb-3">進路別の割合</p>
-                  <div className="text-sm text-gray-600">
-                    詳細な進路統計はプレミアム限定情報です
-                  </div>
-                  <div className="space-y-3 opacity-50">
-                    {["一般企業", "指導者", "教員", "その他"].map((category, index) => (
-                      <div key={index} className="flex justify-between items-center">
-                        <span className="text-gray-400 text-sm font-medium">{category}</span>
-                        <div className="flex items-center space-x-3">
-                          <div className="w-20 bg-gray-200 rounded-full h-2">
-                            <div className="bg-gray-400 h-2 rounded-full w-1/2"></div>
-                          </div>
-                          <span className="text-gray-400 font-medium text-sm min-w-[40px] text-right">
-                            ●●%
-                          </span>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </MaskedContent>
-          )}
-        </div>
-      )}
 
-      {/* J内定実績と進路の関連性 */}
-      {university.soccer_club?.j_league_nominees_2022_24 > 0 && (
-        <div>
-          <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
-            <Trophy size={18} className="text-yellow-600 mr-2" />
-            プロ志向者向け情報
-          </h3>
-          <div className="bg-yellow-50 p-4 rounded-lg border border-yellow-200">
-            <div className="space-y-3">
-              <div className="flex items-center space-x-3 mb-3">
-                <Trophy size={20} className="text-yellow-600" />
-                <span className="font-semibold text-yellow-800">
-                  過去3年でJリーグ内定者 {university.soccer_club.j_league_nominees_2022_24}名
-                </span>
-              </div>
-              
-              <div className="text-sm text-yellow-700 space-y-2">
-                <p>• この大学はプロ選手輩出の実績があります</p>
-                <p>• プロを目指す環境やサポート体制が期待できます</p>
-                <p>• OB・OGのネットワークがプロ志向者に有利に働く可能性があります</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* 注意事項 */}
       <div className="bg-blue-50 p-4 rounded-lg border-l-4 border-blue-500">
@@ -1550,6 +1446,7 @@ const CareersTab = ({ university, isPremium, onUpgradeToPremium }) => {
     </div>
   );
 };
+
 
 // 口コミ・評判タブコンポーネント - プレミアム制限対応版
 const ReviewsTab = ({ university, isPremium, onUpgradeToPremium }) => {
