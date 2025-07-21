@@ -1,4 +1,4 @@
-// src/components/SimpleUniversityCard.jsx - 統一スタイル版
+// src/components/SimpleUniversityCard.jsx - 統一スタイル版（PLAYMAKERコメント60文字制限）
 
 import React from 'react';
 import { Heart, Plus, Check, MapPin, ChevronUp, ChevronDown, X, Info, Star, Target, Lock } from 'lucide-react';
@@ -69,27 +69,27 @@ const SimpleUniversityCard = ({
     return 'bg-gray-50 text-gray-700 border-gray-200';
   };
 
-  // PLAYMAKERコメントの取得とマスク処理
+  // PLAYMAKERコメントの取得とマスク処理（120文字→60文字に変更）
   const getPlaymakerComment = () => {
     if (!university) return "大学データが読み込み中です。";
     
     const fullComment = university.extended_data?.playmaker_comment || 
                        "この大学の詳細な評価情報は準備中です。";
     
-    if (!isPremium && fullComment.length > 120) {
-      // フリープランでは120文字で切り詰め
-      return fullComment.substring(0, 120) + "...";
+    if (!isPremium && fullComment.length > 60) {
+      // フリープランでは60文字で切り詰め
+      return fullComment.substring(0, 60) + "...";
     }
     
     return fullComment;
   };
 
-  // プレミアム限定情報かどうかの判定
+  // プレミアム限定情報かどうかの判定（120文字→60文字に変更）
   const isPremiumContent = () => {
     if (!university) return false;
     
     const comment = university.extended_data?.playmaker_comment || "";
-    return !isPremium && comment.length > 120;
+    return !isPremium && comment.length > 60;
   };
 
   // 志向性の取得（Firebase新形式対応）
@@ -361,7 +361,7 @@ const SimpleUniversityCard = ({
       
       {/* カード本体 */}
       <div className="pt-4">
-        {/* PLAYMAKERコメント（プレミアム制限付き） */}
+        {/* PLAYMAKERコメント（プレミアム制限付き、60文字制限） */}
         <div className="mb-4">
           <div className="bg-green-50 p-3 rounded-lg border-l-4 border-green-500 relative">
             <div className="flex items-center justify-between mb-2">

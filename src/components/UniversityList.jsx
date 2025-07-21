@@ -1,7 +1,7 @@
-// src/components/UniversityList.jsx - スマホ最適化版（JSX修正）
+// src/components/UniversityList.jsx - スマホ最適化版（費用ソート制限対応）
 import React, { useState, useMemo } from 'react';
 import SimpleUniversityCard from './SimpleUniversityCard';
-import { ChevronLeft, ChevronRight, ArrowDown, ArrowUp, Lock } from 'lucide-react';
+import { ChevronLeft, ChevronRight, ArrowDown, ArrowUp, Lock, Crown } from 'lucide-react';
 
 const UniversityList = ({
   filteredUniversities,
@@ -86,15 +86,51 @@ const UniversityList = ({
     );
   };
 
-  // 並べ替えオプション（フリープランでも利用可能）
+  // 並べ替えオプション（プレミアム制限対応）
   const getSortOptions = () => {
-    return [
-      { value: '', label: 'デフォルト' },
-      { value: 'j_league', label: 'Jリーグ内定者数順' },
-      { value: 'members', label: '部員数順' },
-      { value: 'university_cost', label: '大学費用順' },
-      { value: 'soccer_club_cost', label: 'サッカー部費用順' }
+    const basicOptions = [
+      { value: '', label: 'デフォルト', premium: false },
+      { value: 'j_league', label: 'Jリーグ内定者数順', premium: false },
+      { value: 'members', label: '部員数順', premium: false },
     ];
+
+    const premiumOptions = [
+      { value: 'university_cost', label: '大学費用順', premium: true },
+      { value: 'soccer_club_cost', label: 'サッカー部費用順', premium: true }
+    ];
+
+    if (isPremium) {
+      // プレミアムプランでは全オプション利用可能
+      return [...basicOptions, ...premiumOptions];
+    } else {
+      // フリープランでは費用関連のオプションを表示するが制限表示
+      return [
+        ...basicOptions,
+        ...premiumOptions.map(option => ({
+          ...option,
+          label: option.label + ' (プレミアム限定)',
+          disabled: true
+        }))
+      ];
+    }
+  };
+
+  // ソート変更時の処理（プレミアム制限チェック）
+  const handleSortChange = (newSortOption) => {
+    const premiumSorts = ['university_cost', 'soccer_club_cost'];
+    
+    if (!isPremium && premiumSorts.includes(newSortOption)) {
+      alert('費用順の並び替えはプレミアムプラン限定機能です。プレミアムプランにアップグレードしてください。');
+      return;
+    }
+    
+    setSortOption(newSortOption);
+  };
+
+  // プレミアム制限中のソートかどうかチェック
+  const isPremiumLimitedSort = () => {
+    const premiumSorts = ['university_cost', 'soccer_club_cost'];
+    return !isPremium && premiumSorts.includes(sortOption);
   };
 
   return (
@@ -122,16 +158,30 @@ const UniversityList = ({
             <span className="text-sm text-gray-700 font-medium">並べ替え:</span>
             <div className="relative">
               <select 
-                className="p-2 border rounded-md text-sm bg-white focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                className="p-2 border rounded-md text-sm bg-white focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 pr-8"
                 value={sortOption}
-                onChange={(e) => setSortOption(e.target.value)}
+                onChange={(e) => handleSortChange(e.target.value)}
               >
                 {getSortOptions().map(option => (
-                  <option key={option.value} value={option.value}>
+                  <option 
+                    key={option.value} 
+                    value={option.value}
+                    disabled={option.disabled}
+                    style={{
+                      color: option.disabled ? '#9CA3AF' : 'inherit'
+                    }}
+                  >
                     {option.label}
                   </option>
                 ))}
               </select>
+              
+              {/* プレミアム制限中のソートオプションの場合にアイコン表示 */}
+              {isPremiumLimitedSort() && (
+                <div className="absolute right-8 top-1/2 transform -translate-y-1/2 pointer-events-none">
+                  <Crown size={14} className="text-yellow-500" />
+                </div>
+              )}
             </div>
             
             {/* 並び替え順序ボタン - ソートオプションが選択されている時のみ表示 */}
@@ -171,16 +221,27 @@ const UniversityList = ({
           <div className="flex items-center gap-2">
             <div className="flex-1 relative">
               <select 
-                className="w-full p-2 border rounded-md text-sm bg-white focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                className="w-full p-2 border rounded-md text-sm bg-white focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 pr-8"
                 value={sortOption}
-                onChange={(e) => setSortOption(e.target.value)}
+                onChange={(e) => handleSortChange(e.target.value)}
               >
                 {getSortOptions().map(option => (
-                  <option key={option.value} value={option.value}>
+                  <option 
+                    key={option.value} 
+                    value={option.value}
+                    disabled={option.disabled}
+                  >
                     {`並び替え: ${option.label}`}
                   </option>
                 ))}
               </select>
+              
+              {/* プレミアム制限中のソートオプションの場合にアイコン表示 */}
+              {isPremiumLimitedSort() && (
+                <div className="absolute right-8 top-1/2 transform -translate-y-1/2 pointer-events-none">
+                  <Crown size={14} className="text-yellow-500" />
+                </div>
+              )}
             </div>
             
             {/* 並び替え順序ボタン */}
@@ -194,6 +255,17 @@ const UniversityList = ({
               </button>
             )}
           </div>
+          
+          {/* フリープランで費用ソートが選択された場合の警告（モバイル専用） */}
+          {isPremiumLimitedSort() && (
+            <div className="bg-yellow-50 border border-yellow-200 p-3 rounded-lg flex items-center">
+              <Lock size={16} className="text-yellow-600 mr-2 flex-shrink-0" />
+              <div className="text-sm">
+                <p className="text-yellow-800 font-medium">プレミアム限定機能</p>
+                <p className="text-yellow-700">費用順の並び替えはプレミアムプランでご利用いただけます。</p>
+              </div>
+            </div>
+          )}
         </div>
       </div>
       

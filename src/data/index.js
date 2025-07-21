@@ -1,4 +1,4 @@
-// src/data/index.js - 職業データ追加版
+// src/data/index.js - 職業データ追加版（プレミアムソート制限対応）
 
 // 1. 地域データ
 export const regions = [
@@ -303,7 +303,7 @@ export const searchHelpers = {
   }
 };
 
-// 9. 検索オプション
+// 9. 検索オプション（プレミアム制限対応）
 export const searchOptions = {
   regions,
   regionGroups,
@@ -314,13 +314,46 @@ export const searchOptions = {
   careers, // 新規追加
   careerMapping, // 新規追加
   certifications: availableCertifications,
+  // ソートオプション（プレミアム制限情報追加）
   sortOptions: [
-    { value: '', label: 'デフォルト' },
-    { value: 'j_league', label: 'Jリーグ内定者数順' },
-    { value: 'members', label: '部員数順' },
-    { value: 'university_cost', label: '大学費用順' },
-    { value: 'soccer_club_cost', label: 'サッカー部費用順' }
+    { value: '', label: 'デフォルト', premium: false },
+    { value: 'j_league', label: 'Jリーグ内定者数順', premium: false },
+    { value: 'members', label: '部員数順', premium: false },
+    { value: 'university_cost', label: '大学費用順', premium: true }, // プレミアム限定
+    { value: 'soccer_club_cost', label: 'サッカー部費用順', premium: true } // プレミアム限定
   ]
+};
+
+// プレミアム制限関連のユーティリティ関数
+export const premiumUtils = {
+  // プレミアム限定のソートオプションかどうかチェック
+  isPremiumSortOption: (sortValue) => {
+    const premiumSorts = ['university_cost', 'soccer_club_cost'];
+    return premiumSorts.includes(sortValue);
+  },
+  
+  // プレミアム限定のソートオプションを取得
+  getPremiumSortOptions: () => {
+    return searchOptions.sortOptions.filter(option => option.premium);
+  },
+  
+  // フリープランで利用可能なソートオプションを取得
+  getFreeSortOptions: () => {
+    return searchOptions.sortOptions.filter(option => !option.premium);
+  },
+  
+  // PLAYMAKERコメントの表示制限チェック（60文字制限）
+  shouldTruncatePlaymakerComment: (comment, isPremium) => {
+    if (!comment || isPremium) return false;
+    return comment.length > 60;
+  },
+  
+  // PLAYMAKERコメントの切り詰め処理（60文字制限）
+  getTruncatedPlaymakerComment: (comment, isPremium) => {
+    if (!comment) return '';
+    if (isPremium || comment.length <= 60) return comment;
+    return comment.substring(0, 60) + '...';
+  }
 };
 
 // デフォルトエクスポート
@@ -336,5 +369,6 @@ export default {
   availableCertifications,
   userProfile,
   searchHelpers,
-  searchOptions
+  searchOptions,
+  premiumUtils // 新規追加
 };
