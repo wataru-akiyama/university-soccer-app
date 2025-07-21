@@ -1465,36 +1465,50 @@ const ReviewsTab = ({ university, isPremium, onUpgradeToPremium }) => {
         {isPremium ? (
           <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
             <div className="space-y-4">
-              {reviews.student_reviews?.map((review, index) => (
-                <div key={index} className="pb-4 border-b border-gray-200 last:border-b-0 last:pb-0">
-                  <div className="flex justify-between items-start mb-2">
-                    <div className="flex items-center space-x-2">
-                      <span className="text-sm font-medium text-blue-800">{review.grade}</span>
-                      <span className="text-sm text-blue-600">{review.position}</span>
+              {reviews.student_reviews && reviews.student_reviews.length > 0 ? (
+                reviews.student_reviews.map((review, index) => (
+                  <div key={index} className={`${reviews.student_reviews.length > 1 ? 'pb-4 border-b border-gray-200 last:border-b-0 last:pb-0' : ''}`}>
+                    <div className="flex justify-between items-start mb-3">
+                      <div className="flex items-center space-x-2">
+                        <span className="text-sm font-medium text-blue-800">{review.grade || "現役部員"}</span>
+                        <span className="text-sm text-blue-600">{review.position || ""}</span>
+                      </div>
+                      <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">
+                        {review.category || "練習環境について"}
+                      </span>
                     </div>
-                    <div className="flex items-center">
-                      {[...Array(5)].map((_, i) => (
-                        <Star key={i} size={14} className={i < review.rating ? "text-yellow-500 fill-current" : "text-gray-300"} />
-                      ))}
-                    </div>
+                    <p className="text-gray-700 text-sm leading-relaxed">
+                      {review.review || "現在準備中"}
+                    </p>
                   </div>
-                  <p className="text-gray-700">{review.review}</p>
-                </div>
-              )) || (
-                <div>
-                  <div className="flex justify-between items-start mb-2">
-                    <div className="flex items-center space-x-2">
-                      <span className="text-sm font-medium text-blue-800">3年生</span>
-                      <span className="text-sm text-blue-600">MF</span>
+                ))
+              ) : (
+                <>
+                  <div className="pb-4 border-b border-gray-200">
+                    <div className="flex justify-between items-start mb-3">
+                      <div className="flex items-center space-x-2">
+                        <span className="text-sm font-medium text-blue-800">3年生</span>
+                        <span className="text-sm text-blue-600">MF</span>
+                      </div>
+                      <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">
+                        練習環境について
+                      </span>
                     </div>
-                    <div className="flex items-center">
-                      {[...Array(5)].map((_, i) => (
-                        <Star key={i} size={14} className={i < 4 ? "text-yellow-500 fill-current" : "text-gray-300"} />
-                      ))}
-                    </div>
+                    <p className="text-gray-700 text-sm leading-relaxed">監督やコーチの指導が丁寧で、技術面だけでなく人間性も重視してくれます。練習は厳しいですが、仲間との絆も深まり充実した大学生活を送れています。</p>
                   </div>
-                  <p className="text-gray-700">監督の指導が的確で技術的に成長できました。寮生活でチームワークも向上し、人間的にも大きく成長できています。</p>
-                </div>
+                  <div className="">
+                    <div className="flex justify-between items-start mb-3">
+                      <div className="flex items-center space-x-2">
+                        <span className="text-sm font-medium text-blue-800">2年生</span>
+                        <span className="text-sm text-blue-600">DF</span>
+                      </div>
+                      <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">
+                        寮生活について
+                      </span>
+                    </div>
+                    <p className="text-gray-700 text-sm leading-relaxed">寮生活では先輩後輩の縦の関係だけでなく、同期との横のつながりも強くなりました。共同生活で規律も身につき、サッカー以外の面でも成長できる環境です。</p>
+                  </div>
+                </>
               )}
             </div>
           </div>
@@ -1509,18 +1523,16 @@ const ReviewsTab = ({ university, isPremium, onUpgradeToPremium }) => {
                   現役部員からの詳細な評価や体験談はプレミアム限定です
                 </div>
                 <div className="pb-4 border-b border-gray-200 opacity-50">
-                  <div className="flex justify-between items-start mb-2">
+                  <div className="flex justify-between items-start mb-3">
                     <div className="flex items-center space-x-2">
                       <span className="text-sm font-medium text-gray-400">●年生</span>
                       <span className="text-sm text-gray-400">●●</span>
                     </div>
-                    <div className="flex items-center">
-                      {[...Array(5)].map((_, i) => (
-                        <Star key={i} size={14} className="text-gray-300" />
-                      ))}
-                    </div>
+                    <span className="text-xs text-gray-400 bg-gray-200 px-2 py-1 rounded">
+                      練習環境について
+                    </span>
                   </div>
-                  <p className="text-gray-400">実際の部員からの生の声をお聞きいただけます...</p>
+                  <p className="text-gray-400 text-sm">実際の部員からの生の声をお聞きいただけます...</p>
                 </div>
               </div>
             </div>
@@ -1539,29 +1551,29 @@ const ReviewsTab = ({ university, isPremium, onUpgradeToPremium }) => {
         {isPremium ? (
           <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
             <div className="space-y-4">
-              {reviews.parent_reviews?.map((review, index) => (
-                <div key={index} className="pb-4 border-b border-gray-200 last:border-b-0 last:pb-0">
-                  <div className="flex justify-between items-start mb-2">
-                    <span className="text-sm font-medium text-green-800">保護者</span>
-                    <div className="flex items-center">
-                      {[...Array(5)].map((_, i) => (
-                        <Star key={i} size={14} className={i < review.rating ? "text-yellow-500 fill-current" : "text-gray-300"} />
-                      ))}
+              {reviews.parent_reviews && reviews.parent_reviews.length > 0 ? (
+                reviews.parent_reviews.map((review, index) => (
+                  <div key={index} className={`${reviews.parent_reviews.length > 1 ? 'pb-4 border-b border-gray-200 last:border-b-0 last:pb-0' : ''}`}>
+                    <div className="flex justify-between items-start mb-3">
+                      <span className="text-sm font-medium text-green-800">保護者</span>
+                      <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">
+                        {review.category || "費用について"}
+                      </span>
                     </div>
+                    <p className="text-gray-700 text-sm leading-relaxed">
+                      {review.review || "現在準備中"}
+                    </p>
                   </div>
-                  <p className="text-gray-700">{review.review}</p>
-                </div>
-              )) || (
-                <div>
-                  <div className="flex justify-between items-start mb-2">
+                ))
+              ) : (
+                <div className="">
+                  <div className="flex justify-between items-start mb-3">
                     <span className="text-sm font-medium text-green-800">保護者</span>
-                    <div className="flex items-center">
-                      {[...Array(5)].map((_, i) => (
-                        <Star key={i} size={14} className={i < 4 ? "text-yellow-500 fill-current" : "text-gray-300"} />
-                      ))}
-                    </div>
+                    <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">
+                      費用について
+                    </span>
                   </div>
-                  <p className="text-gray-700">費用は決して安くありませんが、子供の成長を考えると納得できます。コーチの方々も親身に相談に乗ってくれて、とても信頼しています。</p>
+                  <p className="text-gray-700 text-sm leading-relaxed">費用は決して安くありませんが、息子の成長を見ていると価値のある投資だと感じています。指導者の方々も親身に相談に乗ってくれて、安心して任せられます。</p>
                 </div>
               )}
             </div>
@@ -1577,15 +1589,13 @@ const ReviewsTab = ({ university, isPremium, onUpgradeToPremium }) => {
                   保護者からの詳細な評価はプレミアム限定です
                 </div>
                 <div className="pb-4 border-b border-gray-200 opacity-50">
-                  <div className="flex justify-between items-start mb-2">
+                  <div className="flex justify-between items-start mb-3">
                     <span className="text-sm font-medium text-gray-400">保護者</span>
-                    <div className="flex items-center">
-                      {[...Array(5)].map((_, i) => (
-                        <Star key={i} size={14} className="text-gray-300" />
-                      ))}
-                    </div>
+                    <span className="text-xs text-gray-400 bg-gray-200 px-2 py-1 rounded">
+                      費用について
+                    </span>
                   </div>
-                  <p className="text-gray-400">保護者目線での大学評価をご確認いただけます...</p>
+                  <p className="text-gray-400 text-sm">保護者目線での大学評価をご確認いただけます...</p>
                 </div>
               </div>
             </div>
@@ -1604,21 +1614,38 @@ const ReviewsTab = ({ university, isPremium, onUpgradeToPremium }) => {
         {isPremium ? (
           <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
             <div className="space-y-4">
-              {reviews.graduate_reviews?.map((review, index) => (
-                <div key={index} className="pb-4 border-b border-gray-200 last:border-b-0 last:pb-0">
-                  <div className="flex justify-between items-start mb-2">
-                    <span className="text-sm font-medium text-purple-800">{review.graduation_year}年卒</span>
-                    <span className="text-sm text-purple-600">{review.current_status}</span>
+              {reviews.graduate_reviews && reviews.graduate_reviews.length > 0 ? (
+                reviews.graduate_reviews.map((review, index) => (
+                  <div key={index} className={`${reviews.graduate_reviews.length > 1 ? 'pb-4 border-b border-gray-200 last:border-b-0 last:pb-0' : ''}`}>
+                    <div className="flex justify-between items-start mb-3">
+                      <div className="flex items-center space-x-2">
+                        <span className="text-sm font-medium text-purple-800">
+                          {review.graduation_year || "卒業生"}
+                        </span>
+                        <span className="text-sm text-purple-600">
+                          {review.current_status || ""}
+                        </span>
+                      </div>
+                      <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">
+                        {review.category || "進路について"}
+                      </span>
+                    </div>
+                    <p className="text-gray-700 text-sm leading-relaxed">
+                      {review.review || "現在準備中"}
+                    </p>
                   </div>
-                  <p className="text-gray-700">{review.review}</p>
-                </div>
-              )) || (
-                <div>
-                  <div className="flex justify-between items-start mb-2">
-                    <span className="text-sm font-medium text-purple-800">2023年卒</span>
-                    <span className="text-sm text-purple-600">社会人チーム所属</span>
+                ))
+              ) : (
+                <div className="">
+                  <div className="flex justify-between items-start mb-3">
+                    <div className="flex items-center space-x-2">
+                      <span className="text-sm font-medium text-purple-800">卒業生</span>
+                    </div>
+                    <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">
+                      進路について
+                    </span>
                   </div>
-                  <p className="text-gray-700">4年間で人間的にも競技的にも大きく成長できました。社会人になった今でも、大学で学んだチームワークや規律が役立っています。</p>
+                  <p className="text-gray-700 text-sm leading-relaxed">4年間サッカー部で学んだチームワークや責任感は、社会人になった今でも非常に役立っています。厳しい環境でしたが、人間的に大きく成長できました。</p>
                 </div>
               )}
             </div>
@@ -1634,30 +1661,21 @@ const ReviewsTab = ({ university, isPremium, onUpgradeToPremium }) => {
                   卒業生の体験談はプレミアム限定です
                 </div>
                 <div className="pb-4 border-b border-gray-200 opacity-50">
-                  <div className="flex justify-between items-start mb-2">
-                    <span className="text-sm font-medium text-gray-400">●●年卒</span>
-                    <span className="text-sm text-gray-400">●●●</span>
+                  <div className="flex justify-between items-start mb-3">
+                    <div className="flex items-center space-x-2">
+                      <span className="text-sm font-medium text-gray-400">●●年卒</span>
+                      <span className="text-sm text-gray-400">●●●</span>
+                    </div>
+                    <span className="text-xs text-gray-400 bg-gray-200 px-2 py-1 rounded">
+                      進路について
+                    </span>
                   </div>
-                  <p className="text-gray-400">卒業後の進路や大学生活の振り返りをお聞きいただけます...</p>
+                  <p className="text-gray-400 text-sm">卒業後の進路や大学生活の振り返りをお聞きいただけます...</p>
                 </div>
               </div>
             </div>
           </MaskedContent>
         )}
-      </div>
-
-      {/* 口コミ投稿の案内 */}
-      <div>
-        <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
-          <Plus size={18} className="text-orange-600 mr-2" />
-          口コミを投稿する
-        </h3>
-        <div className="bg-gray-50 p-4 rounded-lg border border-gray-200 text-center">
-          <p className="text-sm text-gray-600 mb-3">あなたの体験談もお聞かせください</p>
-          <button className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-blue-700 transition-colors">
-            口コミを投稿する
-          </button>
-        </div>
       </div>
 
       {/* 注意事項 */}
