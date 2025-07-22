@@ -1,4 +1,4 @@
-// src/components/MaskedContent.jsx - 透明モザイクデザイン版
+// src/components/MaskedContent.jsx - レスポンシブ対応版
 import React from 'react';
 import { Lock, Crown } from 'lucide-react';
 
@@ -78,7 +78,7 @@ const MaskedContent = ({
 };
 
 /**
- * より簡単なバナー形式のマスク（元の黄色デザイン）
+ * より簡単なバナー形式のマスク（レスポンシブ対応版）
  */
 export const MaskedBanner = ({ 
   title = 'プレミアム限定機能',
@@ -94,7 +94,8 @@ export const MaskedBanner = ({
 
   return (
     <div className={`bg-gradient-to-r from-yellow-100 to-orange-100 border-l-4 border-yellow-500 p-4 rounded-lg ${className}`}>
-      <div className="flex items-center">
+      {/* デスクトップ表示 */}
+      <div className="hidden sm:flex sm:items-center">
         <div className="flex-shrink-0">
           <Lock size={20} className="text-yellow-600" />
         </div>
@@ -104,10 +105,31 @@ export const MaskedBanner = ({
         </div>
         <div className="ml-4">
           <button 
-            className="bg-yellow-600 hover:bg-yellow-700 text-white px-4 py-2 rounded text-sm font-medium transition-colors"
+            className="bg-yellow-600 hover:bg-yellow-700 text-white px-4 py-2 rounded text-sm font-medium transition-colors whitespace-nowrap"
             onClick={handleUpgradeClick}
           >
-            プレミアムプランを見る
+            プレミアムプランに登録
+          </button>
+        </div>
+      </div>
+
+      {/* モバイル表示 */}
+      <div className="sm:hidden">
+        <div className="flex items-start mb-3">
+          <div className="flex-shrink-0">
+            <Lock size={20} className="text-yellow-600" />
+          </div>
+          <div className="ml-3 flex-1">
+            <h3 className="font-semibold text-yellow-800">{title}</h3>
+            <p className="text-sm text-yellow-700 mt-1">{description}</p>
+          </div>
+        </div>
+        <div className="mt-3">
+          <button 
+            className="w-full bg-yellow-600 hover:bg-yellow-700 text-white px-4 py-2.5 rounded text-sm font-medium transition-colors"
+            onClick={handleUpgradeClick}
+          >
+            プレミアムプランに登録
           </button>
         </div>
       </div>
