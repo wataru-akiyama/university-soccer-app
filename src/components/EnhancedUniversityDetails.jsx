@@ -53,6 +53,29 @@ const EnhancedUniversityDetails = ({
     trackPremiumAttempt = () => {}
   } = premiumUtils || {};
 
+  // PLAYMAKERコメントの取得とマスク処理（60文字制限）
+  const getPlaymakerComment = () => {
+    if (!university) return "大学データが読み込み中です。";
+    
+    const fullComment = university.extended_data?.playmaker_comment || 
+                       "この大学の詳細な評価情報は準備中です。";
+    
+    if (!isPremium && fullComment.length > 60) {
+      // フリープランでは60文字で切り詰め
+      return fullComment.substring(0, 60) + "...";
+    }
+    
+    return fullComment;
+  };
+
+  // プレミアム限定情報かどうかの判定（60文字制限）
+  const isPremiumContent = () => {
+    if (!university) return false;
+    
+    const comment = university.extended_data?.playmaker_comment || "";
+    return !isPremium && comment.length > 60;
+  };
+
   // バッジ色分け関数（SimpleUniversityCardと同じ）
   const getLeagueColor = (league) => {
     if (league?.includes('1部')) return 'bg-green-100 text-green-800 border-green-200';
@@ -191,6 +214,8 @@ const EnhancedUniversityDetails = ({
   const academicRank = university?.academic_rank || '';
   const practiceLocationWithArea = getPracticeLocationWithArea();
   const league = university.soccer_club?.league || '';
+  const playmakerComment = getPlaymakerComment();
+  const hasPremiumContent = isPremiumContent();
 
   return (
     <div className="bg-gray-50 min-h-screen">
@@ -343,34 +368,33 @@ const EnhancedUniversityDetails = ({
             </div>
           </div>
 
-          {/* PLAYMAKERコメント */}
+          {/* PLAYMAKERコメント - 60文字制限対応版 */}
           {university.extended_data?.playmaker_comment && (
             <div className="bg-green-50 rounded-xl p-6 border border-green-200 shadow-sm">
               <h2 className="text-lg font-semibold text-green-800 mb-4 flex items-center">
                 <div className="w-2 h-2 bg-green-500 rounded-full mr-3"></div>
                 PLAYMAKERコメント
-                {!isPremium && <PremiumBadge className="ml-2" />}
+                {hasPremiumContent && <PremiumBadge className="ml-2" />}
               </h2>
               
-              {isPremium ? (
+              <div className="space-y-3">
                 <p className="text-gray-700 leading-relaxed">
-                  {university.extended_data.playmaker_comment}
+                  {playmakerComment}
                 </p>
-              ) : (
-                <div className="space-y-3">
-                  <p className="text-gray-700 leading-relaxed">
-                    {university.extended_data.playmaker_comment.split('。')[0]}。
-                  </p>
-                  <MaskedContent 
-                    reason="より詳細な専門評価"
-                    onUpgradeClick={onUpgradeToPremium}
-                  >
-                    <p className="text-gray-700 leading-relaxed">
-                      {university.extended_data.playmaker_comment}
-                    </p>
-                  </MaskedContent>
-                </div>
-              )}
+                
+                {hasPremiumContent && (
+                  <div className="relative">
+                    <MaskedContent 
+                      reason="コメント全文はプレミアム限定"
+                      onUpgradeClick={onUpgradeToPremium}
+                    >
+                      <p className="text-gray-700 leading-relaxed">
+                        {university.extended_data.playmaker_comment}
+                      </p>
+                    </MaskedContent>
+                  </div>
+                )}
+              </div>
             </div>
           )}
         </div>
