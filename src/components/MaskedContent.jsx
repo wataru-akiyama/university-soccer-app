@@ -1,15 +1,16 @@
-// src/components/MaskedContent.jsx - マスクコンテンツコンポーネント
+// src/components/MaskedContent.jsx - 透明モザイクデザイン版
 import React from 'react';
 import { Lock, Crown } from 'lucide-react';
 
 /**
- * プレミアム限定コンテンツをマスクするコンポーネント
+ * プレミアム限定コンテンツをマスクするコンポーネント（レスポンシブ対応版）
  */
 const MaskedContent = ({ 
   children, 
   reason = '詳細情報',
   onUpgradeClick,
   showUpgradeButton = true,
+  showPreview = true,
   className = ''
 }) => {
   const handleUpgradeClick = () => {
@@ -23,39 +24,51 @@ const MaskedContent = ({
   };
 
   return (
-    <div className={`relative ${className}`}>
+    <div className={`relative min-h-[200px] ${className}`}>
       {/* マスクされたコンテンツ */}
-      <div className="filter blur-sm opacity-40 pointer-events-none select-none">
-        {children}
-      </div>
+      {showPreview && (
+        <div className="filter blur-sm opacity-15 pointer-events-none select-none">
+          {children}
+        </div>
+      )}
       
-      {/* オーバーレイ */}
-      <div className="absolute inset-0 bg-gradient-to-r from-yellow-50 to-orange-50 bg-opacity-95 flex items-center justify-center rounded-lg border-2 border-dashed border-yellow-300">
-        <div className="text-center px-4 py-2">
-          {/* ロックアイコン */}
-          <div className="flex justify-center mb-2">
-            <div className="relative">
-              <Lock size={24} className="text-yellow-600" />
-              <Crown size={12} className="text-orange-500 absolute -top-1 -right-1" />
-            </div>
-          </div>
-          
+      {/* モザイク風オーバーレイ */}
+      <div 
+        className="absolute inset-0 flex items-center justify-center rounded-lg overflow-hidden min-h-[200px] p-4"
+        style={{
+          background: `
+            repeating-linear-gradient(
+              0deg,
+              rgba(229, 231, 235, 0.8) 0px,
+              rgba(229, 231, 235, 0.8) 8px,
+              rgba(209, 213, 219, 0.8) 8px,
+              rgba(209, 213, 219, 0.8) 16px
+            ),
+            repeating-linear-gradient(
+              90deg,
+              rgba(243, 244, 246, 0.8) 0px,
+              rgba(243, 244, 246, 0.8) 8px,
+              rgba(229, 231, 235, 0.8) 8px,
+              rgba(229, 231, 235, 0.8) 16px
+            ),
+            rgba(249, 250, 251, 0.9)
+          `,
+          backgroundSize: '16px 16px, 16px 16px, 100% 100%'
+        }}
+      >
+        <div className="text-center w-full max-w-xs sm:max-w-sm mx-auto px-4 sm:px-6 py-6 bg-white/95 rounded-lg shadow-lg border border-gray-200 backdrop-blur-sm">
           {/* メッセージ */}
-          <p className="text-sm font-medium text-yellow-800 mb-1">
-            {reason}はプレミアム限定
-          </p>
-          <p className="text-xs text-yellow-700 mb-3">
-            詳細情報を確認するにはプレミアムプランが必要です
+          <p className="text-gray-700 font-medium mb-4 sm:mb-6 text-sm sm:text-base leading-relaxed">
+            コンテンツを閲覧するには
           </p>
           
           {/* アップグレードボタン */}
           {showUpgradeButton && (
             <button 
-              className="bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white text-xs font-medium px-3 py-1.5 rounded-full transition-all duration-200 shadow-sm hover:shadow-md transform hover:scale-105"
+              className="w-full bg-yellow-500 hover:bg-yellow-600 text-white font-medium py-2.5 sm:py-3 px-4 sm:px-6 rounded-lg transition-colors shadow-sm text-sm sm:text-base"
               onClick={handleUpgradeClick}
             >
-              <Crown size={12} className="inline mr-1" />
-              プレミアムプランを見る
+              プレミアムプランに登録
             </button>
           )}
         </div>
@@ -65,7 +78,7 @@ const MaskedContent = ({
 };
 
 /**
- * より簡単なバナー形式のマスク
+ * より簡単なバナー形式のマスク（元の黄色デザイン）
  */
 export const MaskedBanner = ({ 
   title = 'プレミアム限定機能',
