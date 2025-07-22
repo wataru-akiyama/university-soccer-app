@@ -1,9 +1,9 @@
-// src/components/MaskedContent.jsx - レスポンシブ対応版
+// src/components/MaskedContent.jsx - 高さ自動調整版
 import React from 'react';
 import { Lock, Crown } from 'lucide-react';
 
 /**
- * プレミアム限定コンテンツをマスクするコンポーネント（レスポンシブ対応版）
+ * プレミアム限定コンテンツをマスクするコンポーネント（高さ自動調整版）
  */
 const MaskedContent = ({ 
   children, 
@@ -24,7 +24,7 @@ const MaskedContent = ({
   };
 
   return (
-    <div className={`relative min-h-[200px] ${className}`}>
+    <div className={`relative overflow-hidden rounded-lg ${className}`} style={{ minHeight: '200px' }}>
       {/* マスクされたコンテンツ */}
       {showPreview && (
         <div className="filter blur-sm opacity-15 pointer-events-none select-none">
@@ -34,7 +34,7 @@ const MaskedContent = ({
       
       {/* モザイク風オーバーレイ */}
       <div 
-        className="absolute inset-0 flex items-center justify-center rounded-lg overflow-hidden min-h-[200px] p-4"
+        className="absolute inset-0 flex items-center justify-center p-2 sm:p-4"
         style={{
           background: `
             repeating-linear-gradient(
@@ -56,16 +56,16 @@ const MaskedContent = ({
           backgroundSize: '16px 16px, 16px 16px, 100% 100%'
         }}
       >
-        <div className="text-center w-full max-w-xs sm:max-w-sm mx-auto px-4 sm:px-6 py-6 bg-white/95 rounded-lg shadow-lg border border-gray-200 backdrop-blur-sm">
+        <div className="text-center w-full max-w-xs mx-auto px-3 sm:px-4 py-4 sm:py-6 bg-white/95 rounded-lg shadow-lg border border-gray-200 backdrop-blur-sm">
           {/* メッセージ */}
-          <p className="text-gray-700 font-medium mb-4 sm:mb-6 text-sm sm:text-base leading-relaxed">
+          <p className="text-gray-700 font-medium mb-3 sm:mb-4 text-sm leading-relaxed">
             コンテンツを閲覧するには
           </p>
           
           {/* アップグレードボタン */}
           {showUpgradeButton && (
             <button 
-              className="w-full bg-yellow-500 hover:bg-yellow-600 text-white font-medium py-2.5 sm:py-3 px-4 sm:px-6 rounded-lg transition-colors shadow-sm text-sm sm:text-base"
+              className="w-full bg-yellow-500 hover:bg-yellow-600 text-white font-medium py-2 sm:py-2.5 px-3 sm:px-4 rounded-lg transition-colors shadow-sm text-sm"
               onClick={handleUpgradeClick}
             >
               プレミアムプランに登録
