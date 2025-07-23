@@ -1,6 +1,6 @@
 // src/components/CompareView.jsx - 最大5校対応・詳細比較機能強化版
 import React from 'react';
-import { ChevronRight, X, Crown, Lock, MapPin, Users, Trophy, Home, GraduationCap, Calendar, DollarSign, Target, Clock } from 'lucide-react';
+import { ChevronLeft, X, Crown, Lock, MapPin, Users, Trophy, Home, GraduationCap, Calendar, DollarSign, Target, Clock } from 'lucide-react';
 import UniversityLogo from './UniversityLogo';
 
 // プレミアム限定の比較ビューコンポーネント
@@ -21,23 +21,61 @@ const CompareView = ({
   // プレミアムでない場合は制限画面を表示
   if (!isPremium) {
     return (
-      <div className="bg-white rounded-xl shadow-lg overflow-hidden">
-        <div className="bg-gradient-to-r from-green-600 to-green-700 text-white p-3 sm:p-6">
+      <div>
+        {/* ナビゲーション */}
+        <div className="flex justify-between items-center mb-6">
           <button 
-            className="bg-white text-green-700 px-3 py-1 rounded-lg mb-4 flex items-center text-sm shadow-sm hover:bg-gray-100 transition-colors"
+            className="flex items-center text-gray-700 hover:text-gray-900 transition-colors"
             onClick={onBack}
           >
-            <ChevronRight className="transform rotate-180 mr-1" size={16} />
-            一覧に戻る
+            <ChevronLeft size={20} className="mr-2" />
+            <span className="hidden sm:inline">一覧に戻る</span>
+            <span className="sm:hidden">戻る</span>
           </button>
-          <h2 className="text-lg sm:text-2xl font-bold flex items-center">
-            <Lock size={24} className="mr-3" />
-            大学サッカー部比較
-          </h2>
-          <p className="text-sm sm:text-base opacity-90 mt-1">プレミアム限定機能</p>
+        </div>
+
+        {/* ヘッダー部分（白背景コンテナ） */}
+        <div className="bg-white p-4 sm:p-6 rounded-lg shadow-md mb-6">
+          {/* デスクトップ版 - 横並び */}
+          <div className="hidden md:flex justify-between items-center">
+            <div className="flex items-center">
+              <h1 className="text-2xl font-bold text-gray-900 flex items-center">
+                <Lock size={24} className="text-gray-500 mr-3" />
+                大学サッカー部比較
+              </h1>
+              <span className="bg-gray-100 text-gray-600 text-sm px-3 py-1 rounded-full ml-4">
+                プレミアム限定機能
+              </span>
+            </div>
+            
+            <div className="bg-yellow-400 text-yellow-900 px-3 py-1 rounded-full text-xs font-medium">
+              PREMIUM
+            </div>
+          </div>
+
+          {/* モバイル版 - 縦並び */}
+          <div className="md:hidden space-y-3">
+            {/* タイトルと件数 */}
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+              <h1 className="text-lg font-bold text-gray-900 flex items-center mb-2 sm:mb-0">
+                <Lock size={20} className="text-gray-500 mr-2" />
+                大学サッカー部比較
+              </h1>
+              <div className="flex items-center justify-between">
+                <span className="bg-gray-100 text-gray-600 text-xs px-2 py-1 rounded-full inline-block w-fit">
+                  プレミアム限定
+                </span>
+                <div className="bg-yellow-400 text-yellow-900 px-2 py-1 rounded-full text-xs font-medium">
+                  PREMIUM
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <p className="text-sm text-gray-600 mt-2">最大5校まで詳細に比較検討できます</p>
         </div>
         
-        <div className="p-6 sm:p-8">
+        <div className="bg-white p-6 sm:p-8 rounded-lg shadow-md">
           {/* プレミアム限定機能の説明 */}
           <div className="text-center py-8">
             <div className="w-24 h-24 mx-auto mb-6 bg-gradient-to-br from-yellow-100 to-orange-100 rounded-full flex items-center justify-center">
@@ -202,561 +240,618 @@ const CompareView = ({
   const layout = getTableLayout();
 
   return (
-    <div className="bg-white rounded-xl shadow-lg overflow-hidden">
-      <div className="bg-gradient-to-r from-green-600 to-green-700 text-white p-3 sm:p-6">
+    <div>
+      {/* ナビゲーション */}
+      <div className="flex justify-between items-center mb-6">
         <button 
-          className="bg-white text-green-700 px-3 py-1 rounded-lg mb-4 flex items-center text-sm shadow-sm hover:bg-gray-100 transition-colors"
+          className="flex items-center text-gray-700 hover:text-gray-900 transition-colors"
           onClick={onBack}
         >
-          <ChevronRight className="transform rotate-180 mr-1" size={16} />
-          一覧に戻る
+          <ChevronLeft size={20} className="mr-2" />
+          <span className="hidden sm:inline">一覧に戻る</span>
+          <span className="sm:hidden">戻る</span>
         </button>
-        <div className="flex items-center justify-between">
-          <div>
-            <h2 className="text-lg sm:text-2xl font-bold flex items-center">
-              <Crown size={24} className="mr-3 text-yellow-300" />
+      </div>
+
+      {/* ヘッダー部分（白背景コンテナ） */}
+      <div className="bg-white p-4 sm:p-6 rounded-lg shadow-md mb-6">
+        {/* デスクトップ版 - 横並び */}
+        <div className="hidden md:flex justify-between items-center">
+          <div className="flex items-center">
+            <h1 className="text-2xl font-bold text-gray-900 flex items-center">
+              <Crown size={24} className="text-green-600 mr-3" />
               大学サッカー部比較
-            </h2>
-            <p className="text-sm sm:text-base opacity-90 mt-1">{universities.length}校を比較中（最大5校まで）</p>
+            </h1>
+            <span className="bg-green-100 text-green-800 text-sm px-3 py-1 rounded-full ml-4">
+              {universities.length}校比較中
+            </span>
           </div>
+          
           <div className="bg-yellow-400 text-yellow-900 px-3 py-1 rounded-full text-xs font-medium">
             PREMIUM
           </div>
         </div>
-      </div>
-      
-      <div className="p-3 sm:p-6">
-        {/* 全画面対応テーブル表示 */}
-        <div 
-          className={`${layout.containerClass} border border-gray-200 rounded-lg shadow-sm`}
-        >
-          <table 
-            className="bg-white text-xs sm:text-sm"
-            style={layout.tableStyle}
-          >
-            <thead>
-              <tr>
-                <th 
-                  className={`p-2 sm:p-3 text-left bg-gray-50 ${layout.needsScroll ? 'sticky left-0 z-20' : ''} rounded-tl-lg border-r border-gray-200`}
-                  style={{ 
-                    minWidth: layout.leftColumnWidth, 
-                    width: layout.leftColumnWidth 
-                  }}
-                ></th>
-                {universities.map((university, index) => (
-                  <th 
-                    key={university.id} 
-                    className={`p-2 sm:p-3 bg-white ${index === universities.length - 1 ? 'rounded-tr-lg' : ''}`}
-                    style={{ 
-                      minWidth: layout.universityColumnWidth, 
-                      width: layout.universityColumnWidth 
-                    }}
-                  >
-                    <div className="relative">
-                      {/* 背景ロゴ */}
-                      <div className="absolute top-0 right-0 bottom-0 left-0 flex justify-center opacity-10">
-                        <UniversityLogo 
-                          university={university}
-                          size="lg"
-                          showFallback={false}
-                        />
-                      </div>
-                      
-                      <div className="relative z-10">
-                        <div className="flex justify-between items-center">
-                          <button 
-                            className="text-red-500 p-1 hover:bg-red-50 rounded-full absolute -top-1 -right-1 sm:-top-2 sm:-right-2"
-                            onClick={() => onRemove(university.id)}
-                          >
-                            <X size={14} />
-                          </button>
-                        </div>
-                        
-                        <div className="flex flex-col items-center mb-2 pt-2 sm:pt-3">
-                          <UniversityLogo 
-                            university={university}
-                            size="sm"
-                            className="mb-1 sm:mb-2 shadow-sm"
-                            showFallback={true}
-                          />
-                          <h3 className="font-bold text-center text-xs sm:text-sm leading-tight px-1">{university.university_name}</h3>
-                          <p className="text-xs text-gray-600 mt-1 text-center">{university.soccer_club?.league}</p>
-                        </div>
-                      </div>
-                    </div>
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {/* 基本情報セクション */}
-              <tr className="bg-green-50">
-                <th 
-                  colSpan={universities.length + 1} 
-                  className={`p-2 sm:p-3 text-left font-semibold text-green-800 ${layout.needsScroll ? 'sticky left-0 z-20' : ''} border-t border-b border-green-200`}
-                >
-                  <Users className="inline mr-2" size={16} />
-                  基本情報
-                </th>
-              </tr>
 
-              <tr className="border-b hover:bg-gray-50">
-                <td 
-                  className={`p-2 sm:p-3 font-medium bg-gray-50 ${layout.needsScroll ? 'sticky left-0 z-10' : ''} border-r border-gray-200`}
-                  style={{ 
-                    minWidth: layout.leftColumnWidth, 
-                    width: layout.leftColumnWidth 
-                  }}
-                >
-                  大学種別
-                </td>
-                {universities.map(university => (
-                  <td key={university.id} className="p-2 sm:p-3 text-center" style={{ 
-                    minWidth: layout.universityColumnWidth, 
-                    width: layout.universityColumnWidth 
-                  }}>
-                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                      getUniversityTypeColor(university.university_type || (
-                        university.academic_rank?.includes('国公立') ? '国立' : '私立'
-                      ))
-                    }`}>
-                      {university.university_type || (
-                        university.academic_rank?.includes('国公立') ? '国立' : '私立'
-                      )}
-                    </span>
-                  </td>
-                ))}
-              </tr>
-
-              <tr className="border-b hover:bg-gray-50">
-                <td className={`p-2 sm:p-3 font-medium bg-gray-50 ${layout.needsScroll ? 'sticky left-0 z-10' : ''} border-r border-gray-200`}>学力ランク</td>
-                {universities.map(university => (
-                  <td key={university.id} className="p-2 sm:p-3 text-center">
-                    <span className="bg-indigo-100 text-indigo-800 px-2 py-1 rounded-full text-xs font-medium">
-                      {university.academic_rank?.split('：')[0] || '情報なし'}
-                    </span>
-                  </td>
-                ))}
-              </tr>
-
-              <tr className="border-b hover:bg-gray-50">
-                <td className={`p-2 sm:p-3 font-medium bg-gray-50 ${layout.needsScroll ? 'sticky left-0 z-10' : ''} border-r border-gray-200`}>
-                  リーグ
-                </td>
-                {universities.map(university => (
-                  <td key={university.id} className="p-2 sm:p-3 text-center">
-                    <span className="bg-green-50 text-green-800 px-2 py-1 rounded-lg inline-block text-xs">
-                      <span className="sm:hidden">
-                        {university.soccer_club?.league?.includes('1部') ? '1部' : 
-                         university.soccer_club?.league?.includes('2部') ? '2部' : '他'}
-                      </span>
-                      <span className="hidden sm:inline">{university.soccer_club?.league || '情報なし'}</span>
-                    </span>
-                  </td>
-                ))}
-              </tr>
-
-              <tr className="border-b hover:bg-gray-50">
-                <td className={`p-2 sm:p-3 font-medium bg-gray-50 ${layout.needsScroll ? 'sticky left-0 z-10' : ''} border-r border-gray-200`}>監督</td>
-                {universities.map(university => (
-                  <td key={university.id} className="p-2 sm:p-3 text-center text-xs sm:text-sm truncate">
-                    {university.soccer_club?.coach_name || '情報なし'}
-                  </td>
-                ))}
-              </tr>
-
-              <tr className="border-b hover:bg-gray-50">
-                <td className={`p-2 sm:p-3 font-medium bg-gray-50 ${layout.needsScroll ? 'sticky left-0 z-10' : ''} border-r border-gray-200`}>部員数</td>
-                {universities.map(university => (
-                  <td key={university.id} className="p-2 sm:p-3 text-center font-medium">
-                    {university.soccer_club?.total_members ? `${university.soccer_club.total_members}名` : '情報なし'}
-                  </td>
-                ))}
-              </tr>
-
-              {/* 練習・指導方針セクション */}
-              <tr className="bg-blue-50">
-                <th colSpan={universities.length + 1} className={`p-2 sm:p-3 text-left font-semibold text-green-800 ${layout.needsScroll ? 'sticky left-0 z-20' : ''} border-t border-b border-green-200`}>
-                  <Calendar className="inline mr-2" size={16} />
-                  練習・指導方針
-                </th>
-              </tr>
-
-              <tr className="border-b hover:bg-gray-50">
-                <td className={`p-2 sm:p-3 font-medium bg-gray-50 ${layout.needsScroll ? 'sticky left-0 z-10' : ''} border-r border-gray-200`}>
-                  <Clock className="inline mr-1" size={14} />
-                  練習時間
-                </td>
-                {universities.map(university => (
-                  <td key={university.id} className="p-2 sm:p-3 text-center text-xs">
-                    {university.soccer_club?.practice_schedule || university.soccer_club?.practice_time || '情報なし'}
-                  </td>
-                ))}
-              </tr>
-
-              <tr className="border-b hover:bg-gray-50">
-                <td className={`p-2 sm:p-3 font-medium bg-gray-50 ${layout.needsScroll ? 'sticky left-0 z-10' : ''} border-r border-gray-200`}>
-                  <Target className="inline mr-1" size={14} />
-                  練習強度
-                </td>
-                {universities.map(university => (
-                  <td key={university.id} className="p-2 sm:p-3 text-center">
-                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                      getTrainingIntensityColor(university.soccer_club?.training_intensity)
-                    }`}>
-                      {university.soccer_club?.training_intensity || '情報なし'}
-                    </span>
-                  </td>
-                ))}
-              </tr>
-
-              <tr className="border-b hover:bg-gray-50">
-                <td className={`p-2 sm:p-3 font-medium bg-gray-50 ${layout.needsScroll ? 'sticky left-0 z-10' : ''} border-r border-gray-200`}>指導方針</td>
-                {universities.map(university => (
-                  <td key={university.id} className="p-2 sm:p-3 text-center text-xs">
-                    {university.soccer_club?.club_philosophy || university.soccer_club?.coaching_philosophy || '情報なし'}
-                  </td>
-                ))}
-              </tr>
-
-              {/* 実績セクション */}
-              <tr className="bg-yellow-50">
-                <th colSpan={universities.length + 1} className={`p-2 sm:p-3 text-left font-semibold text-green-800 ${layout.needsScroll ? 'sticky left-0 z-20' : ''} border-t border-b border-green-200`}>
-                  <Trophy className="inline mr-2" size={16} />
-                  実績
-                </th>
-              </tr>
-
-              <tr className="border-b hover:bg-gray-50">
-                <td className={`p-2 sm:p-3 font-medium bg-gray-50 ${layout.needsScroll ? 'sticky left-0 z-10' : ''} border-r border-gray-200`}>
-                  <span className="hidden sm:inline">Jリーグ内定者数</span>
-                  <span className="sm:hidden">J内定</span>
-                </td>
-                {universities.map(university => (
-                  <td key={university.id} className="p-2 sm:p-3 text-center">
-                    <div className="rounded-full bg-yellow-100 text-yellow-800 font-bold py-1 mx-auto w-12 sm:w-16 text-xs sm:text-sm">
-                      {university.soccer_club?.j_league_nominees_2022_24 || 0}名
-                    </div>
-                  </td>
-                ))}
-              </tr>
-
-              <tr className="border-b hover:bg-gray-50">
-                <td className={`p-2 sm:p-3 font-medium bg-gray-50 ${layout.needsScroll ? 'sticky left-0 z-10' : ''} border-r border-gray-200`}>
-                  <span className="hidden sm:inline">デンソーカップ出場者数</span>
-                  <span className="sm:hidden">デンソー</span>
-                </td>
-                {universities.map(university => (
-                  <td key={university.id} className="p-2 sm:p-3 text-center">
-                    <div className="rounded-full bg-green-100 text-green-800 font-bold py-1 mx-auto w-12 sm:w-16 text-xs sm:text-sm">
-                      {university.soccer_club?.denso_cup_2024_25 || 0}名
-                    </div>
-                  </td>
-                ))}
-              </tr>
-
-              {/* 施設・環境セクション */}
-              <tr className="bg-green-50">
-                <th colSpan={universities.length + 1} className={`p-2 sm:p-3 text-left font-semibold text-green-800 ${layout.needsScroll ? 'sticky left-0 z-20' : ''} border-t border-b border-green-200`}>
-                  <Home className="inline mr-2" size={16} />
-                  施設・環境
-                </th>
-              </tr>
-
-              <tr className="border-b hover:bg-gray-50">
-                <td className={`p-2 sm:p-3 font-medium bg-gray-50 ${layout.needsScroll ? 'sticky left-0 z-10' : ''} border-r border-gray-200`}>
-                  <MapPin className="inline mr-1" size={14} />
-                  アクセス
-                </td>
-                {universities.map(university => (
-                  <td key={university.id} className="p-2 sm:p-3 text-center text-xs">
-                    {university.access_info || university.location || '情報なし'}
-                  </td>
-                ))}
-              </tr>
-
-              <tr className="border-b hover:bg-gray-50">
-                <td className={`p-2 sm:p-3 font-medium bg-gray-50 ${layout.needsScroll ? 'sticky left-0 z-10' : ''} border-r border-gray-200`}>
-                  <span className="hidden sm:inline">グラウンド名</span>
-                  <span className="sm:hidden">グラウンド</span>
-                </td>
-                {universities.map(university => (
-                  <td key={university.id} className="p-2 sm:p-3 text-center text-xs sm:text-sm">
-                    <div className="truncate max-w-[120px] sm:max-w-none">
-                      {university.facilities?.ground_name || 
-                      university.soccer_club?.practice_location || 
-                      'グラウンド情報なし'}
-                    </div>
-                  </td>
-                ))}
-              </tr>
-
-              <tr className="border-b hover:bg-gray-50">
-                <td className={`p-2 sm:p-3 font-medium bg-gray-50 ${layout.needsScroll ? 'sticky left-0 z-10' : ''} border-r border-gray-200`}>
-                  <span className="hidden sm:inline">サッカーコート数</span>
-                  <span className="sm:hidden">コート</span>
-                </td>
-                {universities.map(university => (
-                  <td key={university.id} className="p-2 sm:p-3 text-center">
-                    {university.facilities?.soccer_field_count || university.soccer_club?.soccer_field_count || 0}面
-                  </td>
-                ))}
-              </tr>
-
-              <tr className="border-b hover:bg-gray-50">
-                <td className={`p-2 sm:p-3 font-medium bg-gray-50 ${layout.needsScroll ? 'sticky left-0 z-10' : ''} border-r border-gray-200`}>練習施設</td>
-                {universities.map(university => (
-                  <td key={university.id} className="p-2 sm:p-3">
-                    <div className="space-y-1">
-                      {university.facilities?.training_facilities?.slice(0, layout.needsScroll ? 1 : 2).map((facility, index) => (
-                        <span key={index} className="bg-gray-100 text-gray-700 px-1 py-0.5 rounded text-xs block text-center">
-                          {facility}
-                        </span>
-                      )) || <span className="text-xs text-gray-500">情報なし</span>}
-                      {university.facilities?.training_facilities?.length > (layout.needsScroll ? 1 : 2) && (
-                        <span className="text-xs text-gray-500 text-center block">
-                          +{university.facilities.training_facilities.length - (layout.needsScroll ? 1 : 2)}
-                        </span>
-                      )}
-                    </div>
-                  </td>
-                ))}
-              </tr>
-
-              <tr className="border-b hover:bg-gray-50">
-                <td className={`p-2 sm:p-3 font-medium bg-gray-50 ${layout.needsScroll ? 'sticky left-0 z-10' : ''} border-r border-gray-200`}>寮</td>
-                {universities.map(university => (
-                  <td key={university.id} className="p-2 sm:p-3 text-center">
-                    <div className="space-y-1">
-                      {getDormTypes(university.soccer_club?.dorm_details).slice(0, layout.needsScroll ? 1 : 3).map((dormType, index) => (
-                        <span key={index} className={`px-2 py-1 rounded-full inline-block text-xs font-medium ${
-                          dormType === 'なし' || dormType === '情報なし'
-                            ? 'bg-red-100 text-red-600' 
-                            : 'bg-green-100 text-green-700'
-                        }`}>
-                          {dormType}
-                        </span>
-                      ))}
-                      {getDormTypes(university.soccer_club?.dorm_details).length > (layout.needsScroll ? 1 : 3) && (
-                        <span className="text-xs text-gray-500">+他</span>
-                      )}
-                    </div>
-                  </td>
-                ))}
-              </tr>
-
-              <tr className="border-b hover:bg-gray-50">
-                <td className={`p-2 sm:p-3 font-medium bg-gray-50 ${layout.needsScroll ? 'sticky left-0 z-10' : ''} border-r border-gray-200`}>奨学金</td>
-                {universities.map(university => (
-                  <td key={university.id} className="p-2 sm:p-3 text-center">
-                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                      university.soccer_club?.sports_scholarship 
-                        ? 'bg-green-100 text-green-700' 
-                        : 'bg-red-100 text-red-600'
-                    }`}>
-                      {university.soccer_club?.sports_scholarship ? 'あり' : 'なし'}
-                    </span>
-                  </td>
-                ))}
-              </tr>
-
-              {/* 費用セクション（プレミアム限定） */}
-              <tr className="bg-purple-50">
-                <th colSpan={universities.length + 1} className={`p-2 sm:p-3 text-left font-semibold text-green-800 ${layout.needsScroll ? 'sticky left-0 z-20' : ''} border-t border-b border-green-200`}>
-                  <DollarSign className="inline mr-2" size={16} />
-                  費用情報（プレミアム限定）
-                </th>
-              </tr>
-
-              <tr className="border-b hover:bg-gray-50">
-                <td className={`p-2 sm:p-3 font-medium bg-gray-50 ${layout.needsScroll ? 'sticky left-0 z-10' : ''} border-r border-gray-200`}>
-                  <span className="hidden sm:inline">大学年間費用</span>
-                  <span className="sm:hidden">大学費用</span>
-                </td>
-                {universities.map(university => (
-                  <td key={university.id} className="p-2 sm:p-3 text-center font-medium text-red-600">
-                    {formatCurrency(university.costs?.university_cost)}
-                  </td>
-                ))}
-              </tr>
-
-              <tr className="border-b hover:bg-gray-50">
-                <td className={`p-2 sm:p-3 font-medium bg-gray-50 ${layout.needsScroll ? 'sticky left-0 z-10' : ''} border-r border-gray-200`}>
-                  <span className="hidden sm:inline">サッカー部年間費用</span>
-                  <span className="sm:hidden">部費用</span>
-                </td>
-                {universities.map(university => (
-                  <td key={university.id} className="p-2 sm:p-3 text-center font-medium text-orange-600">
-                    {formatCurrency(university.costs?.soccer_club_cost)}
-                  </td>
-                ))}
-              </tr>
-
-              <tr className="border-b hover:bg-gray-50">
-                <td className={`p-2 sm:p-3 font-medium bg-gray-50 ${layout.needsScroll ? 'sticky left-0 z-10' : ''} border-r border-gray-200`}>
-                  <span className="hidden sm:inline">年間総費用</span>
-                  <span className="sm:hidden">総費用</span>
-                </td>
-                {universities.map(university => (
-                  <td key={university.id} className="p-2 sm:p-3 text-center font-bold text-red-700">
-                    {university.costs?.university_cost && university.costs?.soccer_club_cost
-                      ? formatCurrency(university.costs.university_cost + university.costs.soccer_club_cost)
-                      : '情報なし'
-                    }
-                  </td>
-                ))}
-              </tr>
-
-              {/* 進路・資格セクション */}
-              <tr className="bg-indigo-50">
-                <th colSpan={universities.length + 1} className={`p-2 sm:p-3 text-left font-semibold text-green-800 ${layout.needsScroll ? 'sticky left-0 z-20' : ''} border-t border-b border-green-200`}>
-                  <GraduationCap className="inline mr-2" size={16} />
-                  進路・資格
-                </th>
-              </tr>
-
-              <tr className="border-b hover:bg-gray-50">
-                <td className={`p-2 sm:p-3 font-medium bg-gray-50 ${layout.needsScroll ? 'sticky left-0 z-10' : ''} border-r border-gray-200`}>
-                  <span className="hidden sm:inline">主な進路</span>
-                  <span className="sm:hidden">進路</span>
-                </td>
-                {universities.map(university => (
-                  <td key={university.id} className="p-2 sm:p-3">
-                    <div className="space-y-1">
-                      {university.soccer_club?.graduate_career_paths?.slice(0, layout.needsScroll ? 1 : 2).map((career, index) => (
-                        <span key={index} className="bg-blue-100 text-blue-800 px-1 py-0.5 rounded text-xs block text-center">
-                          {career}
-                        </span>
-                      )) || <span className="text-xs text-gray-500 text-center block">情報なし</span>}
-                      {university.soccer_club?.graduate_career_paths?.length > (layout.needsScroll ? 1 : 2) && (
-                        <span className="text-xs text-gray-500 text-center block">
-                          +{university.soccer_club.graduate_career_paths.length - (layout.needsScroll ? 1 : 2)}
-                        </span>
-                      )}
-                    </div>
-                  </td>
-                ))}
-              </tr>
-
-              <tr className="border-b hover:bg-gray-50">
-                <td className={`p-2 sm:p-3 font-medium bg-gray-50 ${layout.needsScroll ? 'sticky left-0 z-10' : ''} border-r border-gray-200`}>
-                  <span className="hidden sm:inline">取得可能資格</span>
-                  <span className="sm:hidden">資格</span>
-                </td>
-                {universities.map(university => (
-                  <td key={university.id} className="p-2 sm:p-3">
-                    <div className="flex flex-wrap gap-1 justify-center">
-                      {layout.needsScroll ? (
-                        <>
-                          {university.soccer_club?.qualifications?.slice(0, 1).map((qualification, index) => (
-                            <span key={index} className="bg-orange-100 text-orange-800 px-1 py-1 rounded-full text-xs mb-1 block text-center">
-                              {qualification.length > 6 ? qualification.substring(0, 6) + '...' : qualification}
-                            </span>
-                          )) || <span className="text-xs text-gray-500">情報なし</span>}
-                          {university.soccer_club?.qualifications?.length > 1 && (
-                            <span className="text-xs text-gray-500">+{university.soccer_club.qualifications.length - 1}</span>
-                          )}
-                        </>
-                      ) : (
-                        university.soccer_club?.qualifications?.slice(0, 2).map((qualification, index) => (
-                          <span key={index} className="bg-orange-100 text-orange-800 px-1 py-1 rounded-full text-xs mb-1 block text-center">
-                            {qualification.length > 8 ? qualification.substring(0, 8) + '...' : qualification}
-                          </span>
-                        )) || <span className="text-xs text-gray-500">情報なし</span>
-                      )}
-                    </div>
-                  </td>
-                ))}
-              </tr>
-              
-              {/* 入部条件セクション */}
-              <tr className="bg-orange-50">
-                <th colSpan={universities.length + 1} className={`p-2 sm:p-3 text-left font-semibold text-green-800 ${layout.needsScroll ? 'sticky left-0 z-20' : ''} border-t border-b border-green-200`}>
-                  入部条件
-                </th>
-              </tr>
-
-              <tr className="border-b hover:bg-gray-50">
-                <td className={`p-2 sm:p-3 font-medium bg-gray-50 ${layout.needsScroll ? 'sticky left-0 z-10' : ''} border-r border-gray-200`}>
-                  <span className="hidden sm:inline">スポーツ推薦</span>
-                  <span className="sm:hidden">推薦</span>
-                </td>
-                {universities.map(university => (
-                  <td key={university.id} className="p-2 sm:p-3">
-                    {university.entry_conditions?.sports_recommend ? (
-                      <div className="text-center">
-                        <span className="bg-green-100 text-green-700 font-medium px-2 py-1 rounded-full inline-block mb-1 text-xs">あり</span>
-                        <p className="text-xs text-gray-600 hidden sm:block">{university.entry_conditions.recommend_criteria}</p>
-                      </div>
-                    ) : (
-                      <div className="text-center">
-                        <span className="bg-red-100 text-red-600 px-2 py-1 rounded-full inline-block text-xs">なし</span>
-                      </div>
-                    )}
-                  </td>
-                ))}
-              </tr>
-
-              <tr className="border-b hover:bg-gray-50">
-                <td className={`p-2 sm:p-3 font-medium bg-gray-50 ${layout.needsScroll ? 'sticky left-0 z-10' : ''} border-r border-gray-200`}>
-                  <span className="hidden sm:inline">セレクション</span>
-                  <span className="sm:hidden">選考</span>
-                </td>
-                {universities.map(university => (
-                  <td key={university.id} className="p-2 sm:p-3">
-                    {university.entry_conditions?.selection ? (
-                      <div className="text-center">
-                        <span className="bg-green-100 text-green-700 font-medium px-2 py-1 rounded-full inline-block mb-1 text-xs">あり</span>
-                        <p className="text-xs text-gray-600 hidden sm:block">時期: {university.entry_conditions.selection_period}</p>
-                      </div>
-                    ) : (
-                      <div className="text-center">
-                        <span className="bg-red-100 text-red-600 px-2 py-1 rounded-full inline-block text-xs">なし</span>
-                      </div>
-                    )}
-                  </td>
-                ))}
-              </tr>
-
-              <tr className="hover:bg-gray-50">
-                <td className={`p-2 sm:p-3 font-medium bg-gray-50 ${layout.needsScroll ? 'sticky left-0 z-10' : ''} border-r border-gray-200`}>
-                  <span className="hidden sm:inline">一般入部</span>
-                  <span className="sm:hidden">一般</span>
-                </td>
-                {universities.map(university => (
-                  <td key={university.id} className="p-2 sm:p-3">
-                    {university.entry_conditions?.general_admission ? (
-                      <div className="text-center">
-                        <span className="bg-green-100 text-green-700 font-medium px-2 py-1 rounded-full inline-block mb-1 text-xs">可能</span>
-                        <p className="text-xs text-gray-600 hidden sm:block">{university.entry_conditions.general_conditions}</p>
-                      </div>
-                    ) : (
-                      <div className="text-center">
-                        <span className="bg-red-100 text-red-600 px-2 py-1 rounded-full inline-block text-xs">不可</span>
-                      </div>
-                    )}
-                  </td>
-                ))}
-              </tr>
-            </tbody>
-          </table>
+        {/* モバイル版 - 縦並び */}
+        <div className="md:hidden space-y-3">
+          {/* タイトルと件数 */}
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+            <h1 className="text-lg font-bold text-gray-900 flex items-center mb-2 sm:mb-0">
+              <Crown size={20} className="text-green-600 mr-2" />
+              大学サッカー部比較
+            </h1>
+            <div className="flex items-center justify-between">
+              <span className="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full inline-block w-fit">
+                {universities.length}校比較中
+              </span>
+              <div className="bg-yellow-400 text-yellow-900 px-2 py-1 rounded-full text-xs font-medium">
+                PREMIUM
+              </div>
+            </div>
+          </div>
         </div>
         
-        {/* スマホでの操作ヒント */}
-        {layout.needsScroll && (
-          <div className="mt-3 text-center">
-            <p className="text-xs text-gray-500 sm:hidden">← 横にスクロールできます →</p>
-          </div>
-        )}
+        <p className="text-sm text-gray-600 mt-2">最大5校まで比較できます</p>
+      </div>
+      
+      {/* メインコンテンツ */}
+      <div className="mb-6">
+        {universities.length > 0 ? (
+          <div className="bg-white rounded-lg shadow-md overflow-hidden">
+            {/* 全画面対応テーブル表示 */}
+            <div 
+              className={`${layout.containerClass} border border-gray-200 rounded-lg shadow-sm`}
+            >
+              <table 
+                className="bg-white text-xs sm:text-sm"
+                style={layout.tableStyle}
+              >
+                <thead>
+                  <tr>
+                    <th 
+                      className={`p-2 sm:p-3 text-left bg-gray-50 ${layout.needsScroll ? 'sticky left-0 z-20' : ''} rounded-tl-lg border-r border-gray-200`}
+                      style={{ 
+                        minWidth: layout.leftColumnWidth, 
+                        width: layout.leftColumnWidth 
+                      }}
+                    ></th>
+                    {universities.map((university, index) => (
+                      <th 
+                        key={university.id} 
+                        className={`p-2 sm:p-3 bg-white ${index === universities.length - 1 ? 'rounded-tr-lg' : ''}`}
+                        style={{ 
+                          minWidth: layout.universityColumnWidth, 
+                          width: layout.universityColumnWidth 
+                        }}
+                      >
+                        <div className="relative">
+                          {/* 背景ロゴ */}
+                          <div className="absolute top-0 right-0 bottom-0 left-0 flex justify-center opacity-10">
+                            <UniversityLogo 
+                              university={university}
+                              size="lg"
+                              showFallback={false}
+                            />
+                          </div>
+                          
+                          <div className="relative z-10">
+                            <div className="flex justify-between items-center">
+                              <button 
+                                className="text-red-500 p-1 hover:bg-red-50 rounded-full absolute -top-1 -right-1 sm:-top-2 sm:-right-2"
+                                onClick={() => onRemove(university.id)}
+                              >
+                                <X size={14} />
+                              </button>
+                            </div>
+                            
+                            <div className="flex flex-col items-center mb-2 pt-2 sm:pt-3">
+                              <UniversityLogo 
+                                university={university}
+                                size="sm"
+                                className="mb-1 sm:mb-2 shadow-sm"
+                                showFallback={true}
+                              />
+                              <h3 className="font-bold text-center text-xs sm:text-sm leading-tight px-1">{university.university_name}</h3>
+                              <p className="text-xs text-gray-600 mt-1 text-center">{university.soccer_club?.league}</p>
+                            </div>
+                          </div>
+                        </div>
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {/* 基本情報セクション */}
+                  <tr className="bg-green-50">
+                    <th 
+                      colSpan={universities.length + 1} 
+                      className={`p-2 sm:p-3 text-left font-semibold text-green-800 ${layout.needsScroll ? 'sticky left-0 z-20' : ''} border-t border-b border-green-200`}
+                    >
+                      <Users className="inline mr-2" size={16} />
+                      基本情報
+                    </th>
+                  </tr>
 
-        {/* デバッグ情報（開発時のみ表示） */}
-        {process.env.NODE_ENV === 'development' && (
-          <div className="mt-4 p-3 bg-gray-100 rounded-lg text-xs text-gray-600">
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-              <div><strong>表示校数:</strong> {universities.length}</div>
-              <div><strong>左カラム幅:</strong> {layout.leftColumnWidth}</div>
-              <div><strong>各校カラム幅:</strong> {layout.universityColumnWidth}</div>
-              <div><strong>スクロール:</strong> {layout.needsScroll ? 'あり' : 'なし'}</div>
+                  <tr className="border-b hover:bg-gray-50">
+                    <td 
+                      className={`p-2 sm:p-3 font-medium bg-gray-50 ${layout.needsScroll ? 'sticky left-0 z-10' : ''} border-r border-gray-200`}
+                      style={{ 
+                        minWidth: layout.leftColumnWidth, 
+                        width: layout.leftColumnWidth 
+                      }}
+                    >
+                      大学種別
+                    </td>
+                    {universities.map(university => (
+                      <td key={university.id} className="p-2 sm:p-3 text-center" style={{ 
+                        minWidth: layout.universityColumnWidth, 
+                        width: layout.universityColumnWidth 
+                      }}>
+                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                          getUniversityTypeColor(university.university_type || (
+                            university.academic_rank?.includes('国公立') ? '国立' : '私立'
+                          ))
+                        }`}>
+                          {university.university_type || (
+                            university.academic_rank?.includes('国公立') ? '国立' : '私立'
+                          )}
+                        </span>
+                      </td>
+                    ))}
+                  </tr>
+
+                  <tr className="border-b hover:bg-gray-50">
+                    <td className={`p-2 sm:p-3 font-medium bg-gray-50 ${layout.needsScroll ? 'sticky left-0 z-10' : ''} border-r border-gray-200`}>学力ランク</td>
+                    {universities.map(university => (
+                      <td key={university.id} className="p-2 sm:p-3 text-center">
+                        <span className="bg-indigo-100 text-indigo-800 px-2 py-1 rounded-full text-xs font-medium">
+                          {university.academic_rank?.split('：')[0] || '情報なし'}
+                        </span>
+                      </td>
+                    ))}
+                  </tr>
+
+                  <tr className="border-b hover:bg-gray-50">
+                    <td className={`p-2 sm:p-3 font-medium bg-gray-50 ${layout.needsScroll ? 'sticky left-0 z-10' : ''} border-r border-gray-200`}>
+                      リーグ
+                    </td>
+                    {universities.map(university => (
+                      <td key={university.id} className="p-2 sm:p-3 text-center">
+                        <span className="bg-green-50 text-green-800 px-2 py-1 rounded-lg inline-block text-xs">
+                          <span className="sm:hidden">
+                            {university.soccer_club?.league?.includes('1部') ? '1部' : 
+                             university.soccer_club?.league?.includes('2部') ? '2部' : '他'}
+                          </span>
+                          <span className="hidden sm:inline">{university.soccer_club?.league || '情報なし'}</span>
+                        </span>
+                      </td>
+                    ))}
+                  </tr>
+
+                  <tr className="border-b hover:bg-gray-50">
+                    <td className={`p-2 sm:p-3 font-medium bg-gray-50 ${layout.needsScroll ? 'sticky left-0 z-10' : ''} border-r border-gray-200`}>監督</td>
+                    {universities.map(university => (
+                      <td key={university.id} className="p-2 sm:p-3 text-center text-xs sm:text-sm truncate">
+                        {university.soccer_club?.coach_name || '情報なし'}
+                      </td>
+                    ))}
+                  </tr>
+
+                  <tr className="border-b hover:bg-gray-50">
+                    <td className={`p-2 sm:p-3 font-medium bg-gray-50 ${layout.needsScroll ? 'sticky left-0 z-10' : ''} border-r border-gray-200`}>部員数</td>
+                    {universities.map(university => (
+                      <td key={university.id} className="p-2 sm:p-3 text-center font-medium">
+                        {university.soccer_club?.total_members ? `${university.soccer_club.total_members}名` : '情報なし'}
+                      </td>
+                    ))}
+                  </tr>
+
+                  {/* 練習・指導方針セクション */}
+                  <tr className="bg-blue-50">
+                    <th colSpan={universities.length + 1} className={`p-2 sm:p-3 text-left font-semibold text-green-800 ${layout.needsScroll ? 'sticky left-0 z-20' : ''} border-t border-b border-green-200`}>
+                      <Calendar className="inline mr-2" size={16} />
+                      練習・指導方針
+                    </th>
+                  </tr>
+
+                  <tr className="border-b hover:bg-gray-50">
+                    <td className={`p-2 sm:p-3 font-medium bg-gray-50 ${layout.needsScroll ? 'sticky left-0 z-10' : ''} border-r border-gray-200`}>
+                      <Clock className="inline mr-1" size={14} />
+                      練習時間
+                    </td>
+                    {universities.map(university => (
+                      <td key={university.id} className="p-2 sm:p-3 text-center text-xs">
+                        {university.soccer_club?.practice_schedule || university.soccer_club?.practice_time || '情報なし'}
+                      </td>
+                    ))}
+                  </tr>
+
+                  <tr className="border-b hover:bg-gray-50">
+                    <td className={`p-2 sm:p-3 font-medium bg-gray-50 ${layout.needsScroll ? 'sticky left-0 z-10' : ''} border-r border-gray-200`}>
+                      <Target className="inline mr-1" size={14} />
+                      練習強度
+                    </td>
+                    {universities.map(university => (
+                      <td key={university.id} className="p-2 sm:p-3 text-center">
+                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                          getTrainingIntensityColor(university.soccer_club?.training_intensity)
+                        }`}>
+                          {university.soccer_club?.training_intensity || '情報なし'}
+                        </span>
+                      </td>
+                    ))}
+                  </tr>
+
+                  <tr className="border-b hover:bg-gray-50">
+                    <td className={`p-2 sm:p-3 font-medium bg-gray-50 ${layout.needsScroll ? 'sticky left-0 z-10' : ''} border-r border-gray-200`}>指導方針</td>
+                    {universities.map(university => (
+                      <td key={university.id} className="p-2 sm:p-3 text-center text-xs">
+                        {university.soccer_club?.club_philosophy || university.soccer_club?.coaching_philosophy || '情報なし'}
+                      </td>
+                    ))}
+                  </tr>
+
+                  {/* 実績セクション */}
+                  <tr className="bg-yellow-50">
+                    <th colSpan={universities.length + 1} className={`p-2 sm:p-3 text-left font-semibold text-green-800 ${layout.needsScroll ? 'sticky left-0 z-20' : ''} border-t border-b border-green-200`}>
+                      <Trophy className="inline mr-2" size={16} />
+                      実績
+                    </th>
+                  </tr>
+
+                  <tr className="border-b hover:bg-gray-50">
+                    <td className={`p-2 sm:p-3 font-medium bg-gray-50 ${layout.needsScroll ? 'sticky left-0 z-10' : ''} border-r border-gray-200`}>
+                      <span className="hidden sm:inline">Jリーグ内定者数</span>
+                      <span className="sm:hidden">J内定</span>
+                    </td>
+                    {universities.map(university => (
+                      <td key={university.id} className="p-2 sm:p-3 text-center">
+                        <div className="rounded-full bg-yellow-100 text-yellow-800 font-bold py-1 mx-auto w-12 sm:w-16 text-xs sm:text-sm">
+                          {university.soccer_club?.j_league_nominees_2022_24 || 0}名
+                        </div>
+                      </td>
+                    ))}
+                  </tr>
+
+                  <tr className="border-b hover:bg-gray-50">
+                    <td className={`p-2 sm:p-3 font-medium bg-gray-50 ${layout.needsScroll ? 'sticky left-0 z-10' : ''} border-r border-gray-200`}>
+                      <span className="hidden sm:inline">デンソーカップ出場者数</span>
+                      <span className="sm:hidden">デンソー</span>
+                    </td>
+                    {universities.map(university => (
+                      <td key={university.id} className="p-2 sm:p-3 text-center">
+                        <div className="rounded-full bg-green-100 text-green-800 font-bold py-1 mx-auto w-12 sm:w-16 text-xs sm:text-sm">
+                          {university.soccer_club?.denso_cup_2024_25 || 0}名
+                        </div>
+                      </td>
+                    ))}
+                  </tr>
+
+                  {/* 施設・環境セクション */}
+                  <tr className="bg-green-50">
+                    <th colSpan={universities.length + 1} className={`p-2 sm:p-3 text-left font-semibold text-green-800 ${layout.needsScroll ? 'sticky left-0 z-20' : ''} border-t border-b border-green-200`}>
+                      <Home className="inline mr-2" size={16} />
+                      施設・環境
+                    </th>
+                  </tr>
+
+                  <tr className="border-b hover:bg-gray-50">
+                    <td className={`p-2 sm:p-3 font-medium bg-gray-50 ${layout.needsScroll ? 'sticky left-0 z-10' : ''} border-r border-gray-200`}>
+                      <MapPin className="inline mr-1" size={14} />
+                      アクセス
+                    </td>
+                    {universities.map(university => (
+                      <td key={university.id} className="p-2 sm:p-3 text-center text-xs">
+                        {university.access_info || university.location || '情報なし'}
+                      </td>
+                    ))}
+                  </tr>
+
+                  <tr className="border-b hover:bg-gray-50">
+                    <td className={`p-2 sm:p-3 font-medium bg-gray-50 ${layout.needsScroll ? 'sticky left-0 z-10' : ''} border-r border-gray-200`}>
+                      <span className="hidden sm:inline">グラウンド名</span>
+                      <span className="sm:hidden">グラウンド</span>
+                    </td>
+                    {universities.map(university => (
+                      <td key={university.id} className="p-2 sm:p-3 text-center text-xs sm:text-sm">
+                        <div className="truncate max-w-[120px] sm:max-w-none">
+                          {university.facilities?.ground_name || 
+                          university.soccer_club?.practice_location || 
+                          'グラウンド情報なし'}
+                        </div>
+                      </td>
+                    ))}
+                  </tr>
+
+                  <tr className="border-b hover:bg-gray-50">
+                    <td className={`p-2 sm:p-3 font-medium bg-gray-50 ${layout.needsScroll ? 'sticky left-0 z-10' : ''} border-r border-gray-200`}>
+                      <span className="hidden sm:inline">サッカーコート数</span>
+                      <span className="sm:hidden">コート</span>
+                    </td>
+                    {universities.map(university => (
+                      <td key={university.id} className="p-2 sm:p-3 text-center">
+                        {university.facilities?.soccer_field_count || university.soccer_club?.soccer_field_count || 0}面
+                      </td>
+                    ))}
+                  </tr>
+
+                  <tr className="border-b hover:bg-gray-50">
+                    <td className={`p-2 sm:p-3 font-medium bg-gray-50 ${layout.needsScroll ? 'sticky left-0 z-10' : ''} border-r border-gray-200`}>練習施設</td>
+                    {universities.map(university => (
+                      <td key={university.id} className="p-2 sm:p-3">
+                        <div className="space-y-1">
+                          {university.facilities?.training_facilities?.slice(0, layout.needsScroll ? 1 : 2).map((facility, index) => (
+                            <span key={index} className="bg-gray-100 text-gray-700 px-1 py-0.5 rounded text-xs block text-center">
+                              {facility}
+                            </span>
+                          )) || <span className="text-xs text-gray-500">情報なし</span>}
+                          {university.facilities?.training_facilities?.length > (layout.needsScroll ? 1 : 2) && (
+                            <span className="text-xs text-gray-500 text-center block">
+                              +{university.facilities.training_facilities.length - (layout.needsScroll ? 1 : 2)}
+                            </span>
+                          )}
+                        </div>
+                      </td>
+                    ))}
+                  </tr>
+
+                  <tr className="border-b hover:bg-gray-50">
+                    <td className={`p-2 sm:p-3 font-medium bg-gray-50 ${layout.needsScroll ? 'sticky left-0 z-10' : ''} border-r border-gray-200`}>寮</td>
+                    {universities.map(university => (
+                      <td key={university.id} className="p-2 sm:p-3 text-center">
+                        <div className="space-y-1">
+                          {getDormTypes(university.soccer_club?.dorm_details).slice(0, layout.needsScroll ? 1 : 3).map((dormType, index) => (
+                            <span key={index} className={`px-2 py-1 rounded-full inline-block text-xs font-medium ${
+                              dormType === 'なし' || dormType === '情報なし'
+                                ? 'bg-red-100 text-red-600' 
+                                : 'bg-green-100 text-green-700'
+                            }`}>
+                              {dormType}
+                            </span>
+                          ))}
+                          {getDormTypes(university.soccer_club?.dorm_details).length > (layout.needsScroll ? 1 : 3) && (
+                            <span className="text-xs text-gray-500">+他</span>
+                          )}
+                        </div>
+                      </td>
+                    ))}
+                  </tr>
+
+                  <tr className="border-b hover:bg-gray-50">
+                    <td className={`p-2 sm:p-3 font-medium bg-gray-50 ${layout.needsScroll ? 'sticky left-0 z-10' : ''} border-r border-gray-200`}>奨学金</td>
+                    {universities.map(university => (
+                      <td key={university.id} className="p-2 sm:p-3 text-center">
+                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                          university.soccer_club?.sports_scholarship 
+                            ? 'bg-green-100 text-green-700' 
+                            : 'bg-red-100 text-red-600'
+                        }`}>
+                          {university.soccer_club?.sports_scholarship ? 'あり' : 'なし'}
+                        </span>
+                      </td>
+                    ))}
+                  </tr>
+
+                  {/* 費用セクション（プレミアム限定） */}
+                  <tr className="bg-purple-50">
+                    <th colSpan={universities.length + 1} className={`p-2 sm:p-3 text-left font-semibold text-green-800 ${layout.needsScroll ? 'sticky left-0 z-20' : ''} border-t border-b border-green-200`}>
+                      <DollarSign className="inline mr-2" size={16} />
+                      費用情報（プレミアム限定）
+                    </th>
+                  </tr>
+
+                  <tr className="border-b hover:bg-gray-50">
+                    <td className={`p-2 sm:p-3 font-medium bg-gray-50 ${layout.needsScroll ? 'sticky left-0 z-10' : ''} border-r border-gray-200`}>
+                      <span className="hidden sm:inline">大学年間費用</span>
+                      <span className="sm:hidden">大学費用</span>
+                    </td>
+                    {universities.map(university => (
+                      <td key={university.id} className="p-2 sm:p-3 text-center font-medium text-red-600">
+                        {formatCurrency(university.costs?.university_cost)}
+                      </td>
+                    ))}
+                  </tr>
+
+                  <tr className="border-b hover:bg-gray-50">
+                    <td className={`p-2 sm:p-3 font-medium bg-gray-50 ${layout.needsScroll ? 'sticky left-0 z-10' : ''} border-r border-gray-200`}>
+                      <span className="hidden sm:inline">サッカー部年間費用</span>
+                      <span className="sm:hidden">部費用</span>
+                    </td>
+                    {universities.map(university => (
+                      <td key={university.id} className="p-2 sm:p-3 text-center font-medium text-orange-600">
+                        {formatCurrency(university.costs?.soccer_club_cost)}
+                      </td>
+                    ))}
+                  </tr>
+
+                  <tr className="border-b hover:bg-gray-50">
+                    <td className={`p-2 sm:p-3 font-medium bg-gray-50 ${layout.needsScroll ? 'sticky left-0 z-10' : ''} border-r border-gray-200`}>
+                      <span className="hidden sm:inline">年間総費用</span>
+                      <span className="sm:hidden">総費用</span>
+                    </td>
+                    {universities.map(university => (
+                      <td key={university.id} className="p-2 sm:p-3 text-center font-bold text-red-700">
+                        {university.costs?.university_cost && university.costs?.soccer_club_cost
+                          ? formatCurrency(university.costs.university_cost + university.costs.soccer_club_cost)
+                          : '情報なし'
+                        }
+                      </td>
+                    ))}
+                  </tr>
+
+                  {/* 進路・資格セクション */}
+                  <tr className="bg-indigo-50">
+                    <th colSpan={universities.length + 1} className={`p-2 sm:p-3 text-left font-semibold text-green-800 ${layout.needsScroll ? 'sticky left-0 z-20' : ''} border-t border-b border-green-200`}>
+                      <GraduationCap className="inline mr-2" size={16} />
+                      進路・資格
+                    </th>
+                  </tr>
+
+                  <tr className="border-b hover:bg-gray-50">
+                    <td className={`p-2 sm:p-3 font-medium bg-gray-50 ${layout.needsScroll ? 'sticky left-0 z-10' : ''} border-r border-gray-200`}>
+                      <span className="hidden sm:inline">主な進路</span>
+                      <span className="sm:hidden">進路</span>
+                    </td>
+                    {universities.map(university => (
+                      <td key={university.id} className="p-2 sm:p-3">
+                        <div className="space-y-1">
+                          {university.soccer_club?.graduate_career_paths?.slice(0, layout.needsScroll ? 1 : 2).map((career, index) => (
+                            <span key={index} className="bg-blue-100 text-blue-800 px-1 py-0.5 rounded text-xs block text-center">
+                              {career}
+                            </span>
+                          )) || <span className="text-xs text-gray-500 text-center block">情報なし</span>}
+                          {university.soccer_club?.graduate_career_paths?.length > (layout.needsScroll ? 1 : 2) && (
+                            <span className="text-xs text-gray-500 text-center block">
+                              +{university.soccer_club.graduate_career_paths.length - (layout.needsScroll ? 1 : 2)}
+                            </span>
+                          )}
+                        </div>
+                      </td>
+                    ))}
+                  </tr>
+
+                  <tr className="border-b hover:bg-gray-50">
+                    <td className={`p-2 sm:p-3 font-medium bg-gray-50 ${layout.needsScroll ? 'sticky left-0 z-10' : ''} border-r border-gray-200`}>
+                      <span className="hidden sm:inline">取得可能資格</span>
+                      <span className="sm:hidden">資格</span>
+                    </td>
+                    {universities.map(university => (
+                      <td key={university.id} className="p-2 sm:p-3">
+                        <div className="flex flex-wrap gap-1 justify-center">
+                          {layout.needsScroll ? (
+                            <>
+                              {university.soccer_club?.qualifications?.slice(0, 1).map((qualification, index) => (
+                                <span key={index} className="bg-orange-100 text-orange-800 px-1 py-1 rounded-full text-xs mb-1 block text-center">
+                                  {qualification.length > 6 ? qualification.substring(0, 6) + '...' : qualification}
+                                </span>
+                              )) || <span className="text-xs text-gray-500">情報なし</span>}
+                              {university.soccer_club?.qualifications?.length > 1 && (
+                                <span className="text-xs text-gray-500">+{university.soccer_club.qualifications.length - 1}</span>
+                              )}
+                            </>
+                          ) : (
+                            university.soccer_club?.qualifications?.slice(0, 2).map((qualification, index) => (
+                              <span key={index} className="bg-orange-100 text-orange-800 px-1 py-1 rounded-full text-xs mb-1 block text-center">
+                                {qualification.length > 8 ? qualification.substring(0, 8) + '...' : qualification}
+                              </span>
+                            )) || <span className="text-xs text-gray-500">情報なし</span>
+                          )}
+                        </div>
+                      </td>
+                    ))}
+                  </tr>
+                  
+                  {/* 入部条件セクション */}
+                  <tr className="bg-orange-50">
+                    <th colSpan={universities.length + 1} className={`p-2 sm:p-3 text-left font-semibold text-green-800 ${layout.needsScroll ? 'sticky left-0 z-20' : ''} border-t border-b border-green-200`}>
+                      入部条件
+                    </th>
+                  </tr>
+
+                  <tr className="border-b hover:bg-gray-50">
+                    <td className={`p-2 sm:p-3 font-medium bg-gray-50 ${layout.needsScroll ? 'sticky left-0 z-10' : ''} border-r border-gray-200`}>
+                      <span className="hidden sm:inline">スポーツ推薦</span>
+                      <span className="sm:hidden">推薦</span>
+                    </td>
+                    {universities.map(university => (
+                      <td key={university.id} className="p-2 sm:p-3">
+                        {university.entry_conditions?.sports_recommend ? (
+                          <div className="text-center">
+                            <span className="bg-green-100 text-green-700 font-medium px-2 py-1 rounded-full inline-block mb-1 text-xs">あり</span>
+                            <p className="text-xs text-gray-600 hidden sm:block">{university.entry_conditions.recommend_criteria}</p>
+                          </div>
+                        ) : (
+                          <div className="text-center">
+                            <span className="bg-red-100 text-red-600 px-2 py-1 rounded-full inline-block text-xs">なし</span>
+                          </div>
+                        )}
+                      </td>
+                    ))}
+                  </tr>
+
+                  <tr className="border-b hover:bg-gray-50">
+                    <td className={`p-2 sm:p-3 font-medium bg-gray-50 ${layout.needsScroll ? 'sticky left-0 z-10' : ''} border-r border-gray-200`}>
+                      <span className="hidden sm:inline">セレクション</span>
+                      <span className="sm:hidden">選考</span>
+                    </td>
+                    {universities.map(university => (
+                      <td key={university.id} className="p-2 sm:p-3">
+                        {university.entry_conditions?.selection ? (
+                          <div className="text-center">
+                            <span className="bg-green-100 text-green-700 font-medium px-2 py-1 rounded-full inline-block mb-1 text-xs">あり</span>
+                            <p className="text-xs text-gray-600 hidden sm:block">時期: {university.entry_conditions.selection_period}</p>
+                          </div>
+                        ) : (
+                          <div className="text-center">
+                            <span className="bg-red-100 text-red-600 px-2 py-1 rounded-full inline-block text-xs">なし</span>
+                          </div>
+                        )}
+                      </td>
+                    ))}
+                  </tr>
+
+                  <tr className="hover:bg-gray-50">
+                    <td className={`p-2 sm:p-3 font-medium bg-gray-50 ${layout.needsScroll ? 'sticky left-0 z-10' : ''} border-r border-gray-200`}>
+                      <span className="hidden sm:inline">一般入部</span>
+                      <span className="sm:hidden">一般</span>
+                    </td>
+                    {universities.map(university => (
+                      <td key={university.id} className="p-2 sm:p-3">
+                        {university.entry_conditions?.general_admission ? (
+                          <div className="text-center">
+                            <span className="bg-green-100 text-green-700 font-medium px-2 py-1 rounded-full inline-block mb-1 text-xs">可能</span>
+                            <p className="text-xs text-gray-600 hidden sm:block">{university.entry_conditions.general_conditions}</p>
+                          </div>
+                        ) : (
+                          <div className="text-center">
+                            <span className="bg-red-100 text-red-600 px-2 py-1 rounded-full inline-block text-xs">不可</span>
+                          </div>
+                        )}
+                      </td>
+                    ))}
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            
+            {/* スマホでの操作ヒント */}
+            {layout.needsScroll && (
+              <div className="mt-3 text-center p-3">
+                <p className="text-xs text-gray-500 sm:hidden">← 横にスクロールできます →</p>
+              </div>
+            )}
+
+            {/* デバッグ情報（開発時のみ表示） */}
+            {process.env.NODE_ENV === 'development' && (
+              <div className="mt-4 p-3 bg-gray-100 rounded-lg text-xs text-gray-600">
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                  <div><strong>表示校数:</strong> {universities.length}</div>
+                  <div><strong>左カラム幅:</strong> {layout.leftColumnWidth}</div>
+                  <div><strong>各校カラム幅:</strong> {layout.universityColumnWidth}</div>
+                  <div><strong>スクロール:</strong> {layout.needsScroll ? 'あり' : 'なし'}</div>
+                </div>
+              </div>
+            )}
+          </div>
+        ) : (
+          /* 比較リストが空の場合の表示 */
+          <div className="bg-white p-6 sm:p-8 rounded-lg shadow-md">
+            <div className="text-center py-12">
+              <div className="bg-gray-50 rounded-xl p-8 shadow-inner">
+                <div className="w-32 h-32 mx-auto mb-6 bg-gray-200 rounded-full flex items-center justify-center opacity-50">
+                  <Crown size={64} className="text-gray-400" />
+                </div>
+                <h3 className="text-xl font-semibold mb-3 text-gray-700">気になる大学を比較してみよう</h3>
+                <p className="text-gray-500 max-w-md mx-auto mb-6 leading-relaxed">
+                  大学の詳細ページから「比較リストに追加」ボタンをクリックして、
+                  最大5校まで詳細に比較検討できます
+                </p>
+                <div className="space-y-2 text-sm text-gray-600">
+                  <p>✓ 費用・入部条件・施設を一覧で比較</p>
+                  <p>✓ PC・スマホどちらでも快適に表示</p>
+                  <p>✓ 進路選択に必要な情報を効率的に確認</p>
+                </div>
+              </div>
             </div>
           </div>
         )}
