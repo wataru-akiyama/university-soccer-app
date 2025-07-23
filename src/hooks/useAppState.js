@@ -1,4 +1,4 @@
-// src/hooks/useAppState.js - プレミアムプラン対応版
+// src/hooks/useAppState.js - プレミアムプラン対応版（最大5校比較対応）
 
 import { useState, useEffect } from 'react';
 import useUniversitySearch from './useUniversitySearch';
@@ -7,7 +7,7 @@ import usePremiumPlan from './usePremiumPlan';
 import { userProfile } from '../data';
 
 /**
- * アプリケーション全体の状態管理フック（プレミアムプラン対応版）
+ * アプリケーション全体の状態管理フック（プレミアムプラン対応版・最大5校比較対応）
  */
 export const useAppState = () => {
   // Firebaseからデータを取得
@@ -225,7 +225,7 @@ export const useAppState = () => {
   };
 
   /**
-   * 比較リストに追加（プレミアム制限付き）
+   * 比較リストに追加（プレミアム制限付き・最大5校対応）
    */
   const addToCompare = (university) => {
     if (!canUsePremiumFeature('comparison')) {
@@ -234,11 +234,11 @@ export const useAppState = () => {
     }
 
     if (!compareList.some(uni => uni.id === university.id)) {
-      if (compareList.length < 3) {
+      if (compareList.length < 5) { // 3から5に変更
         setCompareList([...compareList, university]);
         return true;
       } else {
-        alert("比較は最大3校までです。");
+        alert("比較は最大5校までです。"); // メッセージも更新
         return false;
       }
     }
