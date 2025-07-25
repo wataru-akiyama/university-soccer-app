@@ -1,6 +1,6 @@
-// src/components/BottomNavigation.jsx - プレミアム対応版
+// src/components/BottomNavigation.jsx - 動画タブ追加版
 import React from 'react';
-import { Search, UserCircle, BarChart2, Lock } from 'lucide-react';
+import { Search, UserCircle, BarChart2, Lock, Play } from 'lucide-react';
 
 const BottomNavigation = ({ 
   currentView,
@@ -26,10 +26,20 @@ const BottomNavigation = ({
 
   const tabs = [
     {
+      id: 'videos',
+      icon: Play,
+      label: '動画ライブラリ',
+      shortLabel: '動画',
+      badge: null,
+      badgeColor: 'bg-blue-500',
+      activeViews: ['videos'],
+      disabled: false
+    },
+    {
       id: 'list',
       icon: Search,
       label: '大学検索',
-      shortLabel: '検索', // 小画面用の短いラベル
+      shortLabel: '検索',
       badge: null,
       activeViews: ['list', 'details'],
       disabled: false
@@ -58,7 +68,7 @@ const BottomNavigation = ({
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-lg z-50">
-      <div className="flex justify-around items-center py-2 px-2 max-w-md mx-auto">
+      <div className="flex justify-around items-center py-2 px-1 max-w-md mx-auto">
         {tabs.map((tab) => {
           const Icon = tab.icon;
           const isActive = tab.activeViews.includes(currentView);
@@ -68,7 +78,7 @@ const BottomNavigation = ({
               key={tab.id}
               onClick={() => handleNavClick(tab.id)}
               disabled={tab.disabled}
-              className={`flex flex-col items-center justify-center py-1.5 px-2 rounded-lg transition-colors relative min-w-0 flex-1 ${
+              className={`flex flex-col items-center justify-center py-1.5 px-1.5 rounded-lg transition-colors relative min-w-0 flex-1 ${
                 isActive 
                   ? 'text-green-600' 
                   : tab.disabled
@@ -78,7 +88,7 @@ const BottomNavigation = ({
             >
               {/* アイコンとバッジ */}
               <div className="relative mb-1">
-                <Icon size={20} strokeWidth={isActive ? 2.5 : 2} />
+                <Icon size={18} strokeWidth={isActive ? 2.5 : 2} />
                 {tab.badge && !tab.disabled && (
                   <div className={`absolute -top-2 -right-2 ${tab.badgeColor} text-white text-xs rounded-full min-w-[16px] h-4 flex items-center justify-center font-medium px-1`}>
                     {tab.badge > 9 ? '9+' : tab.badge}

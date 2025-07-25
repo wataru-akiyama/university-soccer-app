@@ -1,4 +1,4 @@
-// src/hooks/useAppState.js - プレミアムプラン対応版（最大5校比較対応）
+// src/hooks/useAppState.js - プレミアムプラン対応版（最大5校比較対応・動画ビュー対応）
 
 import { useState, useEffect } from 'react';
 import useUniversitySearch from './useUniversitySearch';
@@ -7,7 +7,7 @@ import usePremiumPlan from './usePremiumPlan';
 import { userProfile } from '../data';
 
 /**
- * アプリケーション全体の状態管理フック（プレミアムプラン対応版・最大5校比較対応）
+ * アプリケーション全体の状態管理フック（プレミアムプラン対応版・最大5校比較対応・動画ビュー対応）
  */
 export const useAppState = () => {
   // Firebaseからデータを取得
@@ -67,6 +67,9 @@ export const useAppState = () => {
         switch (pageParam) {
           case 'search':
             setCurrentView('list');
+            break;
+          case 'videos':  // 新規追加
+            setCurrentView('videos');
             break;
           case 'portfolio':
             setCurrentView('portfolio');
@@ -202,6 +205,7 @@ export const useAppState = () => {
     // URLパラメータマッピング
     const pageMap = {
       'list': 'search',
+      'videos': 'videos',  // 新規追加
       'portfolio': 'portfolio',
       'compare': 'compare',
       'details': null // 詳細ページは別途処理
