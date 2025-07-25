@@ -1,13 +1,14 @@
-// src/components/ViewManager.jsx - 職業フィルター対応版
+// src/components/ViewManager.jsx - 動画ビュー対応版
 import React from 'react';
 import EnhancedPlayerPortfolio from './EnhancedPlayerPortfolio';
 import EnhancedUniversityDetails from './EnhancedUniversityDetails';
 import CompareView from './CompareView';
+import VideoLibraryView from './VideoLibraryView';
 import MultiSelectSearchForm from './MultiSelectSearchForm';
 import UniversityList from './UniversityList';
 
 /**
- * ViewManager - アプリケーションの現在のビューを管理するコンポーネント（職業フィルター対応版）
+ * ViewManager - アプリケーションの現在のビューを管理するコンポーネント（動画ビュー対応版）
  */
 const ViewManager = ({
   currentView,
@@ -68,6 +69,15 @@ const ViewManager = ({
   
   // 現在のビューに基づいてコンポーネントを返す
   switch (currentView) {
+    case 'videos':
+      return (
+        <VideoLibraryView 
+          onBack={() => handlers.changeView('list')}
+          isPremium={isPremium}
+          onUpgradeToPremium={handlers.upgradeToPremium}
+        />
+      );
+    
     case 'portfolio':
       return (
         <EnhancedPlayerPortfolio 
