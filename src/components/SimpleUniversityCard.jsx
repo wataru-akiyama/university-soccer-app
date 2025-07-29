@@ -111,10 +111,8 @@ const SimpleUniversityCard = ({
   const getPracticeLocationWithArea = () => {
     if (!university) return '';
     
-    // グラウンド住所から都道府県+市を抽出
-    const groundAddress = university.facilities?.ground_address || 
-                         university.soccer_club?.ground_address || 
-                         university.facilities?.address || '';
+    // グラウンド住所から都道府県+市を抽出（正しいパス）
+    const groundAddress = university.facilities?.ground_address || '';
     
     if (groundAddress) {
       // 住所から都道府県+市を抽出する正規表現
