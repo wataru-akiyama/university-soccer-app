@@ -909,15 +909,18 @@ const AdmissionTab = ({ university, isPremium, onUpgradeToPremium }) => (
           <div className="space-y-4">
             <div className="space-y-2 sm:space-y-0 sm:flex sm:items-center">
               <span className={`inline-block px-3 py-1 rounded-full text-sm font-medium ${
-                university.entry_conditions?.general_admission
-                  ? 'bg-purple-100 text-purple-800'
+                university.entry_conditions?.general_admission === '可'
+                ? 'bg-purple-100 text-purple-800'
+                : university.entry_conditions?.general_admission === '条件有'
+                  ? 'bg-yellow-100 text-yellow-800'
                   : 'bg-red-100 text-red-800'
-              }`}>
-                {university.entry_conditions?.general_admission ? "入部可能" : "入部不可"}
-              </span>
-              {!university.entry_conditions?.general_admission && (
-                <p className="text-gray-600 sm:ml-3">一般入部は受け付けていません</p>
-              )}
+            }`}>
+              {university.entry_conditions?.general_admission || '不可'}
+            </span>
+            
+            {university.entry_conditions?.general_admission === '不可' && (
+              <p className="text-gray-600 sm:ml-3">一般入部は受け付けていません</p>
+            )}
             </div>
             
             {/* 修正: 入部条件コメントを常に表示 */}
