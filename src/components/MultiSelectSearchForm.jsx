@@ -133,9 +133,9 @@ const MultiSelectSearchForm = ({
     if (generalAdmissionAvailable) {
       tags.push({
         id: 'general-admission',
-        label: '一般入部可',
+        label: '一般入部可能',
         type: 'generalAdmissionAvailable',
-        color: 'bg-gray-100 text-gray-800'
+        color: 'bg-blue-100 text-blue-800'
       });
     }
     
@@ -286,7 +286,7 @@ const MultiSelectSearchForm = ({
               checked={generalAdmissionAvailable}
               onChange={() => setGeneralAdmissionAvailable(!generalAdmissionAvailable)}
             />
-            <span className="text-sm sm:text-base">一般入部可</span>
+            <span className="text-sm sm:text-base">一般入部可能</span>
           </label>
         </div>
       </div>

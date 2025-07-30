@@ -115,7 +115,8 @@ const useUniversitySearch = (universities) => {
         
         // 一般入部フィルター（Firebase新形式対応）
         if (generalAdmissionAvailable) {
-          const allowsGeneral = university.entry_conditions?.general_admission;
+          const generalAdmission = university.entry_conditions?.general_admission;
+          const allowsGeneral = generalAdmission === '可' || generalAdmission === '条件有';
           if (!allowsGeneral) return false;
         }
         

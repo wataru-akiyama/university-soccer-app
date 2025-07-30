@@ -386,9 +386,15 @@ const SimpleUniversityCard = ({
             </span>
           )}
           
-          {(university.entry_conditions?.general_admission || !university.entry_conditions?.sports_recommend) && (
+          {university.entry_conditions?.general_admission === '可' && (
             <span className="bg-blue-50 text-blue-700 text-xs px-2 py-1 rounded-full border border-blue-100">
               一般入部可
+            </span>
+          )}
+
+          {university.entry_conditions?.general_admission === '条件有' && (
+            <span className="bg-yellow-50 text-yellow-700 text-xs px-2 py-1 rounded-full border border-yellow-100">
+              一般入部条件有
             </span>
           )}
         </div>
