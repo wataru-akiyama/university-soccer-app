@@ -1,8 +1,8 @@
-// src/hooks/useFirebaseData.js - ESLint警告修正済み完全版
+// src/hooks/useFirebaseData.js - テキスト型費用対応版
 import { useState, useEffect, useCallback } from 'react';
 
 /**
- * Firebaseから大学データを取得するカスタムフック
+ * Firebaseから大学データを取得するカスタムフック（費用をテキスト型として扱う）
  */
 export const useFirebaseData = () => {
   const [universities, setUniversities] = useState([]);
@@ -44,7 +44,7 @@ export const useFirebaseData = () => {
         throw new Error('不正なAPIレスポンス形式です。');
       }
 
-      // データの正規化処理
+      // データの正規化処理（費用はテキスト型として扱う）
       const universitiesData = data.data.map(uni => ({
         ...uni,
         id: parseInt(uni.id),
@@ -57,25 +57,28 @@ export const useFirebaseData = () => {
         },
         costs: {
           ...uni.costs,
-          total_annual_cost: parseInt(uni.costs?.total_annual_cost || 0),
+          // total_annual_costは削除（テキスト型では計算不可）
           university_costs: {
             ...uni.costs?.university_costs,
-            annual_tuition: parseInt(uni.costs?.university_costs?.annual_tuition || 0),
-            entrance_fee: parseInt(uni.costs?.university_costs?.entrance_fee || 0),
-            facility_fee: parseInt(uni.costs?.university_costs?.facility_fee || 0),
+            // 費用はテキストのまま保持
+            annual_tuition: uni.costs?.university_costs?.annual_tuition || '',
+            entrance_fee: uni.costs?.university_costs?.entrance_fee || '',
+            facility_fee: uni.costs?.university_costs?.facility_fee || '',
           },
           soccer_club_costs: {
             ...uni.costs?.soccer_club_costs,
-            monthly_club_fee: parseInt(uni.costs?.soccer_club_costs?.monthly_club_fee || 0),
-            equipment_cost: parseInt(uni.costs?.soccer_club_costs?.equipment_cost || 0),
-            camp_cost: parseInt(uni.costs?.soccer_club_costs?.camp_cost || 0),
-            travel_cost: parseInt(uni.costs?.soccer_club_costs?.travel_cost || 0),
+            // 費用はテキストのまま保持
+            monthly_club_fee: uni.costs?.soccer_club_costs?.monthly_club_fee || '',
+            equipment_cost: uni.costs?.soccer_club_costs?.equipment_cost || '',
+            camp_cost: uni.costs?.soccer_club_costs?.camp_cost || '',
+            travel_cost: uni.costs?.soccer_club_costs?.travel_cost || '',
           },
           living_costs: {
             ...uni.costs?.living_costs,
-            dorm_fee: parseInt(uni.costs?.living_costs?.dorm_fee || 0),
-            meal_cost: parseInt(uni.costs?.living_costs?.meal_cost || 0),
-            commute_cost: parseInt(uni.costs?.living_costs?.commute_cost || 0),
+            // 費用はテキストのまま保持
+            dorm_fee: uni.costs?.living_costs?.dorm_fee || '',
+            meal_cost: uni.costs?.living_costs?.meal_cost || '',
+            commute_cost: uni.costs?.living_costs?.commute_cost || '',
           }
         }
       }));

@@ -990,32 +990,20 @@ const CostsTab = ({ university, isPremium, onUpgradeToPremium }) => {
             <div>
               <div className="text-sm text-gray-600 mb-1">授業料</div>
               <div className="text-2xl font-bold text-gray-900">
-                {costs.university_costs?.annual_tuition 
-                  ? `${((costs.university_costs.annual_tuition) / 10000).toFixed(0)}万円`
-                  : "現在準備中"
-                }
+                {costs.university_costs?.annual_tuition || "現在準備中"}
               </div>
-              <div className="text-xs text-gray-500 mt-1">年額</div>
             </div>
             <div>
               <div className="text-sm text-gray-600 mb-1">入学金</div>
               <div className="text-2xl font-bold text-gray-900">
-                {costs.university_costs?.entrance_fee 
-                  ? `${((costs.university_costs.entrance_fee) / 10000).toFixed(0)}万円`
-                  : "現在準備中"
-                }
+                {costs.university_costs?.entrance_fee || "現在準備中"}
               </div>
-              <div className="text-xs text-gray-500 mt-1">入学時のみ</div>
             </div>
             <div>
               <div className="text-sm text-gray-600 mb-1">施設費</div>
               <div className="text-2xl font-bold text-gray-900">
-                {costs.university_costs?.facility_fee 
-                  ? `${((costs.university_costs.facility_fee) / 10000).toFixed(0)}万円`
-                  : "現在準備中"
-                }
+                {costs.university_costs?.facility_fee || "現在準備中"}
               </div>
-              <div className="text-xs text-gray-500 mt-1">年額</div>
             </div>
           </div>
         </div>
@@ -1031,50 +1019,23 @@ const CostsTab = ({ university, isPremium, onUpgradeToPremium }) => {
         
         {isPremium ? (
           <div className="border border-gray-200 p-6 rounded-lg">
-            <div className="space-y-6">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                <div>
-                  <div className="text-sm text-gray-600 mb-1">部費</div>
-                  <div className="text-2xl font-bold text-gray-900">
-                    {costs.soccer_club_costs?.monthly_club_fee 
-                      ? `月額${((costs.soccer_club_costs.monthly_club_fee) / 10000).toFixed(1)}万円`
-                      : "現在準備中"
-                    }
-                  </div>
-                  <div className="text-xs text-gray-500 mt-1">
-                    {costs.soccer_club_costs?.monthly_club_fee 
-                      ? `年額約${(((costs.soccer_club_costs.monthly_club_fee) * 12) / 10000).toFixed(0)}万円`
-                      : ""
-                    }
-                  </div>
-                </div>
-                <div>
-                  <div className="text-sm text-gray-600 mb-1">チームウェア代</div>
-                  <div className="text-2xl font-bold text-gray-900">
-                    {costs.soccer_club_costs?.equipment_cost 
-                      ? `年${((costs.soccer_club_costs.equipment_cost) / 10000).toFixed(0)}万円`
-                      : "現在準備中"
-                    }
-                  </div>
-                  <div className="text-xs text-gray-500 mt-1">ユニフォーム・練習着等</div>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+              <div>
+                <div className="text-sm text-gray-600 mb-1">部費</div>
+                <div className="text-2xl font-bold text-gray-900">
+                  {costs.soccer_club_costs?.monthly_club_fee || "現在準備中"}
                 </div>
               </div>
-              
-              <div className="pt-4 border-t border-gray-200">
-                <div className="mb-3">
-                  <h4 className="font-medium text-gray-900 mb-2 flex items-center">
-                    合宿・遠征費
-                    <span className="ml-2 text-base font-semibold text-purple-700">
-                      {costs.soccer_club_costs?.camp_cost 
-                        ? `年約${((costs.soccer_club_costs.camp_cost) / 10000).toFixed(0)}万円`
-                        : "現在準備中"
-                      }
-                    </span>
-                  </h4>
-                  {/* 修正: 存在しないcamp_travel_descriptionを削除し、一般的な説明に変更 */}
-                  <p className="text-gray-700 leading-relaxed">
-                    夏季・春季合宿、リーグ戦遠征、各種大会参加費等が含まれます。詳細は大学にお問い合わせください。
-                  </p>
+              <div>
+                <div className="text-sm text-gray-600 mb-1">チームウェア代</div>
+                <div className="text-2xl font-bold text-gray-900">
+                  {costs.soccer_club_costs?.equipment_cost || "現在準備中"}
+                </div>
+              </div>
+              <div>
+                <div className="text-sm text-gray-600 mb-1">合宿・遠征費</div>
+                <div className="text-2xl font-bold text-gray-900">
+                  {costs.soccer_club_costs?.camp_cost || "現在準備中"}
                 </div>
               </div>
             </div>
@@ -1090,9 +1051,13 @@ const CostsTab = ({ university, isPremium, onUpgradeToPremium }) => {
                 <div className="text-gray-600 mb-3">
                   月額部費、チームウェア代、合宿・遠征費の詳細はプレミアム限定情報です
                 </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                   <div className="border border-gray-200 p-3 rounded">
-                    <div className="text-sm text-gray-500">部費・ウェア代</div>
+                    <div className="text-sm text-gray-500">部費</div>
+                    <div className="text-lg font-semibold text-gray-400">●●万円</div>
+                  </div>
+                  <div className="border border-gray-200 p-3 rounded">
+                    <div className="text-sm text-gray-500">チームウェア代</div>
                     <div className="text-lg font-semibold text-gray-400">●●万円</div>
                   </div>
                   <div className="border border-gray-200 p-3 rounded">
@@ -1106,7 +1071,7 @@ const CostsTab = ({ university, isPremium, onUpgradeToPremium }) => {
         )}
       </div>
 
-      {/* 特待生制度 - プレミアム限定（修正版） */}
+      {/* 特待生制度 - プレミアム限定 */}
       {university.entry_conditions?.scholarship_available ? (
         <div>
           <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
@@ -1198,7 +1163,6 @@ const CostsTab = ({ university, isPremium, onUpgradeToPremium }) => {
           <li>• 特待生制度により実質負担額が軽減される場合があります</li>
           <li>• 遠征や合宿の回数により年間費用は変動します</li>
           <li>• 教材費や保険料等は含まれていません</li>
-          <li>• チームウェア代には練習着・試合用ユニフォーム・トレーニングシューズ等が含まれます</li>
           <li>• サッカー部費用と特待生制度の詳細はプレミアムプランでご確認いただけます</li>
         </ul>
       </div>
