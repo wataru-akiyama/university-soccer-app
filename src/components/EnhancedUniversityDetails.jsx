@@ -182,14 +182,14 @@ const EnhancedUniversityDetails = ({
   
   if (!university) return null;
 
-  // タブ構成
+  // タブ構成 - reviewsタブを無効化
   const tabs = [
     { id: 'overview', label: '概要', icon: Info },
     { id: 'admission', label: '入部', icon: GraduationCap },
     { id: 'costs', label: '費用', icon: DollarSign },
     { id: 'facilities', label: '施設', icon: Building },
     { id: 'careers', label: '進路', icon: Briefcase },
-    { id: 'reviews', label: '口コミ', icon: MessageSquare }
+    { id: 'reviews', label: '口コミ（開発中）', icon: MessageSquare, disabled: true }
   ];
 
   // プレミアム制限付きアクションハンドラー
@@ -409,15 +409,19 @@ const EnhancedUniversityDetails = ({
           >
             {tabs.map((tab) => {
               const Icon = tab.icon;
+              const isDisabled = tab.disabled;
               return (
                 <button
                   key={tab.id}
+                  disabled={isDisabled}
                   className={`flex-shrink-0 flex items-center justify-center px-4 lg:px-6 py-3 lg:py-4 text-sm font-medium transition-colors whitespace-nowrap ${
-                    activeTab === tab.id
-                      ? 'text-green-600 border-b-2 border-green-600 bg-green-50'
-                      : 'text-gray-500 hover:text-gray-700'
+                    isDisabled
+                      ? 'text-gray-400 cursor-not-allowed opacity-60'
+                      : activeTab === tab.id
+                        ? 'text-green-600 border-b-2 border-green-600 bg-green-50'
+                        : 'text-gray-500 hover:text-gray-700'
                   }`}
-                  onClick={() => setActiveTab(tab.id)}
+                  onClick={() => !isDisabled && setActiveTab(tab.id)}
                 >
                   <Icon size={18} className="mr-2" />
                   <span>{tab.label}</span>
@@ -472,13 +476,6 @@ const EnhancedUniversityDetails = ({
           )}
           {activeTab === 'careers' && (
             <CareersTab 
-              university={university} 
-              isPremium={isPremium} 
-              onUpgradeToPremium={onUpgradeToPremium}
-            />
-          )}
-          {activeTab === 'reviews' && (
-            <ReviewsTab 
               university={university} 
               isPremium={isPremium} 
               onUpgradeToPremium={onUpgradeToPremium}
@@ -578,7 +575,7 @@ const OverviewTab = ({ university, isPremium, onUpgradeToPremium }) => {
       {
         icon: Home,
         label: "コート数",
-        value: soccerClub.soccer_field_count || 0, // 修正: facilitiesから削除
+        value: soccerClub.soccer_field_count || 0,
         unit: "面",
         iconColor: "text-purple-600"
       }
@@ -1198,7 +1195,6 @@ const FacilitiesTab = ({ university, isPremium, onUpgradeToPremium }) => {
               <div>
                 <p className="text-sm text-gray-600 mb-1">サッカーコート数</p>
                 <p className="font-medium text-gray-900 text-lg">
-                  {/* 修正: facilitiesから削除 */}
                   {soccerClub.soccer_field_count || "現在準備中"}
                   {soccerClub.soccer_field_count && "面"}
                 </p>
@@ -1455,269 +1451,6 @@ const CareersTab = ({ university, isPremium, onUpgradeToPremium }) => {
           <li>• 詳細な進路状況は大学キャリアセンターにお問い合わせください</li>
           <li>• サッカー部独自の進路支援については部へ直接お問い合わせください</li>
           <li>• 個別の進路相談については、大学説明会やオープンキャンパスをご利用ください</li>
-        </ul>
-      </div>
-    </div>
-  );
-};
-
-// 口コミ・評判タブコンポーネント - プレミアム制限対応版
-const ReviewsTab = ({ university, isPremium, onUpgradeToPremium }) => {
-  const reviews = university.reviews || {};
-  
-  return (
-    <div className="space-y-8">
-      {/* 現役部員の声 - コメント部分のみプレミアム限定 */}
-      <div>
-        <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
-          <MessageSquare size={18} className="text-blue-600 mr-2" />
-          現役部員の声
-          {!isPremium && <PremiumBadge className="ml-2" />}
-        </h3>
-        
-        <div className="border border-gray-200 p-6 rounded-lg">
-          <div className="space-y-6">
-            {reviews.student_reviews && reviews.student_reviews.length > 0 ? (
-              reviews.student_reviews.map((review, index) => (
-                <div key={index} className={`${reviews.student_reviews.length > 1 ? 'pb-6 border-b border-gray-200 last:border-b-0 last:pb-0' : ''}`}>
-                  {/* 記入者情報とサブタイトル - 常に表示 */}
-                  <div className="flex justify-between items-start mb-3">
-                    <div className="flex items-center space-x-2">
-                      <span className="text-sm font-medium text-blue-800">{review.grade || "現役部員"}</span>
-                      <span className="text-sm text-blue-600">{review.position || ""}</span>
-                    </div>
-                    <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">
-                      {review.category || "練習環境について"}
-                    </span>
-                  </div>
-                  
-                  {/* コメント部分 - プレミアム制限 */}
-                  {isPremium ? (
-                    <p className="text-gray-700 leading-relaxed">
-                      {review.review || "現在準備中"}
-                    </p>
-                  ) : (
-                    <div className="relative">
-                      <MaskedContent 
-                        reason="口コミの詳細内容"
-                        onUpgradeClick={onUpgradeToPremium}
-                        showPreview={true}
-                      >
-                        <p className="text-gray-700 leading-relaxed">
-                          {review.review || "現在準備中"}
-                        </p>
-                      </MaskedContent>
-                    </div>
-                  )}
-                </div>
-              ))
-            ) : (
-              <>
-                <div className="pb-6 border-b border-gray-200">
-                  {/* サンプル1 */}
-                  <div className="flex justify-between items-start mb-3">
-                    <div className="flex items-center space-x-2">
-                      <span className="text-sm font-medium text-blue-800">3年生</span>
-                      <span className="text-sm text-blue-600">MF</span>
-                    </div>
-                    <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">
-                      練習環境について
-                    </span>
-                  </div>
-                  
-                  {isPremium ? (
-                    <p className="text-gray-700 leading-relaxed">監督やコーチの指導が丁寧で、技術面だけでなく人間性も重視してくれます。練習は厳しいですが、仲間との絆も深まり充実した大学生活を送れています。</p>
-                  ) : (
-                    <MaskedContent 
-                      reason="口コミの詳細内容"
-                      onUpgradeClick={onUpgradeToPremium}
-                      showPreview={true}
-                    >
-                      <p className="text-gray-700 leading-relaxed">監督やコーチの指導が丁寧で、技術面だけでなく人間性も重視してくれます。練習は厳しいですが、仲間との絆も深まり充実した大学生活を送れています。</p>
-                    </MaskedContent>
-                  )}
-                </div>
-                
-                <div>
-                  {/* サンプル2 */}
-                  <div className="flex justify-between items-start mb-3">
-                    <div className="flex items-center space-x-2">
-                      <span className="text-sm font-medium text-blue-800">2年生</span>
-                      <span className="text-sm text-blue-600">DF</span>
-                    </div>
-                    <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">
-                      寮生活について
-                    </span>
-                  </div>
-                  
-                  {isPremium ? (
-                    <p className="text-gray-700 leading-relaxed">寮生活では先輩後輩の縦の関係だけでなく、同期との横のつながりも強くなりました。共同生活で規律も身につき、サッカー以外の面でも成長できる環境です。</p>
-                  ) : (
-                    <MaskedContent 
-                      reason="口コミの詳細内容"
-                      onUpgradeClick={onUpgradeToPremium}
-                      showPreview={true}
-                    >
-                      <p className="text-gray-700 leading-relaxed">寮生活では先輩後輩の縦の関係だけでなく、同期との横のつながりも強くなりました。共同生活で規律も身につき、サッカー以外の面でも成長できる環境です。</p>
-                    </MaskedContent>
-                  )}
-                </div>
-              </>
-            )}
-          </div>
-        </div>
-      </div>
-
-      {/* 保護者の声 - コメント部分のみプレミアム限定 */}
-      <div>
-        <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
-          <Users size={18} className="text-green-600 mr-2" />
-          保護者の声
-          {!isPremium && <PremiumBadge className="ml-2" />}
-        </h3>
-        
-        <div className="border border-gray-200 p-6 rounded-lg">
-          <div className="space-y-6">
-            {reviews.parent_reviews && reviews.parent_reviews.length > 0 ? (
-              reviews.parent_reviews.map((review, index) => (
-                <div key={index} className={`${reviews.parent_reviews.length > 1 ? 'pb-6 border-b border-gray-200 last:border-b-0 last:pb-0' : ''}`}>
-                  {/* 記入者情報とサブタイトル - 常に表示 */}
-                  <div className="flex justify-between items-start mb-3">
-                    <span className="text-sm font-medium text-green-800">保護者</span>
-                    <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">
-                      {review.category || "費用について"}
-                    </span>
-                  </div>
-                  
-                  {/* コメント部分 - プレミアム制限 */}
-                  {isPremium ? (
-                    <p className="text-gray-700 leading-relaxed">
-                      {review.review || "現在準備中"}
-                    </p>
-                  ) : (
-                    <MaskedContent 
-                      reason="口コミの詳細内容"
-                      onUpgradeClick={onUpgradeToPremium}
-                      showPreview={true}
-                    >
-                      <p className="text-gray-700 leading-relaxed">
-                        {review.review || "現在準備中"}
-                      </p>
-                    </MaskedContent>
-                  )}
-                </div>
-              ))
-            ) : (
-              <div>
-                {/* サンプル保護者の声 */}
-                <div className="flex justify-between items-start mb-3">
-                  <span className="text-sm font-medium text-green-800">保護者</span>
-                  <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">
-                    費用について
-                  </span>
-                </div>
-                
-                {isPremium ? (
-                  <p className="text-gray-700 leading-relaxed">費用は決して安くありませんが、息子の成長を見ていると価値のある投資だと感じています。指導者の方々も親身に相談に乗ってくれて、安心して任せられます。</p>
-                ) : (
-                  <MaskedContent 
-                    reason="口コミの詳細内容"
-                    onUpgradeClick={onUpgradeToPremium}
-                    showPreview={true}
-                  >
-                    <p className="text-gray-700 leading-relaxed">費用は決して安くありませんが、息子の成長を見ていると価値のある投資だと感じています。指導者の方々も親身に相談に乗ってくれて、安心して任せられます。</p>
-                  </MaskedContent>
-                )}
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
-
-      {/* 卒業生の声 - コメント部分のみプレミアム限定 */}
-      <div>
-        <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
-          <GraduationCap size={18} className="text-purple-600 mr-2" />
-          卒業生の声
-          {!isPremium && <PremiumBadge className="ml-2" />}
-        </h3>
-        
-        <div className="border border-gray-200 p-6 rounded-lg">
-          <div className="space-y-6">
-            {reviews.graduate_reviews && reviews.graduate_reviews.length > 0 ? (
-              reviews.graduate_reviews.map((review, index) => (
-                <div key={index} className={`${reviews.graduate_reviews.length > 1 ? 'pb-6 border-b border-gray-200 last:border-b-0 last:pb-0' : ''}`}>
-                  {/* 記入者情報とサブタイトル - 常に表示 */}
-                  <div className="flex justify-between items-start mb-3">
-                    <div className="flex items-center space-x-2">
-                      <span className="text-sm font-medium text-purple-800">
-                        {review.graduation_year || "卒業生"}
-                      </span>
-                      <span className="text-sm text-purple-600">
-                        {review.current_status || ""}
-                      </span>
-                    </div>
-                    <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">
-                      {review.category || "進路について"}
-                    </span>
-                  </div>
-                  
-                  {/* コメント部分 - プレミアム制限 */}
-                  {isPremium ? (
-                    <p className="text-gray-700 leading-relaxed">
-                      {review.review || "現在準備中"}
-                    </p>
-                  ) : (
-                    <MaskedContent 
-                      reason="口コミの詳細内容"
-                      onUpgradeClick={onUpgradeToPremium}
-                      showPreview={true}
-                    >
-                      <p className="text-gray-700 leading-relaxed">
-                        {review.review || "現在準備中"}
-                      </p>
-                    </MaskedContent>
-                  )}
-                </div>
-              ))
-            ) : (
-              <div>
-                {/* サンプル卒業生の声 */}
-                <div className="flex justify-between items-start mb-3">
-                  <div className="flex items-center space-x-2">
-                    <span className="text-sm font-medium text-purple-800">卒業生</span>
-                  </div>
-                  <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">
-                    進路について
-                  </span>
-                </div>
-                
-                {isPremium ? (
-                  <p className="text-gray-700 leading-relaxed">4年間サッカー部で学んだチームワークや責任感は、社会人になった今でも非常に役立っています。厳しい環境でしたが、人間的に大きく成長できました。</p>
-                ) : (
-                  <MaskedContent 
-                    reason="口コミの詳細内容"
-                    onUpgradeClick={onUpgradeToPremium}
-                    showPreview={true}
-                  >
-                    <p className="text-gray-700 leading-relaxed">4年間サッカー部で学んだチームワークや責任感は、社会人になった今でも非常に役立っています。厳しい環境でしたが、人間的に大きく成長できました。</p>
-                  </MaskedContent>
-                )}
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
-
-      {/* 注意事項 */}
-      <div className="border border-blue-200 border-l-4 p-4 rounded">
-        <h4 className="font-semibold text-gray-900 mb-2">ご注意</h4>
-        <ul className="text-sm text-gray-700 space-y-1">
-          <li>• 口コミは個人の感想・体験談であり、大学の公式見解ではありません</li>
-          <li>• 投稿内容の真偽について当サイトでは責任を負いかねます</li>
-          <li>• 最新の情報については直接大学にお問い合わせください</li>
-          <li>• 不適切な投稿は予告なく削除する場合があります</li>
-          <li>• 口コミの詳細内容はプレミアムプランでご確認いただけます</li>
         </ul>
       </div>
     </div>
