@@ -989,19 +989,19 @@ const CostsTab = ({ university, isPremium, onUpgradeToPremium }) => {
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
             <div>
               <div className="text-sm text-gray-600 mb-1">授業料</div>
-              <div className="text-2xl font-bold text-gray-900">
+              <div className="font-medium text-gray-900 text-lg">
                 {costs.university_costs?.annual_tuition || "現在準備中"}
               </div>
             </div>
             <div>
               <div className="text-sm text-gray-600 mb-1">入学金</div>
-              <div className="text-2xl font-bold text-gray-900">
+              <div className="font-medium text-gray-900 text-lg">
                 {costs.university_costs?.entrance_fee || "現在準備中"}
               </div>
             </div>
             <div>
               <div className="text-sm text-gray-600 mb-1">施設費</div>
-              <div className="text-2xl font-bold text-gray-900">
+              <div className="font-medium text-gray-900 text-lg">
                 {costs.university_costs?.facility_fee || "現在準備中"}
               </div>
             </div>
@@ -1022,19 +1022,19 @@ const CostsTab = ({ university, isPremium, onUpgradeToPremium }) => {
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
               <div>
                 <div className="text-sm text-gray-600 mb-1">部費</div>
-                <div className="text-2xl font-bold text-gray-900">
+                <div className="font-medium text-gray-900 text-lg">
                   {costs.soccer_club_costs?.monthly_club_fee || "現在準備中"}
                 </div>
               </div>
               <div>
                 <div className="text-sm text-gray-600 mb-1">チームウェア代</div>
-                <div className="text-2xl font-bold text-gray-900">
+                <div className="font-medium text-gray-900 text-lg">
                   {costs.soccer_club_costs?.equipment_cost || "現在準備中"}
                 </div>
               </div>
               <div>
                 <div className="text-sm text-gray-600 mb-1">合宿・遠征費</div>
-                <div className="text-2xl font-bold text-gray-900">
+                <div className="font-medium text-gray-900 text-lg">
                   {costs.soccer_club_costs?.camp_cost || "現在準備中"}
                 </div>
               </div>
@@ -1289,13 +1289,13 @@ const FacilitiesTab = ({ university, isPremium, onUpgradeToPremium }) => {
         
         {isPremium ? (
           <div className="border border-gray-200 p-6 rounded-lg">
-            <div className="space-y-4">
+            <div className="space-y-3">
               {(() => {
                 // 修正: 簡素化された寮情報表示
                 const dormStatus = soccerClub.dorm_details?.soccer_club_dorm || "なし";
                 
                 return (
-                  <div className="space-y-4">
+                  <div className="space-y-3">
                     <div className="flex items-center space-x-3">
                       {dormStatus === "なし" ? (
                         <>
@@ -1312,28 +1312,8 @@ const FacilitiesTab = ({ university, isPremium, onUpgradeToPremium }) => {
                       )}
                     </div>
                     
-                    {dormStatus === "なし" ? (
-                      <div className="border border-blue-200 p-4 rounded-lg">
-                        <p className="text-blue-800 text-sm font-medium mb-1">住環境について</p>
-                        <p className="text-blue-700 text-sm leading-relaxed">
-                          部員寮はありませんが、大学近辺には学生向けアパートや下宿が充実しています。
-                        </p>
-                      </div>
-                    ) : (
-                      <div className="border border-green-200 p-4 rounded-lg">
-                        <p className="text-green-800 text-sm font-medium mb-1">寮について</p>
-                        <p className="text-green-700 text-sm leading-relaxed">
-                          {dormStatus === "あり（全寮制）" 
-                            ? "全部員が寮生活を送る全寮制となっています。"
-                            : "サッカー部専用の寮があります。"
-                          }
-                          詳細については大学サッカー部にお問い合わせください。
-                        </p>
-                      </div>
-                    )}
-                    
                     {soccerClub.dorm_details?.dorm_notes && (
-                      <div>
+                      <div className="pt-2">
                         <p className="text-sm text-gray-600 mb-2">寮に関する詳細</p>
                         <p className="text-gray-700 leading-relaxed">
                           {soccerClub.dorm_details.dorm_notes}
@@ -1352,7 +1332,7 @@ const FacilitiesTab = ({ university, isPremium, onUpgradeToPremium }) => {
             showPreview={true}
           >
             <div className="border border-gray-200 p-6 rounded-lg">
-              <div className="space-y-4">
+              <div className="space-y-3">
                 <div className="flex items-center space-x-3">
                   {soccerClub.dorm_details?.soccer_club_dorm === "なし" ? (
                     <>
@@ -1368,7 +1348,7 @@ const FacilitiesTab = ({ university, isPremium, onUpgradeToPremium }) => {
                     </>
                   )}
                 </div>
-                <div className="text-gray-600">
+                <div className="text-gray-600 text-sm">
                   寮の詳細情報はプレミアム限定です
                 </div>
               </div>
