@@ -1,0 +1,559 @@
+[
+  {
+    "id": 1,
+    "university_name": "北海道教育大学岩見沢",
+    "homepage_url": "https://gankyosoccer.com/",
+    "main_faculties": [
+      "芸術・スポーツ文化学科"
+    ],
+    "location": "北海道",
+    "area": "北海道",
+    "academic_rank": "F：国公立",
+    "genres": [
+      "B：自分がどこまで上を目指せるか挑戦したい"
+    ],
+    "soccer_club": {
+      "league": "北海道1部",
+      "coach_name": "安部 久貴",
+      "total_members": 53,
+      "members_by_year": {
+        "fourth_year": 13,
+        "third_year": 12,
+        "second_year": 14,
+        "first_year": 14
+      },
+      "j_league_nominees_2022": 0,
+      "j_league_nominees_2023": 0,
+      "j_league_nominees_2024": 0,
+      "j_league_nominees_2022_24": 0,
+      "denso_cup_2024": 6,
+      "denso_cup_2024_25": 9,
+      "soccer_field_count": 1,
+      "dorm_available": true,
+      "dorm_details": {
+        "university_dorm": true,
+        "soccer_club_dorm": false,
+        "general_dorm": false,
+        "dorm_notes": ""
+      },
+      "sports_scholarship": true,
+      "qualifications": []
+    },
+    "facilities": {
+      "ground_name": "北海道教育大学岩見沢校人工芝グラウンド",
+      "ground_address": "北海道岩見沢市緑が丘2丁目34",
+      "ground_notes": "夜間照明あり。陸上競技場インフィールドを2014年にクレイから人工芝に改修。",
+      "soccer_field_count": 1,
+      "facility_note": "夜間照明あり。陸上競技場インフィールドを2014年にクレイから人工芝に改修。"
+    },
+    "entry_conditions": {
+      "sports_recommend": true,
+      "recommend_criteria": "評定3.8以上",
+      "recommend_people_count": "5",
+      "recommend_criteria_detail": "",
+      "selection": false,
+      "selection_period": "",
+      "general_admission": true,
+      "general_conditions": "高校3年生時に練習参加を推奨"
+    },
+    "costs": {
+      "university_costs": {
+        "annual_tuition": 535800,
+        "entrance_fee": 282000,
+        "facility_fee": 0
+      },
+      "soccer_club_costs": {
+        "monthly_club_fee": 0,
+        "equipment_cost": 0,
+        "camp_cost": 0,
+        "travel_cost": 0
+      },
+      "living_costs": {
+        "dorm_fee": 45000,
+        "meal_cost": 30000,
+        "commute_cost": 5000
+      },
+      "total_annual_cost": 0
+    },
+    "key_features": [
+      "J内定者0名（過去3年）",
+      "寮あり",
+      "スポーツ推薦あり",
+      "F：国公立"
+    ],
+    "career_info": {
+      "university_career_paths": "",
+      "soccer_club_career_paths": "",
+      "career_paths": [
+        {
+          "category": "Jリーグ関連",
+          "percentage": 0
+        },
+        {
+          "category": "指導者・教員",
+          "percentage": 35
+        },
+        {
+          "category": "一般企業",
+          "percentage": 65
+        }
+      ]
+    },
+    "extended_data": {
+      "playmaker_comment": "教員養成の名門大学。教育大学ということもあり文武両道を実践しながら全国大会の常連となっている。真面目な選手が多くひたむきにハードワークするサッカーをベースにして近年は全国大会でもベスト8に入るなど、躍進が目立つ。国立大学ということもあり、スポーツ推薦枠は少ないが教員を目指している選手は要チェックの大学。",
+      "last_updated": "2025-07-09T07:46:28.098Z",
+      "data_version": "v2_45columns"
+    },
+    "status": "active",
+    "data_source": "csv_import_v2",
+    "created_at": {},
+    "updated_at": {}
+  },
+  {
+    "id": 2,
+    "university_name": "札幌大学",
+    "homepage_url": "https://www.sapporo-u.ac.jp/campuslife/circle/physical/soccer.html",
+    "main_faculties": [
+      "経済学部",
+      "経営学部等"
+    ],
+    "location": "北海道",
+    "area": "北海道",
+    "academic_rank": "D：それ以外の私大",
+    "genres": [
+      "B：自分がどこまで上を目指せるか挑戦したい"
+    ],
+    "soccer_club": {
+      "league": "北海道1部",
+      "coach_name": "河端 和哉",
+      "total_members": 83,
+      "members_by_year": {
+        "fourth_year": 16,
+        "third_year": 20,
+        "second_year": 22,
+        "first_year": 25
+      },
+      "j_league_nominees_2022": 1,
+      "j_league_nominees_2023": 2,
+      "j_league_nominees_2024": 3,
+      "j_league_nominees_2022_24": 6,
+      "denso_cup_2024": 11,
+      "denso_cup_2024_25": 7,
+      "soccer_field_count": 1,
+      "dorm_available": false,
+      "dorm_details": {
+        "university_dorm": false,
+        "soccer_club_dorm": false,
+        "general_dorm": false,
+        "dorm_notes": ""
+      },
+      "sports_scholarship": true,
+      "qualifications": []
+    },
+    "facilities": {
+      "ground_name": "札幌大学サッカー場",
+      "ground_address": "北海道札幌市豊平区西岡2条7丁目1",
+      "ground_notes": "",
+      "soccer_field_count": 1,
+      "facility_note": ""
+    },
+    "entry_conditions": {
+      "sports_recommend": true,
+      "recommend_criteria": "評定3.5以上",
+      "recommend_people_count": "20",
+      "recommend_criteria_detail": "全国大会出場/都道府県大会ベスト8",
+      "selection": true,
+      "selection_period": "夏",
+      "general_admission": false,
+      "general_conditions": "練習参加 or セレクションで入試前に合格必要"
+    },
+    "costs": {
+      "university_costs": {
+        "annual_tuition": 0,
+        "entrance_fee": 0,
+        "facility_fee": 0
+      },
+      "soccer_club_costs": {
+        "monthly_club_fee": 0,
+        "equipment_cost": 0,
+        "camp_cost": 0,
+        "travel_cost": 0
+      },
+      "living_costs": {
+        "dorm_fee": 0,
+        "meal_cost": 30000,
+        "commute_cost": 15000
+      },
+      "total_annual_cost": 0
+    },
+    "key_features": [
+      "J内定者6名（過去3年）",
+      "寮なし・通学制",
+      "スポーツ推薦あり",
+      "D：それ以外の私大"
+    ],
+    "career_info": {
+      "university_career_paths": "",
+      "soccer_club_career_paths": "",
+      "career_paths": [
+        {
+          "category": "Jリーグ関連",
+          "percentage": 12
+        },
+        {
+          "category": "指導者・教員",
+          "percentage": 35
+        },
+        {
+          "category": "一般企業",
+          "percentage": 53
+        }
+      ]
+    },
+    "extended_data": {
+      "playmaker_comment": "2018年からOBであり元Jリーガーの河端氏を監督として招聘。全国大会の常連となっているが近年は勝ち上がれていない。力がある選手が多く、デンソーにも多数選手が候補として選出され、実際に出場している。「北海道のサッカー王国を札幌大学に作ろう」を合言葉に日本一を目指して活動している。チームの特徴としてはボールを大事にしてしっかり繋ぎながら相手を崩していくサッカーが特徴的。",
+      "last_updated": "2025-07-09T07:46:28.098Z",
+      "data_version": "v2_45columns"
+    },
+    "status": "active",
+    "data_source": "csv_import_v2",
+    "created_at": {},
+    "updated_at": {}
+  },
+  {
+    "id": 3,
+    "university_name": "東海大学札幌校舎",
+    "homepage_url": "https://www.footballnavi.jp/tokaisoccer_sp/",
+    "main_faculties": [
+      "国際文化学部",
+      "生物学部"
+    ],
+    "location": "北海道",
+    "area": "北海道",
+    "academic_rank": "D：それ以外の私大",
+    "genres": [
+      "C：チームと一緒にカテゴリー・地域内での立ち位置を上げていきたい"
+    ],
+    "soccer_club": {
+      "league": "北海道1部",
+      "coach_name": "菅野　学",
+      "total_members": 58,
+      "members_by_year": {
+        "fourth_year": 10,
+        "third_year": 10,
+        "second_year": 17,
+        "first_year": 21
+      },
+      "j_league_nominees_2022": 0,
+      "j_league_nominees_2023": 0,
+      "j_league_nominees_2024": 0,
+      "j_league_nominees_2022_24": 0,
+      "denso_cup_2024": 2,
+      "denso_cup_2024_25": 2,
+      "soccer_field_count": 1,
+      "dorm_available": false,
+      "dorm_details": {
+        "university_dorm": false,
+        "soccer_club_dorm": false,
+        "general_dorm": false,
+        "dorm_notes": ""
+      },
+      "sports_scholarship": false,
+      "qualifications": []
+    },
+    "facilities": {
+      "ground_name": "東海大学札幌キャンパスサッカー場",
+      "ground_address": "北海道札幌市南区南沢5条1-1-1",
+      "ground_notes": "練習は学校グラウンド(土)や近隣施設を利用",
+      "soccer_field_count": 1,
+      "facility_note": "練習は学校グラウンド(土)や近隣施設を利用"
+    },
+    "entry_conditions": {
+      "sports_recommend": false,
+      "recommend_criteria": "",
+      "recommend_people_count": "",
+      "recommend_criteria_detail": "",
+      "selection": false,
+      "selection_period": "",
+      "general_admission": false,
+      "general_conditions": ""
+    },
+    "costs": {
+      "university_costs": {
+        "annual_tuition": 0,
+        "entrance_fee": 0,
+        "facility_fee": 0
+      },
+      "soccer_club_costs": {
+        "monthly_club_fee": 0,
+        "equipment_cost": 0,
+        "camp_cost": 0,
+        "travel_cost": 0
+      },
+      "living_costs": {
+        "dorm_fee": 0,
+        "meal_cost": 30000,
+        "commute_cost": 15000
+      },
+      "total_annual_cost": 0
+    },
+    "key_features": [
+      "J内定者0名（過去3年）",
+      "寮なし・通学制",
+      "スポーツ推薦なし",
+      "D：それ以外の私大"
+    ],
+    "career_info": {
+      "university_career_paths": "",
+      "soccer_club_career_paths": "",
+      "career_paths": [
+        {
+          "category": "Jリーグ関連",
+          "percentage": 0
+        },
+        {
+          "category": "指導者・教員",
+          "percentage": 35
+        },
+        {
+          "category": "一般企業",
+          "percentage": 65
+        }
+      ]
+    },
+    "extended_data": {
+      "playmaker_comment": "",
+      "last_updated": "2025-07-09T07:46:28.098Z",
+      "data_version": "v2_45columns"
+    },
+    "status": "active",
+    "data_source": "csv_import_v2",
+    "created_at": {},
+    "updated_at": {}
+  },
+  {
+    "id": 4,
+    "university_name": "北海道大学",
+    "homepage_url": "https://hokkaidouniv-football.com/",
+    "main_faculties": [
+      "法学部",
+      "経済学部",
+      "教育学部",
+      "水産学部",
+      "工学部 他"
+    ],
+    "location": "北海道",
+    "area": "北海道",
+    "academic_rank": "F：国公立",
+    "genres": [
+      "D：学生主体の活動でいろんな経験をしたい"
+    ],
+    "soccer_club": {
+      "league": "北海道1部",
+      "coach_name": "学生監督",
+      "total_members": 66,
+      "members_by_year": {
+        "fourth_year": 13,
+        "third_year": 17,
+        "second_year": 10,
+        "first_year": 26
+      },
+      "j_league_nominees_2022": 0,
+      "j_league_nominees_2023": 0,
+      "j_league_nominees_2024": 0,
+      "j_league_nominees_2022_24": 0,
+      "denso_cup_2024": 0,
+      "denso_cup_2024_25": 0,
+      "soccer_field_count": 1,
+      "dorm_available": false,
+      "dorm_details": {
+        "university_dorm": false,
+        "soccer_club_dorm": false,
+        "general_dorm": false,
+        "dorm_notes": ""
+      },
+      "sports_scholarship": false,
+      "qualifications": []
+    },
+    "facilities": {
+      "ground_name": "北海道大学サッカー・ラグビー場",
+      "ground_address": "北海道札幌市北区北16条西10丁目",
+      "ground_notes": "グラウンドは学内土",
+      "soccer_field_count": 1,
+      "facility_note": "グラウンドは学内土"
+    },
+    "entry_conditions": {
+      "sports_recommend": false,
+      "recommend_criteria": "",
+      "recommend_people_count": "",
+      "recommend_criteria_detail": "",
+      "selection": false,
+      "selection_period": "",
+      "general_admission": true,
+      "general_conditions": ""
+    },
+    "costs": {
+      "university_costs": {
+        "annual_tuition": 0,
+        "entrance_fee": 0,
+        "facility_fee": 0
+      },
+      "soccer_club_costs": {
+        "monthly_club_fee": 0,
+        "equipment_cost": 0,
+        "camp_cost": 0,
+        "travel_cost": 0
+      },
+      "living_costs": {
+        "dorm_fee": 0,
+        "meal_cost": 30000,
+        "commute_cost": 15000
+      },
+      "total_annual_cost": 0
+    },
+    "key_features": [
+      "J内定者0名（過去3年）",
+      "寮なし・通学制",
+      "スポーツ推薦なし",
+      "F：国公立"
+    ],
+    "career_info": {
+      "university_career_paths": "",
+      "soccer_club_career_paths": "",
+      "career_paths": [
+        {
+          "category": "Jリーグ関連",
+          "percentage": 0
+        },
+        {
+          "category": "指導者・教員",
+          "percentage": 35
+        },
+        {
+          "category": "一般企業",
+          "percentage": 65
+        }
+      ]
+    },
+    "extended_data": {
+      "playmaker_comment": "全国大会出場を目指す、学生主体のサッカーチームとして、勝利だけではなく、自発的に行動することや、関わる方々への感謝などを行動指針に加えている。2025年の総理大臣杯予選では代表決定戦で札幌大学に敗戦してしまったが、近年力を付けている印象。",
+      "last_updated": "2025-07-09T07:46:28.098Z",
+      "data_version": "v2_45columns"
+    },
+    "status": "active",
+    "data_source": "csv_import_v2",
+    "created_at": {},
+    "updated_at": {}
+  },
+  {
+    "id": 5,
+    "university_name": "北翔大学",
+    "homepage_url": "https://www.instagram.com/hokushosoccer?igsh=MnZobHBobmtpdjJt",
+    "main_faculties": [
+      "生涯スポーツ学部",
+      "教育文化学部"
+    ],
+    "location": "北海道",
+    "area": "北海道",
+    "academic_rank": "D：それ以外の私大",
+    "genres": [
+      "E：楽しく本気でサッカーをしたい"
+    ],
+    "soccer_club": {
+      "league": "北海道1部",
+      "coach_name": "谷木 竜平",
+      "total_members": 25,
+      "members_by_year": {
+        "fourth_year": 25,
+        "third_year": 0,
+        "second_year": 0,
+        "first_year": 0
+      },
+      "j_league_nominees_2022": 0,
+      "j_league_nominees_2023": 0,
+      "j_league_nominees_2024": 0,
+      "j_league_nominees_2022_24": 0,
+      "denso_cup_2024": 2,
+      "denso_cup_2024_25": 1,
+      "soccer_field_count": 1,
+      "dorm_available": false,
+      "dorm_details": {
+        "university_dorm": false,
+        "soccer_club_dorm": false,
+        "general_dorm": false,
+        "dorm_notes": ""
+      },
+      "sports_scholarship": true,
+      "qualifications": []
+    },
+    "facilities": {
+      "ground_name": "",
+      "ground_address": "",
+      "ground_notes": "グラウンドは学内土。トレーニング施設は充実",
+      "soccer_field_count": 1,
+      "facility_note": "グラウンドは学内土。トレーニング施設は充実"
+    },
+    "entry_conditions": {
+      "sports_recommend": true,
+      "recommend_criteria": "評定3.5以上",
+      "recommend_people_count": "70",
+      "recommend_criteria_detail": "",
+      "selection": false,
+      "selection_period": "",
+      "general_admission": true,
+      "general_conditions": ""
+    },
+    "costs": {
+      "university_costs": {
+        "annual_tuition": 0,
+        "entrance_fee": 0,
+        "facility_fee": 0
+      },
+      "soccer_club_costs": {
+        "monthly_club_fee": 0,
+        "equipment_cost": 0,
+        "camp_cost": 0,
+        "travel_cost": 0
+      },
+      "living_costs": {
+        "dorm_fee": 0,
+        "meal_cost": 30000,
+        "commute_cost": 15000
+      },
+      "total_annual_cost": 0
+    },
+    "key_features": [
+      "J内定者0名（過去3年）",
+      "寮なし・通学制",
+      "スポーツ推薦あり",
+      "D：それ以外の私大"
+    ],
+    "career_info": {
+      "university_career_paths": "",
+      "soccer_club_career_paths": "",
+      "career_paths": [
+        {
+          "category": "Jリーグ関連",
+          "percentage": 0
+        },
+        {
+          "category": "指導者・教員",
+          "percentage": 35
+        },
+        {
+          "category": "一般企業",
+          "percentage": 65
+        }
+      ]
+    },
+    "extended_data": {
+      "playmaker_comment": "",
+      "last_updated": "2025-07-09T07:46:28.098Z",
+      "data_version": "v2_45columns"
+    },
+    "status": "active",
+    "data_source": "csv_import_v2",
+    "created_at": {},
+    "updated_at": {}
+  }
+]
